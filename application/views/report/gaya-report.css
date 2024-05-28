@@ -1,0 +1,365 @@
+html, body {
+    font-size: 10pt;
+    color: #000000;
+    font-family: Calibri;
+    width: 100%;
+    height: 100%;
+    margin:0;
+    padding: 0;
+}
+
+@page {
+    size: A4;
+    margin: 0;
+}
+
+ @media print {
+    html, body {
+        width: 210mm;
+        height: 297mm;        
+    }
+
+    .konten-naskah {
+        margin: 0;
+        width: initial;
+        min-height: initial;
+        page-break-after: always;
+    }
+}
+
+.konten-naskah {
+    position: absolute;
+    float: left;
+    /*width: 100%;
+    min-height: 100%;*/
+    width: 210mm;
+    min-height: 297mm;
+    padding: 20mm;
+    margin: 0px auto;
+    /*border: 1px solid #ff0000;*/
+}
+
+.kop-surat {
+    position: relative;
+    float: left;
+    top: 0;
+    left: 0;
+    width: 100%;
+    min-height: 100%;
+    margin-top: 20px;
+    border: 1px solid #fff;
+}
+
+.logo-kop {
+    position: relative;
+    float: left;
+    width: 62%;
+    min-height: 100px;
+    margin-top: 20px;
+}
+
+.logo-kop2 {
+    position: relative;
+    float: left;
+    width: 60%;
+    min-height: 100px;
+    margin-top: 0px;
+}
+
+.alamat-kop {
+    position: relative;
+    float: right;
+    width: 38%;
+    min-height: 10px;
+    font-family: "Times New Roman", Times, serif;
+    font-size: 8pt;
+    color: #0035bd;
+    line-height: 100%;
+    /*border: 1px solid #ff0000;*/
+}
+
+.kepada-naskah {
+    position: relative;
+    float: right;
+    top: 0;
+    left: 0;
+    width: 100%;
+    min-height: 100%;
+    margin-top: 30px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 10pt;
+}
+
+.kepada-alamat {
+    position: relative;
+    float: right;
+    width: 50%;
+    min-height: 10px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 10pt;
+    color: #000000;
+    line-height: normal;
+}
+
+.jenis-naskah {
+    position: relative;
+    float: left;
+    top: 0;
+    left: 0;
+    width: 100%;
+    min-height: 100%;
+    margin-top: 40px;
+}
+
+.nama-jenis-naskah {
+    position: relative;
+    float: left;
+    width: 100%;
+    font-family: Calibri;
+    font-size: 10pt;
+    font-weight: normal;
+    color: #000000;
+    margin: auto;
+    text-align: center;
+}
+
+.jenis-naskah-fax {
+    position: absolute;
+    float: left;
+    top: 0;
+    left: 0;
+    width: 100%;
+    min-height: 100%;
+    margin-top: 0px;
+}
+
+.nama-jenis-naskah-fax {
+    position: relative;
+    float: left;
+    width: 85%;
+    font-family: Calibri;
+    font-size: 18pt;
+    font-weight: bold;
+    color: #000000;
+    text-align: left;
+    /*border: 1px solid #ff0000;*/
+}
+
+.hologram-naskah {
+    position: relative;
+    float: right;
+    width: 20%;
+    font-family: Calibri;
+    font-size: 10pt;
+    color: #000000;
+    text-align: center;
+    margin-right: 120px;
+    /*border: 1px solid #ff0000;*/
+}
+
+.jenis-naskah-memo-intern {
+    position: relative;
+    float: left;
+    top: 0;
+    left: 0;
+    width: 100%;
+    min-height: 100%;
+    margin-top: 0px;
+    /*border: 1px solid #ff0000;*/
+}
+
+.nama-jenis-naskah-memo-intern {
+    position: relative;
+    float: left;
+    width: 65%;
+    font-family: Calibri;
+    font-size: 18pt;
+    font-weight: bold;
+    color: #000000;
+    margin-top: 0px;
+}
+
+.nama-jenis-naskah-memo-intern span {
+    position: relative;
+    float: left;
+    width: 65%;
+    font-family: Calibri;
+    font-size: 10pt;
+    font-weight: bold;
+    color: #000000;
+    margin-top: 10px;
+    text-align: left;
+}
+
+.hologram-naskah-memo-intern {
+    position: relative;
+    float: right;
+    width: 35%;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 10pt;
+    color: #000000;
+    margin-bottom: 10px;
+    text-align: right;
+}
+
+.nama-kop {
+    position: relative;
+    float: left;
+    width: 100%;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 18pt;
+    font-weight: bold;
+    color: #000000;
+    margin: auto;
+    text-align: left;
+}
+
+.unit-kerja {
+    position: relative;
+    float: left;
+    width: 100%;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 10pt;
+    color: #000000;
+    margin: auto;
+    text-align: left;
+}
+
+.nomor-naskah {
+    position: relative;
+    float: left;
+    width: 100%;
+    font-family: Calibri;
+    font-size: 10pt;
+    color: #000000;
+    margin: auto;
+    margin-bottom: 10PX;
+    text-align: center;
+}
+
+.tujuan-naskah {
+    position: relative;
+    float: left;
+    top: 0;
+    left: 0;
+    width: 100%;
+    min-height: 100%;
+    font-family: Calibri;
+    font-size: 10pt;
+    margin-top: 20px;
+    color: #000000;
+    line-height: 1.6;
+}
+
+.margin-atas {
+    position: relative;
+    float: left;
+    top: 0;
+    left: 0;
+    width: 100%;
+    border: 1px solid #fff; 
+    margin-bottom: 30px;
+}
+
+.pembatas {
+    position: relative;
+    float: left;
+    top: 0;
+    left: 0;
+    width: 100%;
+    border: 1px solid #000000; 
+    margin-top: 10px;
+}
+
+.pembatas-atas {
+    position: relative;
+    float: left;
+    top: 0;
+    left: 0;
+    width: 100%;
+    border: 1px solid #000000; 
+    margin-top: 0px;
+}
+
+table {
+    float: left;
+    position: relative;
+}
+
+td{
+    padding:2px 0px;
+    vertical-align: top;
+}
+
+tr.border-bottom td {
+    border-bottom: 0.5px solid #000000;
+}
+
+.isi-naskah {
+    position: relative;
+    float: left;
+    top: 0;
+    left: 0;
+    width: 100%;
+    min-height: 100%;
+    font-family: Calibri;
+    font-size: 10pt;
+    margin-top: 10px;
+    color: #000000;
+    line-height: 1.8;
+    text-align: justify;
+}
+
+.tanda-tangan-kanan {
+    position: relative;
+    float: right;
+    width: 50%;
+    height: auto;
+    font-family: Calibri;
+    font-size: 10pt;
+    margin-top: 20px;
+    color: #000000;
+    line-height: 1.8;
+    text-align: center;
+    display: flex;
+    /*border: 1px solid #ff0000;*/
+}
+
+.tanda-tangan-kiri {
+    position: relative;
+    float: left;
+    width: 50%;
+    min-height: 100px;
+    font-family: Calibri;
+    font-size: 10pt;
+    margin-top: 30px;
+    color: #000000;
+    line-height: 1.8;
+    text-align: left;
+}
+
+.tembusan {
+    position: relative;
+    float: left;
+    width: 100%;
+    font-family: Calibri;
+    margin-top: 30px;
+    color: #000000;
+    line-height: 1.4;
+    font-size: 8pt;
+}
+
+.maker-surat {
+    position: relative;
+    float: left;
+    width: 100%;
+    font-family: Calibri;
+    font-size: 5pt;
+    margin-top: 10px;
+    color: #000000;
+    line-height: 1.8;
+}
+
+body{
+	border: 10px solid red !important;
+}

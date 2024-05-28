@@ -1,0 +1,459 @@
+<?php
+/* INCLUDE FILE */
+include_once("functions/date.func.php");
+include_once("functions/default.func.php");
+include_once("functions/string.func.php");
+include_once("libraries/vendor/autoload.php");
+
+$this->load->library('suratmasukinfo');
+$suratmasukinfo = new suratmasukinfo();
+// print_r($suratmasukinfo);exit;
+
+$actual_link = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+$xx=explode("/",$actual_link);
+$link="http://192.168.88.100/".$xx[3];
+
+$reqId = httpFilterGet("reqId");
+$reqJenisSurat = httpFilterGet("reqJenisSurat");
+$suratmasukinfo->getInfoAsc($reqId, $reqJenisSurat);
+$telp=$suratmasukinfo->TELEPON_UNIT;
+$fax=$suratmasukinfo->FAX_UNIT;
+$alamat=$suratmasukinfo->ALAMAT_UNIT;
+$an_status = $suratmasukinfo->AN_STATUS;
+$an_nama = $suratmasukinfo->AN_NAMA;
+$alamatunit=str_replace(array('<p>', '</p>'), array('<i>', '</i>'), $alamat);
+
+
+$this->load->model("SuratMasuk");
+$suratmasuk = new SuratMasuk();
+$suratmasuk->selectByParamsPltJabatan(array("A.SURAT_MASUK_ID" => $reqId));
+$suratmasuk->firstRow();
+$reqJabatan                    = $suratmasuk->getField("JABATAN");
+$reqAtasanJabatan                    = $suratmasuk->getField("USER_ATASAN_JABATAN");
+$reqAnTambahan                    = $suratmasuk->getField("AN_TAMBAHAN");
+?>
+<link href="<?= base_url() ?>css/gaya-surat.css" rel="stylesheet" type="text/css">
+
+<body>
+  <table style="width: 100%; border-bottom: 5px solid #000; padding: 2px;">
+    <tr>
+      <td>
+        <center><img src="<?=base_url().'images/logo.png'?>" height="100px"></center>
+      </td>
+    </tr>
+    <tr>
+      <td style="text-align:center;font-size: 12pt; height: 70px;">
+        <b><u>KEPUTUSAN DIREKSI PT INDONESIA FERRY PROPERTI</u></b><br>
+        Nomor: <?= $suratmasukinfo->NOMOR ?>
+      </td>
+    </tr>
+    <tr>
+      <td style="text-align: center; font-size: 12pt; height: 50px;">Tentang</td>
+    </tr>
+    <tr>
+      <td style="text-align: center; font-size: 12pt;"><b style="white-space: normal;"><?= $suratmasukinfo->PERIHAL ?></b></td>
+    </tr>
+  </table>
+
+  <br>
+
+  <!-- <br>
+  <br>
+  <table style="width:100%;font-size: 12pt;">
+    <tr>
+      <td style="width:10%">
+        Nomor 
+      </td>
+      <td style="width:40%">
+        : <?= $suratmasukinfo->NOMOR ?>
+      </td>
+      <td style="width:25%">
+      </td>
+      <td rowspan="3" style="width:25%">
+        <?=$suratmasukinfo->LOKASI_UNIT?> <?=getFormattedDateTime($suratmasukinfo->APPROVAL_QR_DATE, false)?><br>
+        Kepada:<br>
+        Yth.
+        
+         <?
+            $arrayKepada =  explode(',', $suratmasukinfo->KEPADA);
+            if (count($arrayKepada) == 1) {
+              echo $suratmasukinfo->KEPADA;
+            } else {
+              ?>
+              <ol>
+                <?
+                foreach ($arrayKepada as $itemKepada) {
+                  ?>
+                  <li><?= $itemKepada ?></li>
+                  <?
+                }
+                ?>
+              </ol>
+              <?
+            }
+            ?>
+        PT. ASDP Indonesia Ferry<br>
+        (Persero)<br>
+        di-<br>
+        <u><b>TEMPAT</b></u>
+      </td>
+    </tr>
+    <tr>
+      <td style="width:10%">
+        Lampiran 
+      </td>
+      <td style="width:40%">
+        : -
+      </td>
+    </tr>
+    <tr>
+      <td style="width:10%">
+        Perihal 
+      </td>
+      <td style="width:40%">
+        : <?= $suratmasukinfo->PERIHAL; ?>
+      </td>
+    </tr>
+  </table> -->
+<!-- End Kop Surat -->
+
+  <?
+    $surat_masuk = new SuratMasuk();
+    $surat_masuk->selectByParams(array("A.SURAT_MASUK_ID" => $reqId), -1, -1, $statement);
+    $surat_masuk->firstRow();
+    $reqMenimbang=  $surat_masuk->getField("MENIMBANG");
+    $reqMengingat= str_replace(chr(194)," ",$surat_masuk->getField("MENGINGAT"));
+    $reqMenetapkan=  $surat_masuk->getField("MENETAPKAN");
+    $reqPertama= str_replace(chr(194)," ",$surat_masuk->getField("PERTAMA"));
+
+    $reqNamaPasal= $surat_masuk->getField("NAMA_PASAL");
+    if ($reqBagianNama ==''){
+        $reqBagianNama=='PASAL';
+     }
+  ?>
+<div>
+  <!-- <br> -->
+<table style="width: 100%;">
+  <tr>
+    <td colspan="3" style="text-align: center; font-size: 12pt;">DIREKSI PT INDONESIA FERRY PROPERTI</td>
+  </tr>
+  <tr style="page-break-inside: avoid;">
+    <td style="padding: 4px 8px; width: 150px;font-size: 12pt;">Menimbang</td>
+    <td style="padding: 4px 8px; width: 20px;">:</td>
+    <td style="padding: 4px 8px; text-align: justify;font-size: 12pt;"><?= $reqMenimbang?></td>
+  </tr>
+   <tr style="page-break-inside: avoid;">
+    <td style="padding: 4px 8px;font-size: 12pt;">Mengingat</td>
+    <td style="padding: 4px 8px;">:</td>
+    <td style="padding: 4px 8px; text-align: justify;font-size: 12pt;"><?= $reqMengingat?></td>
+  </tr>
+</table>
+  <!-- <pagebreak /> -->
+
+<?
+if ($reqId == 414)
+{
+?>
+    <div style="page-break-before:always;"> 
+    </div>
+<?
+}
+?>
+  
+<br>
+<div class="nama-jenis-naskah" style="letter-spacing: 2px;font-size: 12pt;">
+  <b>MEMUTUSKAN :</b><br>
+</div>
+<br>
+<br>
+<br>
+
+<table style="width: 100%;font-size: 11px;font-family: Arial">
+   <tr style="page-break-inside: avoid;">
+    <td style="padding: 4px 8px; width: 150px;font-size: 12pt;font-size: 12pt;"><b>Menetapkan</b></td>
+    <td style="padding: 4px 8px; width: 20px;">:</td>
+    <td style="padding: 4px 8px; text-align: justify; text-transform: uppercase;font-size: 12pt;"><b><?= $reqMenetapkan?></b></td>
+  </tr>
+  <tr style="page-break-inside: avoid;">
+     <td colspan="3" style="padding: 4px 8px; text-align: center;">&nbsp;</td>
+  </tr>
+</table>
+<div style="page-break-after: always;"></div>
+<!--------->
+
+<table>
+  <tr>
+    <?
+    if($reqNamaPasal!='PASAL')
+    {
+    ?>
+      <td colspan="3" style="padding: 4px 8px; text-align: center;font-size: 12pt;"><strong><?= $reqNamaPasal?> I</strong></td>
+    <?
+    }
+    else
+    {
+    ?>
+      <td colspan="3" style="padding: 4px 8px; text-align: center;font-size: 12pt;"><strong><?= $reqNamaPasal?> 1</strong></td>
+    <?
+    }
+    ?>
+  </tr>
+
+  <tr style="page-break-inside: avoid;">
+    <td colspan="3" style="padding: 4px 8px;font-size: 12pt;"><?= $reqPertama?></td>
+  </tr>
+
+  <?
+  $arraypasalfield= array(
+    array("labelbukanpasal"=>"II", "labelpasal"=>"2", "field"=>"KEDUA")
+    , array("labelbukanpasal"=>"III", "labelpasal"=>"3", "field"=>"KETIGA")
+    , array("labelbukanpasal"=>"IV", "labelpasal"=>"4", "field"=>"KEEMPAT")
+    , array("labelbukanpasal"=>"V", "labelpasal"=>"5", "field"=>"KELIMA")
+    , array("labelbukanpasal"=>"VI", "labelpasal"=>"6", "field"=>"KEENAM")
+    , array("labelbukanpasal"=>"VII", "labelpasal"=>"7", "field"=>"KETUJUH")
+    , array("labelbukanpasal"=>"VIII", "labelpasal"=>"8", "field"=>"KEDELAPAN")
+    , array("labelbukanpasal"=>"IX", "labelpasal"=>"9", "field"=>"KESEMBILAN")
+    , array("labelbukanpasal"=>"X", "labelpasal"=>"10", "field"=>"KESEPULUH")
+    , array("labelbukanpasal"=>"XI", "labelpasal"=>"11", "field"=>"KESEBELAS")
+    , array("labelbukanpasal"=>"XII", "labelpasal"=>"12", "field"=>"KEDUABELAS")
+    , array("labelbukanpasal"=>"XIII", "labelpasal"=>"13", "field"=>"KETIGABELAS")
+    , array("labelbukanpasal"=>"XIV", "labelpasal"=>"14", "field"=>"KEEMPATBELAS")
+    , array("labelbukanpasal"=>"XV", "labelpasal"=>"15", "field"=>"KELIMABELAS")
+    , array("labelbukanpasal"=>"XVI", "labelpasal"=>"16", "field"=>"KEENAMBELAS")
+    , array("labelbukanpasal"=>"XVII", "labelpasal"=>"17", "field"=>"KETUJUHBELAS")
+    , array("labelbukanpasal"=>"XVIII", "labelpasal"=>"18", "field"=>"KEDELAPANBELAS")
+    , array("labelbukanpasal"=>"XIX", "labelpasal"=>"19", "field"=>"KESEMBILANBELAS")
+    , array("labelbukanpasal"=>"XX", "labelpasal"=>"20", "field"=>"KEDUAPULUH")
+  );
+
+  foreach ($arraypasalfield as $key => $value) 
+  {
+    $vinfonama= str_replace(chr(194)," ",$surat_masuk->getField($value["field"]));
+    if(!empty($vinfonama))
+    {
+      $labelpasal= $value["labelpasal"];
+      $labelbukanpasal= $value["labelbukanpasal"];
+  ?>
+  <tr style="page-break-inside: avoid;">
+    <td colspan="3" style="border: 1px solid white;">
+      <table style="border: 1px solid white; width: 100%;">
+        <tr style="">
+          <?
+          if($reqNamaPasal!='PASAL')
+          {
+          ?>
+            <td colspan="3" style="padding: 4px 8px; text-align: center;font-size: 12pt;"><strong><?= $reqNamaPasal?> <?=$labelbukanpasal?></strong></td>
+          <?
+          }
+          else
+          {
+          ?>
+            <td colspan="3" style="padding: 4px 8px; text-align: center;font-size: 12pt;"><strong><?= $reqNamaPasal?> <?=$labelpasal?></strong></td>
+          <?
+          }
+          ?>
+        </tr>
+        <tr>
+          <td colspan="3" style="padding: 4px 8px;font-size: 12pt;"><?=$vinfonama?></td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+    
+  <?
+    }
+  }
+  ?>
+</table>
+
+<!-- Start Jenis Naskah -->
+<!-- <div class="jenis-naskah">
+  <div class="nama-jenis-naskah"><u style="text-transform:uppercase;">Surat Perintah Tugas</u></div>
+  <div class="nomor-naskah">NO : <?= $suratmasukinfo->NOMOR ?></div>
+</div> -->
+<!-- End Jenis Naskah -->
+
+<!-- Start Tentang Naskah -->
+<!-- <div class="jenis-naskah">
+</div> -->
+<!-- End Tentang Naskah -->
+
+<!-- Start Isi Naskah -->
+<div class="isi-naskah">
+  <?
+  $visi= str_replace("uploads/froala/",base_url()."/uploads/froala/",$suratmasukinfo->ISI);
+  $visi= str_replace("font", "fontxx", $visi);
+  $visi= str_replace("https://eoffice.myifpro.co.id/https://eoffice.myifpro.co.id//", base_url(),$visi);
+  $visi= preg_replace('/[^(\x20-\x7F)\x0A\x0D]*/','', $visi);
+  echo $visi;
+  ?>
+</div>
+   <!--  <div class="isi-naskah">
+      <table width="100%">
+        <tr>
+          <td width="20%"><b>Menimbang</b></td>
+          <td width="1%">:</td>
+          <td width="79%">
+            <ol type="a">
+              <li>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas sed faucibus dui. Morbi tempor, risus at sodales fringilla, ligula lorem tincidunt elit, ac efficitur ligula dolor id lorem. Donec vel augue lectus. Proin facilisis metus quis mi rhoncus luctus.</li>
+              <li>Pellentesque ultrices placerat eros id luctus. Pellentesque vestibulum bibendum eros id posuere. Pellentesque ornare tincidunt lacus quis iaculis. Ut at consectetur metus. Proin dignissim nunc at nulla auctor sagittis.</li>
+            </ol>
+          </td>
+        </tr>
+        <tr>
+          <td><b>Mengingat</b></td>
+          <td>:</td>
+          <td>
+            <ol>
+              <li>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas sed faucibus dui. Morbi tempor, risus at sodales fringilla, ligula lorem tincidunt elit, ac efficitur ligula dolor id lorem. Donec vel augue lectus. Proin facilisis metus quis mi rhoncus luctus.</li>
+              <li>Pellentesque ultrices placerat eros id luctus. Pellentesque vestibulum bibendum eros id posuere. Pellentesque ornare tincidunt lacus quis iaculis. Ut at consectetur metus. Proin dignissim nunc at nulla auctor sagittis.</li>
+            </ol>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="3" align="center">&nbsp;</td>
+        </tr>
+        <tr>
+          <td colspan="3" align="center"><b>MEMUTUSKAN :</b></td>
+        </tr>
+        <tr>
+          <td colspan="3" align="center">&nbsp;</td>
+        </tr>
+        <tr>
+          <td><b>Menetapkan</b></td>
+          <td>:</td>
+          <td></td>
+        </tr>
+      </table>
+    </div> -->
+<!-- End Isi Naskah -->
+
+<!-- Start Tanda Tangan -->
+<!-- <div class="tanda-tangan-kanan" style="page-break-after: always;" > -->
+  <br>&nbsp;
+  <div class="tanda-tangan-kanan" >
+  <table width="100%">
+    <tr>
+      <td width="40%" style="font-size: 12pt;">Ditetapkan di</td>
+      <td width="1%">:</td>
+      <td width="59%" style="font-size: 12pt;"><?= $suratmasukinfo->LOKASI_UNIT ?></td>
+    </tr>
+    <tr class="border-bottom">
+      <td style="font-size: 12pt;">Pada tanggal</td>
+      <td>:</td>
+      <td>
+        <!-- <?= getFormattedDate2($suratmasukinfo->TANGGAL) ?> -->
+        <?=getFormattedDateTime($suratmasukinfo->APPROVAL_QR_DATE, false)?>
+      </td>
+    </tr>
+  </table>
+  <br>&nbsp;
+  <?
+  if ($an_status == 1)
+  {
+    ?>
+    <br><strong style="font-size: 12pt;">A.n <?=$an_nama?></strong>
+    <?
+  }
+  ?>
+  <br><strong style="font-size: 12pt;"><?= strtoupper($suratmasukinfo->USER_ATASAN_JABATAN) ?></strong>
+  <?
+if(stripos($reqAtasanJabatan, 'plt') !== false || stripos($reqAtasanJabatan, 'plh') !== false)  {
+    ?>
+    <div style="line-height:150%;">
+          <span style="font-size: 12pt;"><?=strtoupper($reqJabatan)?></span>
+    </div>
+  <?
+  }
+  ?>
+  <br>
+  <?
+  $ttdKode = $suratmasukinfo->TTD_KODE;
+  if ($ttdKode == "" || $suratmasukinfo->JENIS_TTD == "BASAH")
+    echo "<br><br>";
+  else {
+  ?>
+    <img src="<?=base_url().$suratmasukinfo->FOLDER_PATH ?>/<?= $suratmasukinfo->SURAT_MASUK_ID ?>/<?= $suratmasukinfo->TTD_KODE ?>.png" height="100px">
+    <!-- <img src="/var/www/html/<?= $suratmasukinfo->FOLDER_PATH ?>/<?= $suratmasukinfo->SURAT_MASUK_ID ?>/<?= $suratmasukinfo->TTD_KODE ?>.png" height="100px"> -->
+    <br>
+<!--     <span style="font-size:10px;"><i>&nbsp;</i></span>
+ -->  <?
+  }
+  ?>
+  <br><u><b style="font-size: 12pt;"><?= strtoupper($suratmasukinfo->USER_ATASAN) ?></b></u>
+</div>
+<!-- End Isi Naskah -->
+
+<!-- Start Kepada -->
+<?
+if ($suratmasukinfo->KEPADA == "") {
+} else {
+?>
+  <!-- <div class="tembusan"  style="page-break-before: always;" > -->
+    <div class="tembusan" style="font-size: 12pt;" >
+    <b>SALINAN</b> Keputusan Direksi ini 
+    <br>
+    <u>disampaikan kepada Yth :</u>
+    <?
+    $arrKepada= explode("xxx", $suratmasukinfo->KEPADA_PARAM);
+    ?>
+    <ol type="1">
+      <?
+      for ($i = 0; $i < count($arrKepada); $i++) {
+      ?>
+        <li><?= $arrKepada[$i] ?></li>
+      <?
+      }
+      ?>
+    </ol>
+  </div>
+<?
+}
+?>
+<!-- End Kepada -->
+
+<!-- Start Tembusan -->
+<?
+/*if ($suratmasukinfo->TEMBUSAN == "") {
+} else {
+?>
+  <div class="tembusan" style="font-size: 12pt;">
+    <b>SALINAN</b> Surat Keputusan Direksi ini 
+    <br>
+    <u>disampaikan kepada Yth :</u>
+    <?
+    $arrTembusan = explode(",", $suratmasukinfo->TEMBUSAN);
+    ?>
+    <ol type="1">
+      <?
+      for ($i = 0; $i < count($arrTembusan); $i++) {
+      ?>
+        <li><?= $arrTembusan[$i] ?></li>
+      <?
+      }
+      ?>
+    </ol>
+  </div>
+<?
+}
+*/?>
+<!-- End Tembusan -->
+
+<!-- Start Maker Surat -->
+<!-- <div class="maker-surat">
+  <?/*
+  $arrNama = explode(" ", $suratmasukinfo->NAMA_USER);
+  $jumlahNama = count($arrNama);
+  if ($jumlahNama > 1) {
+    $inisial = substr($arrNama[0], 0, 1);
+    $lastname = $arrNama[$jumlahNama - 1];
+    $alias = $inisial . "." . $lastname;
+  } else
+    $alias = $arrNama[0];
+  ?>
+  <i style="font-size:9px;"><?= $suratmasukinfo->KODE_UNIT ?>/<?= $suratmasukinfo->KD_SURAT ?>/<?= strtoupper($alias) */ ?></i>
+</div> -->
+
+
+<!-- End Maker Surat -->
+  <!-- <sethtmlpagefooter name="firstpage"  value="off" show-this-page="1" /> -->

@@ -1,0 +1,178 @@
+<? 
+/* *******************************************************************************************************
+MODUL NAME 			: MTSN LAWANG
+FILE NAME 			: 
+AUTHOR				: 
+VERSION				: 1.0
+MODIFICATION DOC	:
+DESCRIPTION			: 
+***************************************************************************************************** */
+
+  /***
+  * Entity-base class untuk mengimplementasikan tabel kategori.
+  * 
+  ***/
+  include_once("Entity.php");
+
+  class Combo extends Entity{ 
+
+		var $query;
+	    /**
+	    * Class constructor.
+	    **/
+	  function Combo()
+		{
+	      $this->Entity(); 
+	  }
+
+	  function selectByParamsBank($paramsArray=array(),$limit=-1,$from=-1,$statement="", $order="")
+		{ 
+			$str = "
+			SELECT * from bank WHERE 1 = 1
+			"; 
+			
+			while(list($key,$val) = each($paramsArray))
+			{
+				$str .= " AND $key = '$val' ";
+			}
+			
+			$str .= $statement." ".$order;
+			$this->query = $str;
+			return $this->selectLimit($str,$limit,$from); 
+	  }
+
+	  function selectByParamsPendidikan($paramsArray=array(),$limit=-1,$from=-1,$statement="", $order="")
+		{ 
+			$str = "
+			SELECT * from PENDIDIKAN WHERE 1 = 1
+			"; 
+			
+			while(list($key,$val) = each($paramsArray))
+			{
+				$str .= " AND $key = '$val' ";
+			}
+			
+			$str .= $statement." ".$order;
+			$this->query = $str;
+			return $this->selectLimit($str,$limit,$from); 
+	  }
+
+	  function selectByParamsAgama($paramsArray=array(),$limit=-1,$from=-1,$statement="", $order="")
+		{ 
+			$str = "
+			SELECT * from AGAMA WHERE 1 = 1
+			"; 
+			
+			while(list($key,$val) = each($paramsArray))
+			{
+				$str .= " AND $key = '$val' ";
+			}
+			
+			$str .= $statement." ".$order;
+			$this->query = $str;
+			return $this->selectLimit($str,$limit,$from); 
+	  }
+
+
+	  function selectByParamsJenisPerusahaan($paramsArray=array(),$limit=-1,$from=-1,$statement="", $order="")
+		{ 
+			$str = "
+			SELECT * from JENIS_PERUSAHAAN WHERE 1 = 1
+			"; 
+			
+			while(list($key,$val) = each($paramsArray))
+			{
+				$str .= " AND $key = '$val' ";
+			}
+			
+			$str .= $statement." ".$order;
+			$this->query = $str;
+			return $this->selectLimit($str,$limit,$from); 
+	  }
+
+
+	  function selectByParamsCustomer($paramsArray=array(),$limit=-1,$from=-1,$statement="", $order="")
+		{ 
+			$str = "
+			SELECT * from CUSTOMER WHERE 1 = 1
+			"; 
+			
+			while(list($key,$val) = each($paramsArray))
+			{
+				$str .= " AND $key = '$val' ";
+			}
+			
+			$str .= $statement." ".$order;
+			$this->query = $str;
+			return $this->selectLimit($str,$limit,$from); 
+	  }
+
+
+	  function selectByParamsLantaiLoo($paramsArray=array(),$limit=-1,$from=-1,$statement="", $order="")
+		{ 
+			$str = "
+			SELECT *, CASE WHEN TIPE = 'I' THEN 'Indoor' ELSE 'Outdoor' END TIPE_INFO from LANTAI_LOO WHERE 1 = 1
+			"; 
+			
+			while(list($key,$val) = each($paramsArray))
+			{
+				$str .= " AND $key = '$val' ";
+			}
+			
+			$str .= $statement." ".$order;
+			$this->query = $str;
+			return $this->selectLimit($str,$limit,$from); 
+	  }
+
+
+	  function selectByParamsLokasiLoo($paramsArray=array(),$limit=-1,$from=-1,$statement="", $order="")
+		{ 
+			$str = "
+			SELECT * from LOKASI_LOO WHERE 1 = 1
+			"; 
+			
+			while(list($key,$val) = each($paramsArray))
+			{
+				$str .= " AND $key = '$val' ";
+			}
+			
+			$str .= $statement." ".$order;
+			$this->query = $str;
+			return $this->selectLimit($str,$limit,$from); 
+	  }
+
+	  function selectByParamsLokasiLooDetil($paramsArray=array(),$limit=-1,$from=-1,$statement="", $order="")
+		{ 
+			$str = "
+			SELECT * from LOKASI_LOO_DETIL WHERE 1 = 1
+			"; 
+			
+			while(list($key,$val) = each($paramsArray))
+			{
+				$str .= " AND $key = '$val' ";
+			}
+			
+			$str .= $statement." ".$order;
+			$this->query = $str;
+			return $this->selectLimit($str,$limit,$from); 
+	  }
+
+	  function selectByParamsProduk($paramsArray=array(),$limit=-1,$from=-1,$statement="", $order="")
+		{ 
+			$str = "
+			SELECT * from PRODUK WHERE 1 = 1
+			"; 
+			
+			while(list($key,$val) = each($paramsArray))
+			{
+				$str .= " AND $key = '$val' ";
+			}
+			
+			$str .= $statement." ".$order;
+			$this->query = $str;
+			return $this->selectLimit($str,$limit,$from); 
+	  }
+
+   
+  } 
+?>
