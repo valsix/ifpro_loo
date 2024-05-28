@@ -336,38 +336,39 @@ class lokasi_loo_detil_json extends CI_Controller
 		$c = $this->input->get("c");
 		
 		$this->load->model("LokasiLooDetil");
-		$lokasi_loo_detil = new LokasiLooDetil();
+		$set = new LokasiLooDetil();
 
 		if($reqPencarian == "")
 		{}
 		else
-			$statement = " AND (UPPER(A.NAMA) LIKE '%".strtoupper($reqPencarian)."%' ) ";
+			$statement = " AND (UPPER(A.NAMA) LIKE '%".strtoupper($reqPencarian)."%' OR UPPER(B.NAMA) LIKE '%".strtoupper($reqPencarian)."%' OR UPPER(C.NAMA) LIKE '%".strtoupper($reqPencarian)."%' OR UPPER(A.LANTAI) LIKE '%".strtoupper($reqPencarian)."%' OR UPPER(A.KODE) LIKE '%".strtoupper($reqPencarian)."%' ) ";
 
 		if ($reqId) 
 		{
 			$statement_privacy = " AND A.LOKASI_LOO_ID = '".$reqId."' AND A.TIPE = '".$reqTipe."' ";
 		}
 
-		$rowCount = $lokasi_loo_detil->getCountByParams(array(), $statement.$statement_privacy);
-		$lokasi_loo_detil->selectByParams(array(), $rows, $offset, $statement.$statement_privacy);
+		$rowCount = $set->getCountByParams(array(), $statement.$statement_privacy);
+		$set->selectByParams(array(), $rows, $offset, $statement.$statement_privacy);
 
 		if(!empty($c))
 		{
-			echo $pegawai->query;exit;
+			echo $set->query;exit;
 		}
 
 		$i = 0;
 		$items = array();
-		while($lokasi_loo_detil->nextRow())
+		while($set->nextRow())
 		{
-			$row['id']		= $lokasi_loo_detil->getField("LOKASI_LOO_DETIL_ID");
-			$row['text']	= $lokasi_loo_detil->getField("NAMA");
-			$row['LOKASI_LOO_ID']	= $lokasi_loo_detil->getField("LOKASI_LOO_ID");
-			$row['NAMA_LOKASI_LOO']	= $lokasi_loo_detil->getField("NAMA_LOKASI_LOO");
-			$row['KODE']	= $lokasi_loo_detil->getField("KODE");
-			$row['DESKRIPSI']	= $lokasi_loo_detil->getField("DESKRIPSI");
-			$row['LANTAI']	= $lokasi_loo_detil->getField("LANTAI");
-			$row['TIPE_INFO']	= $lokasi_loo_detil->getField("TIPE_INFO");
+			$row['id']= $set->getField("LOKASI_LOO_DETIL_ID");
+			$row['text']= $set->getField("NAMA");
+			$row['LOKASI_LOO_ID']= $set->getField("LOKASI_LOO_ID");
+			$row['NAMA_LOKASI_LOO']= $set->getField("NAMA_LOKASI_LOO");
+			$row['NAMA']= $set->getField("NAMA");
+			$row['KODE']= $set->getField("KODE");
+			$row['DESKRIPSI']= $set->getField("DESKRIPSI");
+			$row['LANTAI']= $set->getField("LANTAI");
+			$row['TIPE_INFO']	= $set->getField("TIPE_INFO");
 			$row['state'] 	= 'close';
 			$i++;
 			array_push($items, $row);
