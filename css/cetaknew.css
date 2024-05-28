@@ -1,0 +1,91 @@
+body{
+/*	background-image:url('../images/bg_cetak.jpg');*/
+	background-image-resize:6
+	/*padding: 200px 200px 200px 200px;*/
+}
+*/
+@font-face {
+	*font-family: 'cambria';
+	src: url('../fonts/Cambria.ttf');
+}
+
+body, *{
+	font-family: "Calibri";
+	font-size: 10pt;
+}
+
+.container {
+	background: white;
+	width: 595px;
+	/*height: 842px;*/
+	margin: auto;
+	padding: 50px 50px 50px 90px;
+}
+
+.footer {
+	color: blue;
+	font-size: 10pt;
+	text-align: right;
+	bottom: 10px;
+}
+
+.bold-border{
+	border: 2px solid black !important;
+}
+
+.center {
+	text-align: center;
+}
+
+.left {
+	text-align: left;
+}
+
+.grey {
+	background: #c9c6c6;
+}
+
+.dark-grey {
+	background: grey;
+}
+
+.table-border th, .table-border td{
+	border: 1px solid black;
+}
+
+.table-border-bold th, .table-border-bold td{
+	border: 2px solid black;
+	padding: 10px;
+}
+
+.bold{
+	font-weight: bold;
+}
+
+.v-top {
+	vertical-align: top;
+}
+
+.red {
+	background: red;
+}
+
+.white-text{
+	color: white;
+}
+
+.purple{
+	background: #e878fe;
+}
+
+.yellow{
+	background: #ffff6c;
+}
+
+.green{
+	background: #0F3;
+}
+
+ol.alphabetic-list {
+    list-style-type: lower-alpha;
+}

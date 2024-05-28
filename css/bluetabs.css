@@ -1,0 +1,133 @@
+.bluetabs{
+	padding-left: 15px;
+	height: 34px;
+	float: left;
+	width: 100%;
+}
+#wadah > .judul-halaman ~ .bluetabs{
+	background: #FFFFFF;
+	padding-top: 10px;
+	padding-bottom: 10px;
+	height: 45px;
+}
+@media screen and (max-width:767px) {
+	#wadah > .judul-halaman ~ .bluetabs{
+		display: inherit;
+		position: relative;
+		-webkit-border-radius: 0px;
+		-moz-border-radius: 0px;
+		border-radius: 0px;
+		padding-left: 20px;
+		padding-right: 20px;
+	}
+	#wadah > .judul-halaman ~ .bluetabs a{
+		height: auto;
+		line-height: normal;
+		padding: 5px 10px;
+	}
+}
+
+.bluetabs ul{
+	padding: 0px 0px;
+	margin-left: 0;
+	margin-top: 0px;
+	margin-bottom: 0px;
+	font-size: 12px;	
+	list-style-type: none;
+	text-align: left;
+}
+.bluetabs li{
+	display: inline;
+	margin: 0;
+}
+.bluetabs li a img{
+	vertical-align:middle;
+	margin-right:5px;
+}
+.bluetabs li a{
+	text-decoration: none;
+	background: #0162b7;
+	color: #FFFFFF;
+	font-size: 12px;
+	height: 26px;
+	line-height: 26px;
+	display: inline-block;
+	padding: 0px 10px;
+	-webkit-border-radius: 14px;
+	-moz-border-radius: 14px;
+	border-radius: 14px;
+}
+
+/****/
+.bluetabs li a > img{
+	height: 14px;
+	vertical-align: middle;
+	display: inline-block;
+	margin-top: -6px;
+}
+
+.bluetabs li a:visited{
+	color: #2d2b2b;
+}
+
+.bluetabs li a:hover{
+	background: #f78200;
+}
+
+.bluetabs li.selected{
+	
+}
+
+.bluetabs li.selected a{
+	background-image: url(media/bluetabactive.gif);
+	border-bottom-color: white;
+}
+
+.bluetabs li.selected a:hover{
+	text-decoration: none;
+}
+
+/* ######### Style for Drop Down Menu ######### */
+.dropmenudiv_b{
+	position:absolute;
+	top: 0;
+	border: 1px solid #918d8d; /*THEME CHANGE HERE*/
+	border-width: 0 1px;
+	font:normal 12px Verdana;
+	line-height:18px;
+	z-index:100;
+	background-color: white;
+	width: 200px;
+	visibility: hidden;
+}
+.dropmenudiv_b a{
+	width: auto;
+	display: block;
+	text-indent: 5px;
+	border: 0 solid #918d8d; /*THEME CHANGE HERE*/
+	border-bottom-width: 1px;
+	padding: 2px 0;
+	text-decoration: none;
+	color: black;
+}
+
+* html .dropmenudiv_b a{ /*IE only hack*/
+width: 100%;
+}
+
+.dropmenudiv_b a:hover{ /*THEME CHANGE HERE*/
+background-color: #edf3f3;
+}
+
+/****/
+.bluetabs li select {
+	-webkit-border-radius: 15px;
+	-moz-border-radius: 15px;
+	border-radius: 15px;
+
+	border: none;
+
+	height: 26px !important;
+	padding-left: 10px;
+	padding-right: 10px;
+}

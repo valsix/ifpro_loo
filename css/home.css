@@ -1,0 +1,33 @@
+.source-img{
+	cursor:pointer;
+}
+#destination{
+	width:100%;
+	max-height: 168px;
+	overflow: hidden; 
+	border:7px solid #eaedf2 !important;
+}
+#destination img.half{
+	
+}
+.crop-height {
+}
+img.scale {
+	display: block;
+	max-width: 100%;
+	height: auto !important;
+	width:100%;
+	-ms-interpolation-mode: bicubic;
+}
+@media screen and (max-width:767px) {
+	#destination{
+		width:100%;
+		height: auto;
+	}
+	#destination img{
+		width:100%;
+	}
+	.grafik-kehadiran-area canvas{
+		height:240px !important;
+	}
+}

@@ -1,0 +1,51 @@
+html, body{
+	height:100%;
+	min-height:100%;
+}
+#wrapper{
+	height: -moz-calc(100% - 85px);
+	height: -webkit-calc(100% - 85px);
+	height: -o-calc(100% - 85px);
+	height: calc(100% - 85px); 
+	min-height: -moz-calc(100% - 85px);
+	min-height: -webkit-calc(100% - 85px);
+	min-height: -o-calc(100% - 85px);
+	min-height: calc(100% - 85px);
+}
+#page-content-wrapper{
+	height:100%; min-height:100%;
+}
+.container-fluid{		height:100%; min-height:100%;}
+.soal-area{
+	height:100%; min-height:100%;
+}
+	
+/****/
+.track3 {
+    width: 10px;
+    background: rgba(0, 0, 0, 0);
+	border-radius: 10px;
+    -webkit-transition: background 250ms linear;
+    transition: background 250ms linear;
+}
+.track3:hover,
+.track3.dragging {
+    background: #d9d9d9; 
+    background: rgba(0, 0, 0, 0.15);
+}
+.handle3 {
+    width: 7px;
+    right: 0;
+    background: #999;
+    background:rgba(0,174,239,0.7);
+    border-radius: 7px;
+    -webkit-transition: width 250ms;
+    transition: width 250ms;
+}
+.track3:hover .handle3,
+.track3.dragging .handle3 {
+    width: 10px;
+}
+
+/****/
+element{}

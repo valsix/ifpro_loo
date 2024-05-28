@@ -1,0 +1,65 @@
+html, body {height:100%; margin:0; padding:0;}
+#begron {position:fixed; top:0; left:0; width:100%; height:100%;}
+#wadah {position:relative; z-index:1;}
+
+/****/
+#begron {
+	display: none;
+}
+.area-monitoring .area-monitoring-inner{
+	min-height: calc(100vh - 0px);
+}
+#wadah{
+	margin-left: 30px;
+	margin-top: 130px;
+	float: left;
+	width: calc(100% - 30px);
+	height: calc(100vh - 130px);
+	-webkit-border-radius: 0px;
+	-webkit-border-top-left-radius: 30px;
+	-moz-border-radius: 0px;
+	-moz-border-radius-topleft: 30px;
+	border-radius: 0px;
+	border-top-left-radius: 30px;
+	position: absolute;
+}
+#wadah > .dataTables_wrapper {
+	height: calc(100% - 100px) !important;
+}
+@media screen and (max-width:767px) {
+	#wadah > .dataTables_wrapper {
+		padding-left: 15px;
+		padding-right: 15px;
+	}
+}
+#wadah > .panel.datagrid{
+	width: 100% !important;
+}
+#wadah > .panel.datagrid > .datagrid-wrap.panel-body.panel-body-noheader{
+	border-left: none;
+	border-right: none;
+}
+@media screen and (max-width:767px) {
+	.row.area-monitoring-inner > #wadah{
+		margin-top: 0px;
+	}
+	#wadah {
+		margin-left: 0px;
+		width: calc(100% - 0px);
+	}
+	#wadah > .judul-halaman{
+		position: relative;
+		text-align: right;
+		width: calc(100% - 30px);
+		margin-left: 15px;
+		padding-right: 10px;
+		-webkit-border-radius: 0px;
+		-moz-border-radius: 0px;
+		border-radius: 0px;
+		padding-left: 90px;
+		font-size: 14px;
+	}
+	#wadah > .judul-halaman .dropdown.yamm-fw.notifikasi.pull-right.area-button-judul a .fa-reply{
+		margin-left: 15px;
+	}
+}
