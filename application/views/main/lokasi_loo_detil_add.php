@@ -26,8 +26,8 @@ else
     $reqArea= $lokasi_loo_detil->getField("AREA");
     $reqJenis= $lokasi_loo_detil->getField("JENIS");
     $reqPrime= $lokasi_loo_detil->getField("PRIME");
-    $reqLuas= $lokasi_loo_detil->getField("LUAS");
-    $reqKdTarif= $lokasi_loo_detil->getField("KD_TARIF");
+    $reqLuas= dotToComma($lokasi_loo_detil->getField("LUAS"));
+    $reqKdTarif= currencyToPage($lokasi_loo_detil->getField("KD_TARIF"),false);
     $reqDeskripsi= $lokasi_loo_detil->getField("DESKRIPSI");
     
 }

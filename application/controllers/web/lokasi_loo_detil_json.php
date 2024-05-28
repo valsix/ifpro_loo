@@ -228,8 +228,8 @@ class lokasi_loo_detil_json extends CI_Controller
 		$set->setField("AREA", $reqArea);
 		$set->setField("JENIS", $reqJenis);
 		$set->setField("PRIME", $reqPrime);
-		$set->setField("LUAS", $reqLuas);
-		$set->setField("KD_TARIF", $reqKdTarif);
+		$set->setField("LUAS", dotToNo($reqLuas));
+		$set->setField("KD_TARIF", dotToNo($reqKdTarif));
 		$set->setField("DESKRIPSI", $reqDeskripsi);
 
 		if ($reqMode == "insert") {
