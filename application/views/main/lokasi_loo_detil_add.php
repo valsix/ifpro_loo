@@ -178,7 +178,7 @@ $(function(){
                             <td>KD Tarif</td>
                             <td>:</td>
                             <td>
-                                <input type="text" id="reqKdTarif" class="easyui-validatebox textbox form-control" required name="reqKdTarif"  value="<?=$reqKdTarif ?>" data-options="required:true" style="width:90%" />
+                                <input type="text" id="reqKdTarif" class="vlxuangclass easyui-validatebox textbox form-control totalluasoutdoor" required name="reqKdTarif"  value="<?=$reqKdTarif ?>" data-options="required:true" style="width:90%" />
                             </td>
                         </tr>
                         <tr>

@@ -1,0 +1,1 @@
+ALTER TABLE lokasi_loo_detil ALTER COLUMN kd_tarif TYPE numeric;
