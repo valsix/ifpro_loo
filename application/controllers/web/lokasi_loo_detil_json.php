@@ -191,6 +191,10 @@ class lokasi_loo_detil_json extends CI_Controller
 					$row[] = "<a href='uploads/'" . $set->getField($aColumns[$i]) . " target='_blank'>" . $set->getField($aColumns[$i]) . "</a>";
 				elseif ($aColumns[$i] == "LANTAI")
 					$row[] = $set->getField('NAMA_LANTAI')." (".$set->getField('TIPE_LANTAI_INFO').")";
+				elseif ($aColumns[$i] == "KD_TARIF")
+					$row[] = currencyToPage($set->getField($aColumns[$i]),false);
+				elseif ($aColumns[$i] == "LUAS")
+					$row[] = dotToComma($set->getField($aColumns[$i]));
 				else
 					$row[] = $set->getField($aColumns[$i]);
 			}
