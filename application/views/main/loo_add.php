@@ -178,12 +178,10 @@ $(function(){
                                     <td class="tdcolor">
                                         Indoor
                                         <a onClick="openLookup('I')"><i class="fa fa-plus-square fa-lg" aria-hidden="true"></i></a>
-                                        <input type="hidden" name="reqTotalLuasIndoor" id="reqTotalLuasIndoor" value="<?=$reqTotalLuasIndoor?>" />
                                     </td>
                                     <td class="tdcolor">
                                         Outdoor
                                         <a onClick="openLookup('O')"><i class="fa fa-plus-square fa-lg" aria-hidden="true"></i></a>
-                                        <input type="hidden" name="reqTotalLuasOutdoor" id="reqTotalLuasOutdoor" value="<?=$reqTotalLuasOutdoor?>" />
                                     </td>
                                 </tr>
                                 <tr>
@@ -192,6 +190,14 @@ $(function(){
                                             <tbody id="luassewaindoor">
                                                 
                                             </tbody>
+                                            <tfoot>
+                                                <tr>
+                                                    <td colspan="2" style="text-align: right;">Total Luas Indoor</td>
+                                                    <td style="width: 20%">
+                                                        <input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control" name="reqTotalLuasIndoor" id="reqTotalLuasIndoor" style="width:85%; display: inline; text-align: right;" value="<?=$reqTotalLuasIndoor?>" /> <label class="labeltotal">m2</label>
+                                                    </td>
+                                                </tr>
+                                            </tfoot>
                                         </table>
                                     </td>
                                     <td style="width: 50%">
@@ -199,13 +205,21 @@ $(function(){
                                             <tbody id="luassewaoutdoor">
                                                 
                                             </tbody>
+                                            <tfoot>
+                                                <tr>
+                                                    <td colspan="2" style="text-align: right;">Total Luas Outdoor</td>
+                                                    <td style="width: 20%">
+                                                        <input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control" name="reqTotalLuasOutdoor" id="reqTotalLuasOutdoor" style="width:85%; display: inline; text-align: right;" value="<?=$reqTotalLuasOutdoor?>" /> <label class="labeltotal">m2</label>
+                                                    </td>
+                                                </tr>
+                                            </tfoot>
                                         </table>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td colspan="2" style="text-align: right;">
                                         Total Luas Sewa
-                                        <input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control" name="reqTotalLuas" id="reqTotalLuas" style="width:15%; display: inline; text-align: right;" /> <label class="labeltotal">m2</label>
+                                        <input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control" name="reqTotalLuas" id="reqTotalLuas" style="width:15%; display: inline; text-align: right;" value="<?=$reqTotalLuas?>" /> <label class="labeltotal">m2</label>
                                     </td>
                                 </tr>
                             </tbody>
@@ -231,9 +245,10 @@ $(function(){
                                         <table class="table">
                                             <tbody id="tarifinfosewaindoor">
                                                 <tr>
-                                                    <td colspan="2" class="tdcolor" style="width: 50%">Unit</td>
-                                                    <td colspan="2" class="tdcolor" style="width: 20%">Discount</td>
-                                                    <td colspan="2" class="tdcolor" style="width: 30%">Tarif (after discount)</td>
+                                                    <td class="tdcolor" style="width: 27%">Unit</td>
+                                                    <td class="tdcolor" style="width: 10%">Discount</td>
+                                                    <td class="tdcolor" style="width: 29%">Tarif (after discount)</td>
+                                                    <td class="tdcolor" style="width: 29%">Harga Sewa</td>
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -242,9 +257,10 @@ $(function(){
                                         <table class="table">
                                             <tbody id="tarifinfosewaoutdoor">
                                                 <tr>
-                                                    <td colspan="2" class="tdcolor" style="width: 50%">Unit</td>
-                                                    <td colspan="2" class="tdcolor" style="width: 20%">Discount</td>
-                                                    <td colspan="2" class="tdcolor" style="width: 30%">Tarif (after discount)</td>
+                                                    <td class="tdcolor" style="width: 27%">Unit</td>
+                                                    <td class="tdcolor" style="width: 10%">Discount</td>
+                                                    <td class="tdcolor" style="width: 29%">Tarif (after discount)</td>
+                                                    <td class="tdcolor" style="width: 29%">Harga Sewa</td>
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -255,9 +271,9 @@ $(function(){
                                         <table class="table">
                                             <tbody id="tarifinfosewascindoor">
                                                 <tr>
-                                                    <td colspan="2" class="tdcolor" style="width: 50%">Service Charge</td>
-                                                    <td colspan="2" class="tdcolor" style="width: 20%">Discount</td>
-                                                    <td colspan="2" class="tdcolor" style="width: 30%">Tarif (after discount)</td>
+                                                    <td colspan="2" class="tdcolor" style="width: 35%">Service Charge</td>
+                                                    <td colspan="2" class="tdcolor" style="width: 30%">Discount</td>
+                                                    <td colspan="2" class="tdcolor" style="width: 35%">Tarif (after discount)</td>
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -266,9 +282,9 @@ $(function(){
                                         <table class="table">
                                             <tbody id="tarifinfosewascoutdoor">
                                                 <tr>
-                                                    <td colspan="2" class="tdcolor" style="width: 50%">Service Charge</td>
-                                                    <td colspan="2" class="tdcolor" style="width: 20%">Discount</td>
-                                                    <td colspan="2" class="tdcolor" style="width: 30%">Tarif (after discount)</td>
+                                                    <td colspan="2" class="tdcolor" style="width: 35%">Service Charge</td>
+                                                    <td colspan="2" class="tdcolor" style="width: 30%">Discount</td>
+                                                    <td colspan="2" class="tdcolor" style="width: 35%">Tarif (after discount)</td>
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -404,11 +420,32 @@ $(document).ready(function() {
 
 function openLookup(tipe) 
 {
+    /*tparam= [];
+
+    var obj = {};
+    obj["DESKRIPSI"] = "sdsasdasd";
+    obj["KODE"] = "kode";
+    obj["LANTAI"] = "lantai 11";
+    obj["LOKASI_LOO_ID"] = "1";
+    obj["NAMA"] = "nama";
+    obj["NAMA_LOKASI_LOO"] = "SOSORO MALL - MERAK";
+    obj["TIPE_INFO"] = null;
+    obj["id"] = "1";
+    obj["state"] = "open";
+    obj["luas"] = "95.58";
+    obj["kdtarif"] = "200000";
+    obj["text"] = "nama";
+    tparam.push(obj);
+    // console.log(tparam);return false;
+    // untuk percobanaan
+    addmulti("I", tparam);
+    addmulti("O", tparam);*/
+
     reqIdLokasi= $("#reqLokasiLooId").combotree("getValue");
 
     if (reqIdLokasi) 
     {
-        openAdd('app/loadUrl/main/luassewa_indoor_lookup?reqId='+reqIdLokasi+'&reqTipe='+tipe)
+        openAdd('app/loadUrl/main/luas_sewa_lookup?reqId='+reqIdLokasi+'&reqTipe='+tipe)
     }
     else
     {
@@ -416,53 +453,84 @@ function openLookup(tipe)
     }
 }
 
-function appenddata(id, nama, nama_lokasi, kode, lantai, tipes)
+function addmulti(vtipe, vparam)
 {
-    if (tipes=='I') 
+    // console.log(vparam);return false;
+    vparam.forEach(function (item, index) {
+        // console.log(item, index);
+        vdetilparam= [];
+        vdetilparam.id= item.id;
+        vdetilparam.nama= item.text;
+        vdetilparam.nama_lokasi= item.NAMA_LOKASI_LOO;
+        vdetilparam.kode= item.KODE;
+        vdetilparam.lantai= item.LANTAI;
+        vdetilparam.luas= item.LUAS;
+        vdetilparam.kdtarif= item.KD_TARIF;
+        // console.log(vdetilparam);
+        // param.id, param.text, param.NAMA_LOKASI_LOO, param.KODE, param.LANTAI
+
+        appenddata(vtipe, vdetilparam);
+    });
+}
+
+function appenddata(vtipe, vdetilparam)
+{
+    id= vdetilparam["id"];
+    nama= vdetilparam["nama"];
+    kode= vdetilparam["kode"];
+    nama_lokasi= vdetilparam["nama_lokasi"];
+    lantai= vdetilparam["lantai"];
+    vluas= setformat(vdetilparam["luas"]);
+    vkdtarif= setformat(vdetilparam["kdtarif"]);
+    // console.log(vdetilparam);return false;
+    // vluas= setformat(95.58);
+    // vkdtarif= setformat(200000);
+
+    if (vtipe=='I') 
     {
         vtable= ''
         +'<tr>'
         +   '<td>'+kode+' - '+lantai+'</td>'
         +   '<td>:</td>'
-        +   '<td>'
+        +   '<td style="width:30%">'
         +       '<input type="hidden" name="vmode[]" value="luas_sewa_indoor" />'
         +       '<input type="hidden" name="vid[]" class="valsetid" />'
-        +       '<input type="text" class="vlxuangclass easyui-validatebox textbox form-control totalluasindoor" name="vnilai[]" placeholder="Isi Luas (m2)" data-options="required:true" style="width:90%; display: inline; text-align: right;" /> <label>m2</label>'
+        +       '<input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control totalluasindoor" name="vnilai[]" placeholder="Isi Luas (m2)" data-options="required:true" style="width:85%; display: inline; text-align: right;" value="'+vluas+'" /> <label class="labeltotal">m2</label>'
         +   '</td>'
         +'</tr>';
         $("#luassewaindoor").append(vtable);
+        hitungluas("totalluasindoor");
 
         vtable= ''
         +'<tr>'
-        +   '<td colspan="6">'
+        +   '<td colspan="4">'
         +       kode+' - '+lantai
         +   '</td>'
+        +'</tr>'
         +'<tr>'
         +   '<td>'
         +       '<input type="hidden" name="vmode[]" value="tarif_sewa_unit_indoor" />'
         +       '<input type="hidden" name="vid[]" class="valsetid" />'
-        +       '<input type="text" class="vlxuangclass easyui-validatebox textbox form-control totalsewaunitindoor" name="vnilai[]" placeholder="Isi Rp/m2" data-options="required:true" style="width:90%; display: inline; text-align: right;" />'
-        +   '</td>'
-        +   '<td>'
-        +       '<label>Rp/m2</label>'
+        +       '<input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control totalsewaunitindoor" name="vnilai[]" placeholder="Isi Rp/m2" data-options="required:true" style="width:65%; display: inline; text-align: right;" value="'+vkdtarif+'" /> <label class="labeltotal">Rp/m2</label>'
         +   '</td>'
         +   '<td>'
         +       '<input type="hidden" name="vmode[]" value="tarif_sewa_unit_indoor_diskon" />'
         +       '<input type="hidden" name="vid[]" class="valsetid" />'
-        +       '<input type="text" class="vlxuangclass easyui-validatebox textbox form-control totalsewaunitindoordiskon" name="vnilai[]" placeholder="Isi %" data-options="required:true" style="width:90%; display: inline; text-align: right;" value="0" />'
-        +   '</td>'
-        +   '<td>'
-        +       '<label>%</label>'
+        +       '<input type="text" class="vlxuangclass easyui-validatebox textbox form-control totalsewaunitindoordiskon" name="vnilai[]" placeholder="Isi %" data-options="required:true" style="width:65%; display: inline; text-align: right;" value="0" /> <label class="labeltotal">%</label>'
         +   '</td>'
         +   '<td>'
         +       '<input type="hidden" name="vmode[]" value="tarif_sewa_unit_indoor_after_diskon" />'
         +       '<input type="hidden" name="vid[]" class="valsetid" />'
-        +       '<input type="text" class="vlxuangclass easyui-validatebox textbox form-control totalsewaunitindoorafterdiskon" name="vnilai[]" placeholder="Isi Rp/m2" data-options="required:true" style="width:90%; display: inline; text-align: right;" />'
+        +       '<input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control totalsewaunitindoorafterdiskon" name="vnilai[]" placeholder="Isi Rp/m2" data-options="required:true" style="width:65%; display: inline; text-align: right;" /> <label class="labeltotal">Rp/m2</label>'
         +   '</td>'
         +   '<td>'
-        +       '<label>Rp/m2</label>'
+        +       '<input type="hidden" name="vmode[]" value="tarif_sewa_unit_indoor_harga" />'
+        +       '<input type="hidden" name="vid[]" class="valsetid" />'
+        +       '<input type="hidden" class="totalsewaunitindoorsewaluas" value="'+vluas+'" />'
+        +       '<input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control totalsewaunitindoorharga" name="vnilai[]" style="display: inline; text-align: right;" />'
         +   '</td>'
-        +'</tr>';
+        +'</tr>'
+        ;
         $("#tarifinfosewaindoor").append(vtable);
     }
     else
@@ -474,42 +542,42 @@ function appenddata(id, nama, nama_lokasi, kode, lantai, tipes)
         +   '<td>'
         +       '<input type="hidden" name="vmode[]" value="luas_sewa_outdoor" />'
         +       '<input type="hidden" name="vid[]" class="valsetid" />'
-        +       '<input type="text" class="vlxuangclass easyui-validatebox textbox form-control totalluasoutdoor" name="vnilai[]" placeholder="Isi Luas (m2)" data-options="required:true" style="width:90%; display: inline; text-align: right;" /> <label>m2</label>'
+        +       '<input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control totalluasoutdoor" name="vnilai[]" placeholder="Isi Luas (m2)" data-options="required:true" style="width:85%; display: inline; text-align: right;" value="'+vluas+'" /> <label class="labeltotal">m2</label>'
         +   '</td>'
         +'</tr>';
         $("#luassewaoutdoor").append(vtable);
+        hitungluas("totalluasoutdoor");
 
         vtable= ''
         +'<tr>'
-        +   '<td colspan="6">'
+        +   '<td colspan="4">'
         +       kode+' - '+lantai
         +   '</td>'
+        +'</tr>'
         +'<tr>'
         +   '<td>'
         +       '<input type="hidden" name="vmode[]" value="tarif_sewa_unit_outdoor" />'
         +       '<input type="hidden" name="vid[]" class="valsetid" />'
-        +       '<input type="text" class="vlxuangclass easyui-validatebox textbox form-control totalsewaunitoutdoor" name="vnilai[]" placeholder="Isi Rp/m2" data-options="required:true" style="width:90%; display: inline; text-align: right;" />'
-        +   '</td>'
-        +   '<td>'
-        +       '<label>Rp/m2</label>'
+        +       '<input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control totalsewaunitoutdoor" name="vnilai[]" placeholder="Isi Rp/m2" data-options="required:true" style="width:65%; display: inline; text-align: right;" value="'+vkdtarif+'" /> <label class="labeltotal">Rp/m2</label>'
         +   '</td>'
         +   '<td>'
         +       '<input type="hidden" name="vmode[]" value="tarif_sewa_unit_outdoor_diskon" />'
         +       '<input type="hidden" name="vid[]" class="valsetid" />'
-        +       '<input type="text" class="vlxuangclass easyui-validatebox textbox form-control totalsewaunitoutdoordiskon" name="vnilai[]" placeholder="Isi %" data-options="required:true" style="width:90%; display: inline; text-align: right;" value="0" />'
-        +   '</td>'
-        +   '<td>'
-        +       '<label>%</label>'
+        +       '<input type="text" class="vlxuangclass easyui-validatebox textbox form-control totalsewaunitoutdoordiskon" name="vnilai[]" placeholder="Isi %" data-options="required:true" style="width:65%; display: inline; text-align: right;" value="0" /> <label class="labeltotal">%</label>'
         +   '</td>'
         +   '<td>'
         +       '<input type="hidden" name="vmode[]" value="tarif_sewa_unit_outdoor_after_diskon" />'
         +       '<input type="hidden" name="vid[]" class="valsetid" />'
-        +       '<input type="text" class="vlxuangclass easyui-validatebox textbox form-control totalsewaunitoutdoorafterdiskon" name="vnilai[]" placeholder="Isi Rp/m2" data-options="required:true" style="width:90%; display: inline; text-align: right;" />'
+        +       '<input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control totalsewaunitoutdoorafterdiskon" name="vnilai[]" placeholder="Isi Rp/m2" data-options="required:true" style="width:65%; display: inline; text-align: right;" /> <label class="labeltotal">Rp/m2</label>'
         +   '</td>'
         +   '<td>'
-        +       '<label>Rp/m2</label>'
+        +       '<input type="hidden" name="vmode[]" value="tarif_sewa_unit_outdoor_harga" />'
+        +       '<input type="hidden" name="vid[]" class="valsetid" />'
+        +       '<input type="hidden" class="totalsewaunitoutdoorsewaluas" value="'+vluas+'" />'
+        +       '<input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control totalsewaunitoutdoorharga" name="vnilai[]" style="display: inline; text-align: right;" />'
         +   '</td>'
-        +'</tr>';
+        +'</tr>'
+        ;
         $("#tarifinfosewaoutdoor").append(vtable);
     }
 
@@ -554,6 +622,92 @@ function callformatdyna()
             hitungluas("totalluasoutdoor");
         });
 
+        $(".totalsewaunitindoordiskon").keyup(function() {
+            totalsewaunitindoordiskon= $(this).val();
+            totalsewaunitindoordiskon= FormatAngkaNumber(totalsewaunitindoordiskon);
+            totalsewaunitindoordiskon= notnullval(totalsewaunitindoordiskon);
+
+            totalsewaunitindoor= $(this).closest('tr').find('.totalsewaunitindoor').val();
+            totalsewaunitindoor= FormatAngkaNumber(totalsewaunitindoor);
+            totalsewaunitindoor= notnullval(totalsewaunitindoor);
+
+            // vlog= totalsewaunitindoor + " - " + " ( "+(totalsewaunitindoordiskon / 100)+" * "+totalsewaunitindoor+" )";
+            // console.log(vlog);
+
+            totalsewaunitindoorafterdiskon= totalsewaunitindoor - ( (totalsewaunitindoordiskon / 100) * totalsewaunitindoor );
+            totalsewaunitindoorafterdiskon= setformat(totalsewaunitindoorafterdiskon);
+            $(this).closest('tr').find('.totalsewaunitindoorafterdiskon').val(totalsewaunitindoorafterdiskon);
+
+            // hitunghargasewa("totalsewaunitindoordiskon");
+
+            totalsewaunitindoorsewaluas= $(this).closest('tr').find('.totalsewaunitindoorsewaluas').val();
+            totalsewaunitindoorsewaluas= FormatAngkaNumber(totalsewaunitindoorsewaluas);
+            totalsewaunitindoorsewaluas= notnullval(totalsewaunitindoorsewaluas);
+
+            totalsewaunitindoorafterdiskon= $(this).closest('tr').find('.totalsewaunitindoorafterdiskon').val();
+            totalsewaunitindoorafterdiskon= FormatAngkaNumber(totalsewaunitindoorafterdiskon);
+            totalsewaunitindoorafterdiskon= notnullval(totalsewaunitindoorafterdiskon);
+
+            totalsewaunitindoorharga= totalsewaunitindoorafterdiskon * totalsewaunitindoorsewaluas;
+            totalsewaunitindoorharga= setformat(totalsewaunitindoorharga);
+            $(this).closest('tr').find('.totalsewaunitindoorharga').val(totalsewaunitindoorharga);
+
+        });
+
+        $(".totalsewaunitoutdoordiskon").keyup(function() {
+            totalsewaunitoutdoordiskon= $(this).val();
+            totalsewaunitoutdoordiskon= FormatAngkaNumber(totalsewaunitoutdoordiskon);
+            totalsewaunitoutdoordiskon= notnullval(totalsewaunitoutdoordiskon);
+
+            totalsewaunitoutdoor= $(this).closest('tr').find('.totalsewaunitoutdoor').val();
+            totalsewaunitoutdoor= FormatAngkaNumber(totalsewaunitoutdoor);
+            totalsewaunitoutdoor= notnullval(totalsewaunitoutdoor);
+
+            // vlog= totalsewaunitoutdoor + " - " + " ( "+(totalsewaunitoutdoordiskon / 100)+" * "+totalsewaunitoutdoor+" )";
+            // console.log(vlog);
+
+            totalsewaunitoutdoorafterdiskon= totalsewaunitoutdoor - ( (totalsewaunitoutdoordiskon / 100) * totalsewaunitoutdoor );
+            totalsewaunitoutdoorafterdiskon= setformat(totalsewaunitoutdoorafterdiskon);
+            $(this).closest('tr').find('.totalsewaunitoutdoorafterdiskon').val(totalsewaunitoutdoorafterdiskon);
+
+            // hitunghargasewa("totalsewaunitoutdoordiskon");
+
+            totalsewaunitoutdoorsewaluas= $(this).closest('tr').find('.totalsewaunitoutdoorsewaluas').val();
+            totalsewaunitoutdoorsewaluas= FormatAngkaNumber(totalsewaunitoutdoorsewaluas);
+            totalsewaunitoutdoorsewaluas= notnullval(totalsewaunitoutdoorsewaluas);
+
+            totalsewaunitoutdoorafterdiskon= $(this).closest('tr').find('.totalsewaunitoutdoorafterdiskon').val();
+            totalsewaunitoutdoorafterdiskon= FormatAngkaNumber(totalsewaunitoutdoorafterdiskon);
+            totalsewaunitoutdoorafterdiskon= notnullval(totalsewaunitoutdoorafterdiskon);
+
+            totalsewaunitoutdoorharga= totalsewaunitoutdoorafterdiskon * totalsewaunitoutdoorsewaluas;
+            totalsewaunitoutdoorharga= setformat(totalsewaunitoutdoorharga);
+            $(this).closest('tr').find('.totalsewaunitoutdoorharga').val(totalsewaunitoutdoorharga);
+        });
+
+    });
+}
+
+function hitunghargasewa(vmode)
+{
+    vtotal= 0;
+    vindex= 0;
+    $("."+vmode).each(function(){
+        infoval= FormatAngkaNumber($(this).parents().find('.totalsewaunitindoorafterdiskon').val());
+        infoval= notnullval(infoval);
+        vtotal= parseFloat(vtotal) + parseFloat(infoval);
+
+        // console.log(vtotal);
+        vtotal= setformat(vtotal);
+
+        if(vmode == "totalsewaunitindoordiskon")
+        {
+            $(this).closest('tr').find('.totalsewaunitindoorharga').val(vtotal);
+        }
+        else if(vmode == "totalsewaunitoutdoordiskon")
+        {
+            $(this).closest('tr').find('.totalsewaunitoutdoorharga').val(vtotal);
+        }
     });
 }
 
@@ -577,29 +731,47 @@ function hitungluas(vmode)
         }
 
     });
-    // console.log("xx"+vtotal);
 
+    vtotal= setformat(vtotal);
     if(vmode == "totalluasindoor")
     {
-        $("#reqTotalLuasIndoor").val(vlxformat(vtotal));
+        $("#reqTotalLuasIndoor").val(vtotal);
     }
     else if(vmode == "totalluasoutdoor")
     {
-        $("#reqTotalLuasOutdoor").val(vlxformat(vtotal));
+        $("#reqTotalLuasOutdoor").val(vtotal);
     }
 
     if(vmode == "totalluasindoor" || vmode == "totalluasoutdoor")
     {
-        reqTotalLuasIndoor= parseFloat(FormatAngkaNumber($("#reqTotalLuasIndoor").val()));
-        reqTotalLuasIndoor = reqTotalLuasIndoor ? reqTotalLuasIndoor : 0;
+        reqTotalLuasIndoor= $("#reqTotalLuasIndoor").val();
+        reqTotalLuasIndoor= FormatAngkaNumber($("#reqTotalLuasIndoor").val());
+        reqTotalLuasIndoor= notnullval(reqTotalLuasIndoor);
+        // console.log(reqTotalLuasIndoor);
 
-        reqTotalLuasOutdoor= parseFloat(FormatAngkaNumber($("#reqTotalLuasOutdoor").val()));
-        reqTotalLuasOutdoor = reqTotalLuasOutdoor ? reqTotalLuasOutdoor : 0;
+        reqTotalLuasOutdoor= $("#reqTotalLuasOutdoor").val();
+        reqTotalLuasOutdoor= FormatAngkaNumber($("#reqTotalLuasOutdoor").val());
+        reqTotalLuasOutdoor= notnullval(reqTotalLuasOutdoor);
 
-        reqTotalLuas= parseFloat(reqTotalLuasIndoor) + parseFloat(reqTotalLuasOutdoor);
-        $("#reqTotalLuas").val(vlxformat(reqTotalLuas));
+        reqTotalLuas= reqTotalLuasIndoor + reqTotalLuasOutdoor;
+        reqTotalLuas= setformat(reqTotalLuas);
+        $("#reqTotalLuas").val(reqTotalLuas);
     }
-    
+}
+
+function setformat(v)
+{
+    v= v.toString();
+    v= ReplaceString('.',',',v);
+    v= vlxformat(v);
+    return v;
+}
+
+function notnullval(v)
+{
+    v= v ? v : 0;
+    v= parseFloat(v);
+    return v;
 }
 
 function submitPreview() 

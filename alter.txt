@@ -1,4 +1,3 @@
-x
 drop table if exists tr_loo;
 create table tr_loo
 (

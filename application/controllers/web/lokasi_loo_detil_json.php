@@ -210,8 +210,8 @@ class lokasi_loo_detil_json extends CI_Controller
 		$set = new LokasiLooDetil();
 		// $naskah_template = new NaskahTemplate();
 
-		$reqMode 					= $this->input->post("reqMode");
-		$reqId 						= $this->input->post("reqId");
+		$reqMode= $this->input->post("reqMode");
+		$reqId= $this->input->post("reqId");
 
 		$reqLokasiLooId= $this->input->post("reqLokasiLooId");
 		$reqKode= $this->input->post("reqKode");
@@ -376,8 +376,10 @@ class lokasi_loo_detil_json extends CI_Controller
 			$row['KODE']= $set->getField("KODE");
 			$row['DESKRIPSI']= $set->getField("DESKRIPSI");
 			$row['LANTAI']= $set->getField("LANTAI");
-			$row['TIPE_INFO']	= $set->getField("TIPE_INFO");
-			$row['state'] 	= 'close';
+			$row['TIPE_INFO']= $set->getField("TIPE_INFO");
+			$row['LUAS']= $set->getField("LUAS");
+			$row['KD_TARIF']= $set->getField("KD_TARIF");
+			$row['state']= 'close';
 			$i++;
 			array_push($items, $row);
 		}
