@@ -23,6 +23,8 @@ else
     $reqKode= $lokasi_loo_detil->getField("KODE");
     $reqNama= $lokasi_loo_detil->getField("NAMA");
     $reqLantaiLooId= $lokasi_loo_detil->getField("LANTAI_LOO_ID");
+    $reqArea= $lokasi_loo_detil->getField("AREA");
+    $reqJenis= $lokasi_loo_detil->getField("JENIS");
     $reqPrime= $lokasi_loo_detil->getField("PRIME");
     $reqLuas= $lokasi_loo_detil->getField("LUAS");
     $reqKdTarif= $lokasi_loo_detil->getField("KD_TARIF");
@@ -145,7 +147,7 @@ $(function(){
                             </td>
                         </tr>
                         <tr>
-                            <td>Nama</td>
+                            <td>Unit</td>
                             <td>:</td>
                             <td>
                                 <input type="text" id="reqNama" class="easyui-validatebox textbox form-control" required name="reqNama"  value="<?=$reqNama ?>" data-options="required:true" style="width:90%" />
@@ -157,6 +159,22 @@ $(function(){
                             <td>
                                 <input type="text" name="reqLantaiLooId" class="easyui-combobox"  id="reqLantaiLooId"
                                        data-options="width:'350', valueField:'id', textField:'text', editable:false, url:'combo_json/comboLantaiLoo'" required value="<?=$reqLantaiLooId?>" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Area</td>
+                            <td>:</td>
+                            <td>
+                                <input type="text" name="reqArea" class="easyui-combobox"  id="reqArea"
+                                       data-options="width:'350', valueField:'id', textField:'text', editable:false, url:'combo_json/comboTipeLokasiDetilLoo'" required value="<?=$reqArea?>" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Jenis</td>
+                            <td>:</td>
+                            <td>
+                                <input type="text" name="reqJenis" class="easyui-combobox"  id="reqJenis"
+                                       data-options="width:'350', valueField:'id', textField:'text', editable:false, url:'combo_json/comboJenis'" required value="<?=$reqJenis?>" />
                             </td>
                         </tr>
                         <tr>           
@@ -171,7 +189,7 @@ $(function(){
                             <td>Luas</td>
                             <td>:</td>
                             <td>
-                                <input type="text" id="reqLuas" class="easyui-validatebox textbox form-control" required name="reqLuas"  value="<?=$reqLuas ?>" data-options="required:true" style="width:90%" />
+                                <input type="text" id="reqLuas" class="vlxuangclass easyui-validatebox textbox form-control totalluasoutdoor" required name="reqLuas"  value="<?=$reqLuas ?>" data-options="required:true" style="width:90%" />
                             </td>
                         </tr>
                         <tr>

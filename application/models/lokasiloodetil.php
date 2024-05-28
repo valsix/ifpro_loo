@@ -31,13 +31,15 @@ DESCRIPTION			:
 		// $this->setField("LOKASI_LOO_DETIL_ID", $this->getNextId("LOKASI_LOO_DETIL_ID","LOKASI_LOO_DETIL")); 
 		$str = "
 				INSERT INTO LOKASI_LOO_DETIL (
-				   LOKASI_LOO_ID, KODE, NAMA, LANTAI_LOO_ID, PRIME, LUAS, KD_TARIF, DESKRIPSI
+				   LOKASI_LOO_ID, KODE, NAMA, LANTAI_LOO_ID, AREA, JENIS, PRIME, LUAS, KD_TARIF, DESKRIPSI
 				   ) 
 				VALUES (
 					'".$this->getField("LOKASI_LOO_ID")."', 
 					'".$this->getField("KODE")."',
 					'".$this->getField("NAMA")."',
 					'".$this->getField("LANTAI_LOO_ID")."',
+					'".$this->getField("AREA")."',
+					'".$this->getField("JENIS")."',
 					'".$this->getField("PRIME")."',
 					'".$this->getField("LUAS")."',
 					'".$this->getField("KD_TARIF")."',
@@ -71,6 +73,8 @@ DESCRIPTION			:
 					   KODE		= '".$this->getField("KODE")."',
 					   NAMA		= '".$this->getField("NAMA")."',
 					   LANTAI_LOO_ID		= '".$this->getField("LANTAI_LOO_ID")."',
+					   AREA		= '".$this->getField("AREA")."',
+					   JENIS		= '".$this->getField("JENIS")."',
 					   PRIME		= '".$this->getField("PRIME")."',
 					   LUAS		= '".$this->getField("LUAS")."',
 					   KD_TARIF		= '".$this->getField("KD_TARIF")."',
@@ -126,6 +130,13 @@ DESCRIPTION			:
 		$str = "
 		SELECT 
 		B.NAMA NAMA_LOKASI_LOO, C.NAMA NAMA_LANTAI, CASE WHEN C.TIPE = 'I' THEN 'Indoor' ELSE 'Outdoor' END TIPE_LANTAI_INFO 
+		, CASE WHEN A.AREA = 'I' THEN 'Indoor' ELSE 'Outdoor' END AREA_INFO, CASE WHEN A.JENIS = 'L' THEN 'Leasing' ELSE 'Casual Leasing' END JENIS_INFO
+		, CASE WHEN A.PRIME = '1' THEN 'Bintang 1'
+			WHEN A.PRIME = '2' THEN 'Bintang 2' 
+			WHEN A.PRIME = '3' THEN 'Bintang 3' 
+			WHEN A.PRIME = '4' THEN 'Bintang 4' 
+			WHEN A.PRIME = '5' THEN 'Bintang 5' 
+			END PRIME_INFO
 		, A.*
 		FROM LOKASI_LOO_DETIL A
 		LEFT JOIN LOKASI_LOO B ON B.LOKASI_LOO_ID = A.LOKASI_LOO_ID

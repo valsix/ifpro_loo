@@ -289,6 +289,18 @@ class combo_json extends CI_Controller {
 		$arr_json[$i]['text']	= "Indoor";
 		$i++;
 		echo json_encode($arr_json);
+	}
+
+	function comboJenis() 
+	{
+		$i = 0;
+		$arr_json[$i]['id']		= "L";
+		$arr_json[$i]['text']	= "Leasing";
+		$i++;
+		$arr_json[$i]['id']		= "CL";
+		$arr_json[$i]['text']	= "Casual Leasing";
+		$i++;
+		echo json_encode($arr_json);
 	}	
 
 	function comboPrime() 

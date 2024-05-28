@@ -1,1 +1,7 @@
 ALTER TABLE lokasi_loo_detil ALTER COLUMN kd_tarif TYPE numeric;
+
+ALTER TABLE lokasi_loo_detil ALTER COLUMN luas TYPE numeric;
+
+ALTER TABLE lokasi_loo_detil ADD COLUMN area CHARACTER VARYING;
+
+ALTER TABLE lokasi_loo_detil ADD COLUMN jenis CHARACTER VARYING;
