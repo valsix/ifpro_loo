@@ -1,0 +1,72 @@
+﻿.glyphicon
+{
+    margin-right:4px !important; /*override*/
+}
+
+.pagination .glyphicon
+{
+    margin-right:0px !important; /*override*/
+}
+
+.pagination a
+{
+    color:#555;
+}
+
+.panel ul
+{
+    padding:0px;
+    margin:0px;
+    list-style:none;
+	*height:350px !important;
+}
+ul.demo1{
+	border:1px solid red !important;
+	height:350px !important;
+}
+
+ul.demo2{
+	list-style:none;
+	*list-style-position:outside;
+	padding:0px;
+    margin:0px;
+	
+	height:274px !important;
+	*border:1px solid red;
+}
+
+.news-item
+{
+    *padding:4px 4px;
+    *margin:0px;
+    *border-bottom:1px dotted #555; 
+	
+	width:calc(100% - 4px);
+	*background:#e5f0fb;
+	background:#FFF;
+	
+	-webkit-box-shadow: 0 3px 6px -6px black;
+	   -moz-box-shadow: 0 3px 6px -6px black;
+	        box-shadow: 0 3px 6px -6px black;
+			
+	*border-left:4px solid #024489;
+	border-left:4px solid #00aeef;
+	margin-bottom:10px;
+	padding:10px !important;
+	*border:1px solid green;
+}
+
+/*.news-item table{
+	border-collapse:collapse;
+	background-color:transparent !important;
+	*margin:10px !important;
+	width:100%;
+	margin-bottom:1px !important;
+}
+.news-item table td{
+	padding:0px !important;
+	*background-color:transparent !important;
+	background:#e5f0fb !important;
+	*border:1px solid red;
+	padding:10px !important;
+}*/

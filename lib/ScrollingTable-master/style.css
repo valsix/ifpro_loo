@@ -1,0 +1,65 @@
+/* ***************************************************************************************
+ * ScrollingTable - Required styles - DO NOT CHANGE
+ * *************************************************************************************** */
+.scrollingTable {overflow:auto; text-transform: uppercase;}
+.scrollingTable > table {border-collapse: separate; *border-spacing: 1px;}
+.scrollingTable > table .headerHor,
+.scrollingTable > table .headerVer {position:relative;}
+.scrollingTable > table .headerHor {z-index:1;}
+
+
+
+
+/* ***************************************************************************************
+ * Demo style
+ * *************************************************************************************** */
+/*@import url("http://fonts.googleapis.com/css?family=Lato:400,700,900,400italic");
+body {
+  color:#34495e;
+  text-align:center;
+  font:14px/1.231 "Lato", sans-serif;}
+.demo-headline {
+  font-size:32px;
+  font-weight:900;
+  padding:73px 0 110px;
+  text-align:center; } 
+  */
+.scrollingTable {
+    margin:auto;
+    width: 100%;
+	height: 352px;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+	
+	*border: 10px solid red;
+    *border:2px solid #DCE4EC;}
+table .headerHor,
+table .headerVer {
+    *color:#FFF;
+    font-weight:bold;}
+table .headerHor {*background-color:#1ABC9C;}
+table .headerVer {*background:#34495e;}
+table th,
+table td {
+	width:50px;
+    min-width:50px;
+	height:30px;
+	*text-align:center;
+    background-color: #FFFFFF;
+	color: #333333;
+}
+table th,
+table td{
+	text-align: left;
+	vertical-align: top;
+	padding: 10px;
+}
+table th:nth-child(1),
+table td:nth-child(1){
+	padding-left: 20px;
+}
+table th:nth-child(3){
+	width: 200px;
+}
+

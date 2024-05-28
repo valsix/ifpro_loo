@@ -1,0 +1,48 @@
+@import url('reset.css');
+@import url('tabs.css');
+
+/**
+* Anowave tools common styles
+* 
+* The CSS rules below are used only for tool demo pages and are NOT required by tools themselves.
+* All required tool CSS can be found in the tool download file (Zip)
+* 
+* @version 1.0
+* @copyright Anowave
+*/
+
+/*body { background:#f8f8f8; border-top:5px solid #fb8800; padding:20px; }*/
+
+.framework { background:url(images/logo.png) 25px 29px no-repeat; }
+.framework a { display:block; height:100px; }
+
+.wrapper { position:relative; margin:0px auto; padding:0px 20px 0px 20px; max-width:1200px; }
+.wrapper.wrapper-tabs { margin-top:20px; margin-bottom:20px;  }
+.wrapper.wrapper-tabs > div { background:#fbfbfb; padding:0px 20px 0px 20px;  -webkit-border-radius: 4px; -moz-border-radius: 4px; border-radius: 4px; border:1px solid #bfbfbf; }
+
+.wrap { padding:5px; }
+
+/* Buttons */
+a.button { display:block; float:left; }
+a.button { background:url(images/buttons/input.button.right.png) top right no-repeat; padding-right:10px; }
+a.button > span { float:left; position:relative; display:block; height:34px; line-height:26px; color:#000;  background:url(images/buttons/input.button.left.png) top left no-repeat; padding-left:20px; }
+a.button > span > span {  float:left; color:#d85800; zoom: 1; filter: progid:DXImageTransform.Microsoft.Blur(pixelradius=2); padding-right:20px;  }
+a.button > span > span i { display:block; width:16px; height:16px; position:absolute; top:6px; left:-24px; background:url(images/loader/button.gif) center center no-repeat; }
+a.button > span > span:before { color: #fff; content: attr(data-text); position:absolute; top:1px; left:21px; }
+a.button:hover { background:url(images/buttons/input.button.right.over.png) top right no-repeat; padding-right:10px;  }
+a.button:hover > span { position:relative; display:block; height:34px; line-height:26px; color:#ffdad3; cursor:pointer;   background:url(images/buttons/input.button.left.over.png) top left no-repeat; padding-left:20px;  }
+
+h2 { display:block; margin:20px 0px 20px 0px; color:#2e2e2e; font-weight:normal; font-size:15px; text-shadow:0 0 1px rgba(255, 255, 255, 0.2);  }
+h2 em { display:block; color:#959595; margin:5px 0px 0px 15px; }
+h3 { display:block; margin:20px 0px 5px 0px; color:#909090; }
+
+pre { -moz-tab-size: 4; -o-tab-size:4; tab-size:4; }
+
+.copy, 
+.copy p { line-height:16px; }
+.copy p { display:block; margin:5px 0px 5px 0px; }
+.copy h1 { display:block; margin-bottom:20px; text-transform:uppercase; }
+
+.pin { position:absolute; top:-100px; left:50%; background:#fb8800; margin:0px auto; padding:20px; color:#fff; text-shadow:#e87e00 -1px -1px; white-space:nowrap; }
+
+.footer { padding:40px; background:#393939; color:#fff; text-shadow:#202020 -1px -1px; line-height:18px; font-size:11px; }

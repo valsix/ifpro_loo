@@ -1,0 +1,112 @@
+/***********************************************************************************************************************
+DOCUMENT: style/format.css
+DEVELOPED BY: Ryan Stemkoski
+COMPANY: Zipline Interactive
+EMAIL: ryan@gozipline.com
+PHONE: 509-321-2849
+DATE: 2/26/2009
+DESCRIPTION: This document contains the structural formatting files for the accordion style menu.
+************************************************************************************************************************/
+#wrapper-accordion-menu {
+	width: 100%;
+	margin-left: auto;
+	margin-right: auto;
+	text-align:left;
+	
+	/*height: -moz-calc(100% - 170px);
+    height: -webkit-calc(100% - 170px);
+    height: -o-calc(100% - 170px);
+    height: calc(100% - 170px);*/
+	
+	text-transform:uppercase;
+	
+	/** UNTUK MENAMPILKAN SCROLL KETIKA MELEBIHI TINGGI SIDEBAR **/
+	position:fixed;
+	top:51px;
+	overflow:auto; 
+	bottom:0; 
+	left:0; 
+	width:250px;
+	
+	}
+
+.accordionButton {	
+	width: 100%;
+	padding-left:15px;
+	padding-right:20px;
+	height:42px;
+	line-height:39px;
+	float: left;
+	background: #0162b7;
+	color:#FFF;
+	font-size:12px;
+	border-bottom: 1px solid #dbdee3;
+	cursor: pointer;
+	}
+	
+.accordionButton img{	
+	vertical-align:middle;
+	margin-right:5px;
+}
+.accordionContent {	
+	width: 100%;
+	padding:0px 0px;
+	float: left;
+	background: #014e92;
+	display: none;
+	border-top:1px solid #f8f9fa;
+	
+	/*min-height:calc(100% - 470px);*/
+	
+	/*height: -moz-calc(100% - 300px);
+    height: -webkit-calc(100% - 300px);
+    height: -o-calc(100% - 300px);
+    height: calc(100% - 300px);*/
+	
+	overflow:auto;
+	}
+.accordion-item{
+	*height:30px;
+	*line-height:30px;
+	border-bottom:1px solid #f8f9fa;
+}
+.accordion-item a{
+	padding:8px 45px;
+	color:#FFF;
+	text-decoration:none;
+	display:block;
+	font-size:12px;
+}
+.accordion-item a:hover{
+	color:#67b3f6;
+	text-decoration:none;
+}
+
+@media (max-width:767px) {
+	
+	#wrapper-accordion-menu {
+		width: 100%;
+		margin-left: auto;
+		margin-right: auto;
+		text-align:left;
+		text-transform:uppercase;
+		
+		/** UNTUK MENAMPILKAN SCROLL KETIKA MELEBIHI TINGGI SIDEBAR **/
+		position:fixed;
+		top:102px;
+		overflow:auto; 
+		bottom:0; 
+		left:0; 
+		width:100%;
+	
+	}
+	.accordionButton {	
+		padding-left:10px;
+		padding-right:10px;
+	}
+	
+	.accordion-item a{
+		padding:8px 10px;
+	}
+
+}

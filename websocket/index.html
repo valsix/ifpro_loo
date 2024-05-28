@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>		
+        <title></title>
+        <meta charset="UTF-8" />					
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+    </head>
+    <body>
+        
+        <!-- scripts -->
+        <script src="https://code.jquery.com/jquery-2.1.3.min.js"></script>
+        <script type="text/javascript">
+            var conn = new WebSocket('ws://192.168.88.100:3000/chat');
+            conn.onmessage = function(e) { 
+                console.log(e.data); 
+            };
+            conn.onopen = function(e) { 
+                conn.send('Hello Me!'); 
+            };
+        </script>
+    </body>
+</html>
+

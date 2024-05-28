@@ -1,0 +1,27 @@
+{
+  "name": "realtime-chat",
+  "version": "0.0.8",
+  "description": "Socket.io realtime chat for jquery-chat",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.15.3",
+    "socket.io": "2.0.3"
+  },
+  "engines": {
+    "node": "0.10.x"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lovelle/jquery-chat"
+  },
+   "keywords": [
+    "socket.io",
+    "realtime",
+    "jquery-chat"
+  ],
+  "author": "Ezequiel Lovelle <ezequiellovelle@gmail.com>",
+  "license": "MIT"
+}

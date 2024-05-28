@@ -1,0 +1,33 @@
+drop table if exists tr_loo;
+create table tr_loo
+(
+	tr_loo_id numeric not null
+	, produk_id integer
+	, customer_id integer
+	, lokasi_loo_id integer
+	, total_luas_indoor numeric
+	, total_luas_outdoor numeric
+	, total_luas numeric
+	, total_diskon_indoor_sewa numeric
+	, total_diskon_outdoor_sewa numeric
+	, total_diskon_indoor_service numeric
+	, total_diskon_outdoor_service numeric
+	, harga_indoor_sewa numeric
+	, harga_outdoor_sewa numeric
+	, harga_indoor_service numeric
+	, harga_outdoor_service numeric
+	, dp numeric
+	, periode_sewa numeric
+	, constraint pk_tr_loo primary key (tr_loo_id)
+);
+
+drop table if exists tr_loo_detil;
+create table tr_loo_detil
+(
+	tr_loo_detil_id numeric not null
+	, tr_loo_id numeric not null
+	, vmode character varying
+	, vid numeric
+	, nilai numeric
+	, constraint pk_tr_loo_detil primary key (tr_loo_detil_id)
+);

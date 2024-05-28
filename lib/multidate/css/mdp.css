@@ -1,0 +1,13 @@
+@import url("pepper-ginder-custom.css");
+
+.clear {clear: both;}
+
+#share {
+	position: absolute;
+	right: 20px;
+	top: 20px;
+	text-align: right;
+}
+/* begin: jQuery UI Datepicker hide datepicker helper */
+#ui-datepicker-div {display:none;}
+/* end: jQuery UI Datepicker hide datepicker helper */
