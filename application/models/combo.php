@@ -111,7 +111,7 @@ DESCRIPTION			:
 	  function selectByParamsLantaiLoo($paramsArray=array(),$limit=-1,$from=-1,$statement="", $order="")
 		{ 
 			$str = "
-			SELECT *, CASE WHEN TIPE = 'I' THEN 'Indoor' ELSE 'Outdoor' END TIPE_INFO from LANTAI_LOO WHERE 1 = 1
+			SELECT * from LANTAI_LOO WHERE 1 = 1
 			"; 
 			
 			while(list($key,$val) = each($paramsArray))
