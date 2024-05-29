@@ -43,6 +43,7 @@ DESCRIPTION			:
 		)";
 		$this->id = $this->getField("TR_LOO_DETIL_ID");
 		$this->query = $str;
+		// echo $str;exit;
 
 		return $this->execQuery($str);
     }
@@ -67,7 +68,7 @@ DESCRIPTION			:
 	{
         $str = "
         DELETE FROM tr_loo_detil
-        WHERE TR_LOO_DETIL_ID = ".$this->getField("TR_LOO_DETIL_ID")."
+        WHERE TR_LOO_ID = ".$this->getField("TR_LOO_ID")."
         ";
 				  
 		$this->query = $str;

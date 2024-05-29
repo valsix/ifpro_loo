@@ -3,30 +3,43 @@
 include_once("functions/string.func.php");
 include_once("functions/date.func.php");
 
+$this->load->model("TrLoo");
+$this->load->model("TrLooDetil");
 
-// $this->load->model("LokasiLooDetil");
-// $lokasi_loo_detil = new LokasiLooDetil();
+$reqId= $this->input->get("reqId");
 
-// $reqId = $this->input->get("reqId");
-
-// if($reqId == ""){
-// $reqMode = "insert";
-// }
-// else
-// {
-//     $reqMode = "ubah";
-//     $lokasi_loo_detil->selectByParams(array("A.LOKASI_LOO_DETIL_ID" => $reqId));
-//     $lokasi_loo_detil->firstRow();
+if(empty($reqId))
+{
+    $reqMode= "insert";
+}
+else
+{
+    $reqMode = "ubah";
+    $set= new TrLoo();
+    $set->selectByParams(array("A.TR_LOO_ID" => $reqId));
+    $set->firstRow();
     
-//     $reqId= $lokasi_loo_detil->getField("LOKASI_LOO_DETIL_ID");
-//     $reqLokasiLooId= $lokasi_loo_detil->getField("LOKASI_LOO_ID");
-//     $reqLantai= $lokasi_loo_detil->getField("LANTAI");
-//     $reqKode= $lokasi_loo_detil->getField("KODE");
-//     $reqNama= $lokasi_loo_detil->getField("NAMA");
-//     $reqTipe= $lokasi_loo_detil->getField("TIPE");
-//     $reqDeskripsi= $lokasi_loo_detil->getField("DESKRIPSI");
+    $reqProdukId= $set->getField("PRODUK_ID");
+    $reqCustomerId= $set->getField("CUSTOMER_ID");
+    $reqLokasiLooId= $set->getField("LOKASI_LOO_ID");
+
+    /*
     
-// }
+        $set->setField("TOTAL_LUAS_INDOOR", ValToNullDB(dotToNo($reqTotalLuasIndoor)));
+        $set->setField("TOTAL_LUAS_OUTDOOR", ValToNullDB(dotToNo($reqTotalLuasOutdoor)));
+        $set->setField("TOTAL_LUAS", ValToNullDB(dotToNo($reqTotalLuas)));
+        $set->setField("TOTAL_DISKON_INDOOR_SEWA", ValToNullDB(dotToNo($req)));
+        $set->setField("TOTAL_DISKON_OUTDOOR_SEWA", ValToNullDB(dotToNo($req)));
+        $set->setField("TOTAL_DISKON_INDOOR_SERVICE", ValToNullDB(dotToNo($req)));
+        $set->setField("TOTAL_DISKON_OUTDOOR_SERVICE", ValToNullDB(dotToNo($req)));
+        $set->setField("HARGA_INDOOR_SEWA", ValToNullDB(dotToNo($reqHargaIndoorSewa)));
+        $set->setField("HARGA_OUTDOOR_SEWA", ValToNullDB(dotToNo($reqHargaOutdoorSewa)));
+        $set->setField("HARGA_INDOOR_SERVICE", ValToNullDB(dotToNo($reqHargaIndoorService)));
+        $set->setField("HARGA_OUTDOOR_SERVICE", ValToNullDB(dotToNo($reqHargaOutdoorService)));
+        $set->setField("DP", ValToNullDB(dotToNo($reqDp)));
+        $set->setField("PERIODE_SEWA", ValToNullDB(dotToNo($reqPeriodeSewa)));*/
+    
+}
 ?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -130,279 +143,266 @@ $(function(){
 
             <div id="popup-tabel2">
 
-                    <table class="table">
-                        <thead>
-                            <tr>           
-                                <td>Lokasi</td>
-                                <td>:</td>
-                                <td>
-                                    <input type="text" name="reqLokasiLooId" class="easyui-combotree"  id="reqLokasiLooId"
-                                           data-options="width:'350', valueField:'id', textField:'text', editable:false, url:'combo_json/comboLokasiLoo'" required value="<?=$reqLokasiLooId?>" />
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Customer</td>
-                                <td>:</td>
-                                <td>
-                                    <input type="text" name="reqCustomerId" class="easyui-combobox"  id="reqCustomerId"
-                                           data-options="width:'350', valueField:'id', textField:'text', editable:false, url:'combo_json/comboCustomer?cek=pemilik'" required value="<?=$reqCustomerId?>" />
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Produk</td>
-                                <td>:</td>
-                                <td>
-                                    <input type="text" name="reqProdukId" class="easyui-combobox"  id="reqProdukId"
-                                           data-options="width:'350', valueField:'id', textField:'text', editable:false, url:'combo_json/comboProduk'" required value="<?=$reqProdukId?>" />
-                                </td>
-                            </tr>
-                            <!-- <tr>
-                                <td>Lokasi Lantai</td>
-                                <td>:</td>
-                                <td>
-                                    <input type="text" name="reqLokasiLooId" class="easyui-combobox"  id="reqLokasiLooId"
-                                           data-options="width:'350', valueField:'id', textField:'text', editable:false, url:'combo_json/comboLokasiLooDetil'" required value="<?=$reqLokasiLooId?>" />
-                                </td>
-                            </tr> -->
-                        </thead>
-                    </table>
+                <input type="hidden" name="reqStatusData" id="reqStatusData" value="<?=$reqStatusData?>" />
+                <input type="hidden" name="reqId" value="<?=$reqId?>" />
+                <input type="hidden" name="reqMode" value="<?=$reqMode?>" />
 
-                    <fieldset>
-                        <legend style="font-size: large;">
-                            Luas Sewa
-                        </legend>
+                <table class="table">
+                    <thead>
+                        <tr>           
+                            <td>Lokasi</td>
+                            <td>:</td>
+                            <td>
+                                <input type="text" name="reqLokasiLooId" class="easyui-combotree" id="reqLokasiLooId" data-options="width:'350', valueField:'id', textField:'text', editable:false, url:'combo_json/comboLokasiLoo'" required value="<?=$reqLokasiLooId?>" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Customer</td>
+                            <td>:</td>
+                            <td>
+                                <input type="text" name="reqCustomerId" class="easyui-combobox" id="reqCustomerId" data-options="width:'350', valueField:'id', textField:'text', editable:false, url:'combo_json/comboCustomer?cek=pemilik'" required value="<?=$reqCustomerId?>" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Produk</td>
+                            <td>:</td>
+                            <td>
+                                <input type="text" name="reqProdukId" class="easyui-combobox" id="reqProdukId" data-options="width:'350', valueField:'id', textField:'text', editable:false, url:'combo_json/comboProduk'" required value="<?=$reqProdukId?>" />
+                            </td>
+                        </tr>
+                        <!-- <tr>
+                            <td>Lokasi Lantai</td>
+                            <td>:</td>
+                            <td>
+                                <input type="text" name="reqLokasiLooId" class="easyui-combobox"  id="reqLokasiLooId"
+                                       data-options="width:'350', valueField:'id', textField:'text', editable:false, url:'combo_json/comboLokasiLooDetil'" required value="<?=$reqLokasiLooId?>" />
+                            </td>
+                        </tr> -->
+                    </thead>
+                </table>
 
-                        <table class="table">
-                            <tbody>
-                                <tr>
-                                    <td class="tdcolor">
-                                        Indoor
-                                        <a onClick="openLookup('I')"><i class="fa fa-plus-square fa-lg" aria-hidden="true"></i></a>
-                                    </td>
-                                    <td class="tdcolor">
-                                        Outdoor
-                                        <a onClick="openLookup('O')"><i class="fa fa-plus-square fa-lg" aria-hidden="true"></i></a>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td style="width: 50%">
-                                        <table class="table">
-                                            <tbody id="luassewaindoor">
-                                                
-                                            </tbody>
-                                            <tfoot>
-                                                <tr>
-                                                    <td colspan="2" style="text-align: right;">Total Luas Indoor</td>
-                                                    <td style="width: 20%">
-                                                        <input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control" name="reqTotalLuasIndoor" id="reqTotalLuasIndoor" style="width:85%; display: inline; text-align: right;" value="<?=$reqTotalLuasIndoor?>" /> <label class="labeltotal">m2</label>
-                                                    </td>
-                                                </tr>
-                                            </tfoot>
-                                        </table>
-                                    </td>
-                                    <td style="width: 50%">
-                                        <table class="table">
-                                            <tbody id="luassewaoutdoor">
-                                                
-                                            </tbody>
-                                            <tfoot>
-                                                <tr>
-                                                    <td colspan="2" style="text-align: right;">Total Luas Outdoor</td>
-                                                    <td style="width: 20%">
-                                                        <input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control" name="reqTotalLuasOutdoor" id="reqTotalLuasOutdoor" style="width:85%; display: inline; text-align: right;" value="<?=$reqTotalLuasOutdoor?>" /> <label class="labeltotal">m2</label>
-                                                    </td>
-                                                </tr>
-                                            </tfoot>
-                                        </table>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td colspan="2" style="text-align: right;">
-                                        Total Luas Sewa
-                                        <input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control" name="reqTotalLuas" id="reqTotalLuas" style="width:15%; display: inline; text-align: right;" value="<?=$reqTotalLuas?>" /> <label class="labeltotal">m2</label>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </fieldset>
-
-                    <fieldset>
-                        <legend style="font-size: large;">
-                            Tarif Sewa
-                        </legend>
-                        <table class="table">
-                            <tbody>
-                                <tr>
-                                    <td colspan="3" class="tdcolor" style="width: 50%">
-                                        Indoor
-                                    </td>
-                                    <td colspan="3" class="tdcolor" style="width: 50%">
-                                        Outdoor
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td colspan="3">
-                                        <table class="table">
-                                            <tbody id="tarifinfosewaindoor">
-                                                <tr>
-                                                    <td class="tdcolor" style="width: 27%">Unit</td>
-                                                    <td class="tdcolor" style="width: 10%">Discount</td>
-                                                    <td class="tdcolor" style="width: 29%">Tarif (after discount)</td>
-                                                    <td class="tdcolor" style="width: 29%">Harga Sewa</td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </td>
-                                    <td colspan="3">
-                                        <table class="table">
-                                            <tbody id="tarifinfosewaoutdoor">
-                                                <tr>
-                                                    <td class="tdcolor" style="width: 27%">Unit</td>
-                                                    <td class="tdcolor" style="width: 10%">Discount</td>
-                                                    <td class="tdcolor" style="width: 29%">Tarif (after discount)</td>
-                                                    <td class="tdcolor" style="width: 29%">Harga Sewa</td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td colspan="3">
-                                        <table class="table">
-                                            <tbody id="tarifinfosewascindoor">
-                                                <tr>
-                                                    <td colspan="2" class="tdcolor" style="width: 35%">Service Charge</td>
-                                                    <td colspan="2" class="tdcolor" style="width: 30%">Discount</td>
-                                                    <td colspan="2" class="tdcolor" style="width: 35%">Tarif (after discount)</td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </td>
-                                    <td colspan="3">
-                                        <table class="table">
-                                            <tbody id="tarifinfosewascoutdoor">
-                                                <tr>
-                                                    <td colspan="2" class="tdcolor" style="width: 35%">Service Charge</td>
-                                                    <td colspan="2" class="tdcolor" style="width: 30%">Discount</td>
-                                                    <td colspan="2" class="tdcolor" style="width: 35%">Tarif (after discount)</td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </fieldset>
-
-                    <fieldset>
-                        <legend style="font-size: large;">
-                            Harga
-                        </legend>
-
-                        <table class="table">
-                            <tbody>
-                                <tr>
-                                    <td style="text-align: right;">
-                                        Sewa Indoor
-                                        <input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control" name="reqHargaIndoorSewa" id="reqHargaIndoorSewa" style="width:15%; display: inline; text-align: right;" /> <label class="labeltotal">/ m2 / bulan</label>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td style="text-align: right;">
-                                        Sewa Outdoor
-                                        <input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control" name="reqHargaOutdoorSewa" id="reqHargaOutdoorSewa" style="width:15%; display: inline; text-align: right;" /> <label class="labeltotal">/ m2 / bulan</label>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td style="text-align: right;">
-                                        Service Charge Indoor
-                                        <input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control" name="reqHargaIndoorService" id="reqHargaIndoorService" style="width:15%; display: inline; text-align: right;" /> <label class="labeltotal">/ m2 / bulan</label>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td style="text-align: right;">
-                                        Service Charge Outdoor
-                                        <input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control" name="reqHargaOutdoorService" id="reqHargaOutdoorService" style="width:15%; display: inline; text-align: right;" /> <label class="labeltotal">/ m2 / bulan</label>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </fieldset>
+                <fieldset>
+                    <legend style="font-size: large;">
+                        Luas Sewa
+                    </legend>
 
                     <table class="table">
-                        <thead>
+                        <tbody>
                             <tr>
-                                <td colspan="3">Harga Utility Charge</td>
-                            </tr>
-                            <tr>
-                                <td>Listrik</td>
-                                <td>:</td>
-                                <td>
-                                    <input type="text" id="reqNama" class="easyui-validatebox textbox form-control" required name="reqNama" value="<?=$reqNama ?>" data-options="required:true" style="width:90%; display: inline; text-align: right;" />
+                                <td class="tdcolor">
+                                    Indoor
+                                    <a onClick="openLookup('I')"><i class="fa fa-plus-square fa-lg" aria-hidden="true"></i></a>
+                                </td>
+                                <td class="tdcolor">
+                                    Outdoor
+                                    <a onClick="openLookup('O')"><i class="fa fa-plus-square fa-lg" aria-hidden="true"></i></a>
                                 </td>
                             </tr>
                             <tr>
-                                <td>Gas</td>
-                                <td>:</td>
-                                <td>
-                                    <input type="text" id="reqNama" class="easyui-validatebox textbox form-control" required name="reqNama" value="<?=$reqNama ?>" data-options="required:true" style="width:90%; display: inline; text-align: right;" />
+                                <td style="width: 50%">
+                                    <table class="table">
+                                        <tbody id="luassewaindoor">
+                                            
+                                        </tbody>
+                                        <tfoot>
+                                            <tr>
+                                                <td colspan="2" style="text-align: right;">Total Luas Indoor</td>
+                                                <td style="width: 20%">
+                                                    <input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control" name="reqTotalLuasIndoor" id="reqTotalLuasIndoor" style="width:85%; display: inline; text-align: right;" value="<?=$reqTotalLuasIndoor?>" /> <label class="labeltotal">m2</label>
+                                                </td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </td>
+                                <td style="width: 50%">
+                                    <table class="table">
+                                        <tbody id="luassewaoutdoor">
+                                            
+                                        </tbody>
+                                        <tfoot>
+                                            <tr>
+                                                <td colspan="2" style="text-align: right;">Total Luas Outdoor</td>
+                                                <td style="width: 20%">
+                                                    <input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control" name="reqTotalLuasOutdoor" id="reqTotalLuasOutdoor" style="width:85%; display: inline; text-align: right;" value="<?=$reqTotalLuasOutdoor?>" /> <label class="labeltotal">m2</label>
+                                                </td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
                                 </td>
                             </tr>
                             <tr>
-                                <td>Air</td>
-                                <td>:</td>
-                                <td>
-                                    <input type="text" id="reqNama" class="easyui-validatebox textbox form-control" required name="reqNama" value="<?=$reqNama ?>" data-options="required:true" style="width:90%; display: inline; text-align: right;" />
+                                <td colspan="2" style="text-align: right;">
+                                    Total Luas Sewa
+                                    <input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control" name="reqTotalLuas" id="reqTotalLuas" style="width:15%; display: inline; text-align: right;" value="<?=$reqTotalLuas?>" /> <label class="labeltotal">m2</label>
                                 </td>
                             </tr>
-                            
-                        </thead>
+                        </tbody>
                     </table>
+                </fieldset>
+
+                <fieldset>
+                    <legend style="font-size: large;">
+                        Tarif Sewa
+                    </legend>
+                    <table class="table">
+                        <tbody>
+                            <tr>
+                                <td colspan="3" class="tdcolor" style="width: 50%">
+                                    Indoor
+                                </td>
+                                <td colspan="3" class="tdcolor" style="width: 50%">
+                                    Outdoor
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="3">
+                                    <table class="table">
+                                        <tbody id="tarifinfosewaindoor">
+                                            <tr>
+                                                <td class="tdcolor" style="width: 27%">Unit</td>
+                                                <td class="tdcolor" style="width: 10%">Discount</td>
+                                                <td class="tdcolor" style="width: 29%">Tarif (after discount)</td>
+                                                <td class="tdcolor" style="width: 29%">Harga Sewa</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                                <td colspan="3">
+                                    <table class="table">
+                                        <tbody id="tarifinfosewaoutdoor">
+                                            <tr>
+                                                <td class="tdcolor" style="width: 27%">Unit</td>
+                                                <td class="tdcolor" style="width: 10%">Discount</td>
+                                                <td class="tdcolor" style="width: 29%">Tarif (after discount)</td>
+                                                <td class="tdcolor" style="width: 29%">Harga Sewa</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="3">
+                                    <table class="table">
+                                        <tbody id="tarifinfosewascindoor">
+                                            <tr>
+                                                <td class="tdcolor" style="width: 35%">Service Charge</td>
+                                                <td class="tdcolor" style="width: 30%">Discount</td>
+                                                <td class="tdcolor" style="width: 35%">Tarif (after discount)</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                                <td colspan="3">
+                                    <table class="table">
+                                        <tbody id="tarifinfosewascoutdoor">
+                                            <tr>
+                                                <td class="tdcolor" style="width: 35%">Service Charge</td>
+                                                <td class="tdcolor" style="width: 30%">Discount</td>
+                                                <td class="tdcolor" style="width: 35%">Tarif (after discount)</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </fieldset>
+
+                <fieldset>
+                    <legend style="font-size: large;">
+                        Harga
+                    </legend>
 
                     <table class="table">
-                        <thead>
+                        <tbody>
                             <tr>
-                                <td>Down Payment</td>
-                                <td>:</td>
-                                <td>
-                                    <input type="text" id="reqNama" class="easyui-validatebox textbox form-control" required name="reqNama" value="<?=$reqNama ?>" data-options="required:true" style="width:90%; display: inline; text-align: right;" />
+                                <td style="width: 25%; text-align: right;">
+                                    Sewa Indoor
+                                    <input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control" name="reqHargaIndoorSewa" id="reqHargaIndoorSewa" style="width:40%; display: inline; text-align: right;" /> <label class="labelsumtotal">/ m2 / bulan</label>
+                                </td>
+                                <td style="width: 25%; text-align: right;">
+                                    Sewa Outdoor
+                                    <input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control" name="reqHargaOutdoorSewa" id="reqHargaOutdoorSewa" style="width:40%; display: inline; text-align: right;" /> <label class="labelsumtotal">/ m2 / bulan</label>
+                                </td>
+                                <td style="width: 25%; text-align: right;">
+                                    Service Charge Indoor
+                                    <input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control" name="reqHargaIndoorService" id="reqHargaIndoorService" style="width:40%; display: inline; text-align: right;" /> <label class="labelsumtotal">/ m2 / bulan</label>
+                                </td>
+                                <td style="width: 25%; text-align: right;">
+                                    Service Charge Outdoor
+                                    <input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control" name="reqHargaOutdoorService" id="reqHargaOutdoorService" style="width:40%; display: inline; text-align: right;" /> <label class="labelsumtotal">/ m2 / bulan</label>
                                 </td>
                             </tr>
-                            <tr>
-                                <td>Periode Sewa</td>
-                                <td>:</td>
-                                <td>
-                                    <input type="text" id="reqNama" class="easyui-validatebox textbox form-control" required name="reqNama" value="<?=$reqNama ?>" data-options="required:true" style="width:90%; display: inline; text-align: right;" />
-                                </td>
-                            </tr>
-                            <tr>
-                                <td colspan="3">Jam Operasional</td>
-                            </tr>
-                            <tr>
-                                <td>Gedung</td>
-                                <td>:</td>
-                                <td>
-                                    <input type="text" id="reqNama" class="easyui-validatebox textbox form-control" required name="reqNama" value="<?=$reqNama ?>" data-options="required:true" style="width:90%; display: inline; text-align: right;" />
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Tenant</td>
-                                <td>:</td>
-                                <td>
-                                    <input type="text" id="reqNama" class="easyui-validatebox textbox form-control" required name="reqNama" value="<?=$reqNama ?>" data-options="required:true" style="width:90%; display: inline; text-align: right;" />
-                                </td>
-                            </tr>
-                            
-                        </thead>
+                        </tbody>
                     </table>
+                </fieldset>
 
-                    <input type="hidden" name="reqId" value="<?=$reqId?>" />
-                    <input type="hidden" name="reqMode" value="<?=$reqMode?>" />
-                    <!-- <div style="text-align:center;padding:5px">
-                        <a href="javascript:void(0)" class="btn btn-primary" onclick="submitForm()">Submit</a>
-                        <a href="javascript:void(0)" class="btn btn-warning" onclick="clearForm()">Clear</a>
-                    </div> -->
-                <!-- </form> -->
+                <!-- <table class="table">
+                    <thead>
+                        <tr>
+                            <td colspan="3">Harga Utility Charge</td>
+                        </tr>
+                        <tr>
+                            <td>Listrik</td>
+                            <td>:</td>
+                            <td>
+                                <input type="text" id="reqNama" class="easyui-validatebox textbox form-control" required name="reqNama" value="<?=$reqNama ?>" data-options="required:true" style="width:90%; display: inline; text-align: right;" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Gas</td>
+                            <td>:</td>
+                            <td>
+                                <input type="text" id="reqNama" class="easyui-validatebox textbox form-control" required name="reqNama" value="<?=$reqNama ?>" data-options="required:true" style="width:90%; display: inline; text-align: right;" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Air</td>
+                            <td>:</td>
+                            <td>
+                                <input type="text" id="reqNama" class="easyui-validatebox textbox form-control" required name="reqNama" value="<?=$reqNama ?>" data-options="required:true" style="width:90%; display: inline; text-align: right;" />
+                            </td>
+                        </tr>
+                        
+                    </thead>
+                </table>
+
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <td>Down Payment</td>
+                            <td>:</td>
+                            <td>
+                                <input type="text" id="reqNama" class="easyui-validatebox textbox form-control" required name="reqNama" value="<?=$reqNama ?>" data-options="required:true" style="width:90%; display: inline; text-align: right;" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Periode Sewa</td>
+                            <td>:</td>
+                            <td>
+                                <input type="text" id="reqNama" class="easyui-validatebox textbox form-control" required name="reqNama" value="<?=$reqNama ?>" data-options="required:true" style="width:90%; display: inline; text-align: right;" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="3">Jam Operasional</td>
+                        </tr>
+                        <tr>
+                            <td>Gedung</td>
+                            <td>:</td>
+                            <td>
+                                <input type="text" id="reqNama" class="easyui-validatebox textbox form-control" required name="reqNama" value="<?=$reqNama ?>" data-options="required:true" style="width:90%; display: inline; text-align: right;" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Tenant</td>
+                            <td>:</td>
+                            <td>
+                                <input type="text" id="reqNama" class="easyui-validatebox textbox form-control" required name="reqNama" value="<?=$reqNama ?>" data-options="required:true" style="width:90%; display: inline; text-align: right;" />
+                            </td>
+                        </tr>
+                        
+                    </thead>
+                </table> -->
 
             </div>
 
@@ -432,17 +432,17 @@ function openLookup(tipe)
     obj["TIPE_INFO"] = null;
     obj["id"] = "1";
     obj["state"] = "open";
-    obj["luas"] = "95.58";
-    obj["kdtarif"] = "200000";
+    obj["LUAS"] = "95.58";
+    obj["KD_TARIF"] = "200000";
+    obj["TARIF_SC"] = "92400";
     obj["text"] = "nama";
     tparam.push(obj);
     // console.log(tparam);return false;
     // untuk percobanaan
-    addmulti("I", tparam);
-    addmulti("O", tparam);*/
+    // addmulti("I", tparam);
+    // addmulti("O", tparam);*/
 
     reqIdLokasi= $("#reqLokasiLooId").combotree("getValue");
-
     if (reqIdLokasi) 
     {
         openAdd('app/loadUrl/main/luas_sewa_lookup?reqId='+reqIdLokasi+'&reqTipe='+tipe)
@@ -466,6 +466,8 @@ function addmulti(vtipe, vparam)
         vdetilparam.lantai= item.LANTAI;
         vdetilparam.luas= item.LUAS;
         vdetilparam.kdtarif= item.KD_TARIF;
+        // vdetilparam.tarifsc= item.TARIF_SC;
+        vdetilparam.tarifsc= "92400";
         // console.log(vdetilparam);
         // param.id, param.text, param.NAMA_LOKASI_LOO, param.KODE, param.LANTAI
 
@@ -482,6 +484,7 @@ function appenddata(vtipe, vdetilparam)
     lantai= vdetilparam["lantai"];
     vluas= setformat(vdetilparam["luas"]);
     vkdtarif= setformat(vdetilparam["kdtarif"]);
+    vtarifsc= setformat(vdetilparam["tarifsc"]);
     // console.log(vdetilparam);return false;
     // vluas= setformat(95.58);
     // vkdtarif= setformat(200000);
@@ -489,12 +492,12 @@ function appenddata(vtipe, vdetilparam)
     if (vtipe=='I') 
     {
         vtable= ''
-        +'<tr>'
-        +   '<td>'+kode+' - '+lantai+'</td>'
+        +'<tr class="groupclass'+id+'">'
+        +   '<td>'+kode+' - '+lantai+' <i style="cursor:pointer" class="fa fa-times-circle text-danger" aria-hidden="true" onclick="hapusgroupclass('+id+');"></i></td>'
         +   '<td>:</td>'
         +   '<td style="width:30%">'
         +       '<input type="hidden" name="vmode[]" value="luas_sewa_indoor" />'
-        +       '<input type="hidden" name="vid[]" class="valsetid" />'
+        +       '<input type="hidden" name="vid[]" class="valsetid" value="'+id+'" />'
         +       '<input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control totalluasindoor" name="vnilai[]" placeholder="Isi Luas (m2)" data-options="required:true" style="width:85%; display: inline; text-align: right;" value="'+vluas+'" /> <label class="labeltotal">m2</label>'
         +   '</td>'
         +'</tr>';
@@ -502,46 +505,74 @@ function appenddata(vtipe, vdetilparam)
         hitungluas("totalluasindoor");
 
         vtable= ''
-        +'<tr>'
+        +'<tr class="groupclass'+id+'">'
         +   '<td colspan="4">'
         +       kode+' - '+lantai
         +   '</td>'
         +'</tr>'
-        +'<tr>'
+        +'<tr class="groupclass'+id+'">'
         +   '<td>'
         +       '<input type="hidden" name="vmode[]" value="tarif_sewa_unit_indoor" />'
-        +       '<input type="hidden" name="vid[]" class="valsetid" />'
+        +       '<input type="hidden" name="vid[]" class="valsetid" value="'+id+'" />'
         +       '<input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control totalsewaunitindoor" name="vnilai[]" placeholder="Isi Rp/m2" data-options="required:true" style="width:65%; display: inline; text-align: right;" value="'+vkdtarif+'" /> <label class="labeltotal">Rp/m2</label>'
         +   '</td>'
         +   '<td>'
         +       '<input type="hidden" name="vmode[]" value="tarif_sewa_unit_indoor_diskon" />'
-        +       '<input type="hidden" name="vid[]" class="valsetid" />'
+        +       '<input type="hidden" name="vid[]" class="valsetid" value="'+id+'" />'
         +       '<input type="text" class="vlxuangclass easyui-validatebox textbox form-control totalsewaunitindoordiskon" name="vnilai[]" placeholder="Isi %" data-options="required:true" style="width:65%; display: inline; text-align: right;" value="0" /> <label class="labeltotal">%</label>'
         +   '</td>'
         +   '<td>'
         +       '<input type="hidden" name="vmode[]" value="tarif_sewa_unit_indoor_after_diskon" />'
-        +       '<input type="hidden" name="vid[]" class="valsetid" />'
+        +       '<input type="hidden" name="vid[]" class="valsetid" value="'+id+'" />'
         +       '<input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control totalsewaunitindoorafterdiskon" name="vnilai[]" placeholder="Isi Rp/m2" data-options="required:true" style="width:65%; display: inline; text-align: right;" /> <label class="labeltotal">Rp/m2</label>'
         +   '</td>'
         +   '<td>'
         +       '<input type="hidden" name="vmode[]" value="tarif_sewa_unit_indoor_harga" />'
-        +       '<input type="hidden" name="vid[]" class="valsetid" />'
+        +       '<input type="hidden" name="vid[]" class="valsetid" value="'+id+'" />'
         +       '<input type="hidden" class="totalsewaunitindoorsewaluas" value="'+vluas+'" />'
         +       '<input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control totalsewaunitindoorharga" name="vnilai[]" style="display: inline; text-align: right;" />'
         +   '</td>'
         +'</tr>'
         ;
         $("#tarifinfosewaindoor").append(vtable);
+        hitunghargasewa("totalsewaunitindoordiskon");
+
+        vtable= ''
+        +'<tr class="groupclass'+id+'">'
+        +   '<td colspan="4">'
+        +       kode+' - '+lantai
+        +   '</td>'
+        +'</tr>'
+        +'<tr class="groupclass'+id+'">'
+        +   '<td>'
+        +       '<input type="hidden" name="vmode[]" value="tarif_sewa_sc_indoor" />'
+        +       '<input type="hidden" name="vid[]" class="valsetid" value="'+id+'" />'
+        +       '<input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control totalsewascindoor" name="vnilai[]" placeholder="Isi Rp/m2" data-options="required:true" style="width:65%; display: inline; text-align: right;" value="'+vtarifsc+'" /> <label class="labeltotal">Rp/m2</label>'
+        +   '</td>'
+        +   '<td>'
+        +       '<input type="hidden" name="vmode[]" value="tarif_sewa_sc_indoor_diskon" />'
+        +       '<input type="hidden" name="vid[]" class="valsetid" value="'+id+'" />'
+        +       '<input type="text" class="vlxuangclass easyui-validatebox textbox form-control totalsewascindoordiskon" name="vnilai[]" placeholder="Isi %" data-options="required:true" style="width:65%; display: inline; text-align: right;" value="0" /> <label class="labeltotal">%</label>'
+        +   '</td>'
+        +   '<td>'
+        +       '<input type="hidden" name="vmode[]" value="tarif_sewa_sc_indoor_after_diskon" />'
+        +       '<input type="hidden" name="vid[]" class="valsetid" value="'+id+'" />'
+        +       '<input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control totalsewascindoorafterdiskon" name="vnilai[]" placeholder="Isi Rp/m2" data-options="required:true" style="width:65%; display: inline; text-align: right;" /> <label class="labeltotal">Rp/m2</label>'
+        +   '</td>'
+        +'</tr>'
+        ;
+        $("#tarifinfosewascindoor").append(vtable);
+        hitunghargasewa("totalsewascindoordiskon");
     }
     else
     {
         vtable= ''
-        +'<tr>'
+        +'<tr class="groupclass'+id+'">'
         +   '<td>'+kode+' - '+lantai+'</td>'
         +   '<td>:</td>'
         +   '<td>'
         +       '<input type="hidden" name="vmode[]" value="luas_sewa_outdoor" />'
-        +       '<input type="hidden" name="vid[]" class="valsetid" />'
+        +       '<input type="hidden" name="vid[]" class="valsetid" value="'+id+'" />'
         +       '<input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control totalluasoutdoor" name="vnilai[]" placeholder="Isi Luas (m2)" data-options="required:true" style="width:85%; display: inline; text-align: right;" value="'+vluas+'" /> <label class="labeltotal">m2</label>'
         +   '</td>'
         +'</tr>';
@@ -549,36 +580,37 @@ function appenddata(vtipe, vdetilparam)
         hitungluas("totalluasoutdoor");
 
         vtable= ''
-        +'<tr>'
+        +'<tr class="groupclass'+id+'">'
         +   '<td colspan="4">'
         +       kode+' - '+lantai
         +   '</td>'
         +'</tr>'
-        +'<tr>'
+        +'<tr class="groupclass'+id+'">'
         +   '<td>'
         +       '<input type="hidden" name="vmode[]" value="tarif_sewa_unit_outdoor" />'
-        +       '<input type="hidden" name="vid[]" class="valsetid" />'
+        +       '<input type="hidden" name="vid[]" class="valsetid" value="'+id+'" />'
         +       '<input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control totalsewaunitoutdoor" name="vnilai[]" placeholder="Isi Rp/m2" data-options="required:true" style="width:65%; display: inline; text-align: right;" value="'+vkdtarif+'" /> <label class="labeltotal">Rp/m2</label>'
         +   '</td>'
         +   '<td>'
         +       '<input type="hidden" name="vmode[]" value="tarif_sewa_unit_outdoor_diskon" />'
-        +       '<input type="hidden" name="vid[]" class="valsetid" />'
+        +       '<input type="hidden" name="vid[]" class="valsetid" value="'+id+'" />'
         +       '<input type="text" class="vlxuangclass easyui-validatebox textbox form-control totalsewaunitoutdoordiskon" name="vnilai[]" placeholder="Isi %" data-options="required:true" style="width:65%; display: inline; text-align: right;" value="0" /> <label class="labeltotal">%</label>'
         +   '</td>'
         +   '<td>'
         +       '<input type="hidden" name="vmode[]" value="tarif_sewa_unit_outdoor_after_diskon" />'
-        +       '<input type="hidden" name="vid[]" class="valsetid" />'
+        +       '<input type="hidden" name="vid[]" class="valsetid" value="'+id+'" />'
         +       '<input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control totalsewaunitoutdoorafterdiskon" name="vnilai[]" placeholder="Isi Rp/m2" data-options="required:true" style="width:65%; display: inline; text-align: right;" /> <label class="labeltotal">Rp/m2</label>'
         +   '</td>'
         +   '<td>'
         +       '<input type="hidden" name="vmode[]" value="tarif_sewa_unit_outdoor_harga" />'
-        +       '<input type="hidden" name="vid[]" class="valsetid" />'
+        +       '<input type="hidden" name="vid[]" class="valsetid" value="'+id+'" />'
         +       '<input type="hidden" class="totalsewaunitoutdoorsewaluas" value="'+vluas+'" />'
         +       '<input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control totalsewaunitoutdoorharga" name="vnilai[]" style="display: inline; text-align: right;" />'
         +   '</td>'
         +'</tr>'
         ;
         $("#tarifinfosewaoutdoor").append(vtable);
+        hitunghargasewa("totalsewaunitoutdoordiskon");
     }
 
     callformatdyna();
@@ -623,68 +655,32 @@ function callformatdyna()
         });
 
         $(".totalsewaunitindoordiskon").keyup(function() {
-            totalsewaunitindoordiskon= $(this).val();
-            totalsewaunitindoordiskon= FormatAngkaNumber(totalsewaunitindoordiskon);
-            totalsewaunitindoordiskon= notnullval(totalsewaunitindoordiskon);
-
-            totalsewaunitindoor= $(this).closest('tr').find('.totalsewaunitindoor').val();
-            totalsewaunitindoor= FormatAngkaNumber(totalsewaunitindoor);
-            totalsewaunitindoor= notnullval(totalsewaunitindoor);
-
-            // vlog= totalsewaunitindoor + " - " + " ( "+(totalsewaunitindoordiskon / 100)+" * "+totalsewaunitindoor+" )";
-            // console.log(vlog);
-
-            totalsewaunitindoorafterdiskon= totalsewaunitindoor - ( (totalsewaunitindoordiskon / 100) * totalsewaunitindoor );
-            totalsewaunitindoorafterdiskon= setformat(totalsewaunitindoorafterdiskon);
-            $(this).closest('tr').find('.totalsewaunitindoorafterdiskon').val(totalsewaunitindoorafterdiskon);
-
-            // hitunghargasewa("totalsewaunitindoordiskon");
-
-            totalsewaunitindoorsewaluas= $(this).closest('tr').find('.totalsewaunitindoorsewaluas').val();
-            totalsewaunitindoorsewaluas= FormatAngkaNumber(totalsewaunitindoorsewaluas);
-            totalsewaunitindoorsewaluas= notnullval(totalsewaunitindoorsewaluas);
-
-            totalsewaunitindoorafterdiskon= $(this).closest('tr').find('.totalsewaunitindoorafterdiskon').val();
-            totalsewaunitindoorafterdiskon= FormatAngkaNumber(totalsewaunitindoorafterdiskon);
-            totalsewaunitindoorafterdiskon= notnullval(totalsewaunitindoorafterdiskon);
-
-            totalsewaunitindoorharga= totalsewaunitindoorafterdiskon * totalsewaunitindoorsewaluas;
-            totalsewaunitindoorharga= setformat(totalsewaunitindoorharga);
-            $(this).closest('tr').find('.totalsewaunitindoorharga').val(totalsewaunitindoorharga);
-
+            hitunghargasewa("totalsewaunitindoordiskon");
         });
 
         $(".totalsewaunitoutdoordiskon").keyup(function() {
-            totalsewaunitoutdoordiskon= $(this).val();
-            totalsewaunitoutdoordiskon= FormatAngkaNumber(totalsewaunitoutdoordiskon);
-            totalsewaunitoutdoordiskon= notnullval(totalsewaunitoutdoordiskon);
-
-            totalsewaunitoutdoor= $(this).closest('tr').find('.totalsewaunitoutdoor').val();
-            totalsewaunitoutdoor= FormatAngkaNumber(totalsewaunitoutdoor);
-            totalsewaunitoutdoor= notnullval(totalsewaunitoutdoor);
-
-            // vlog= totalsewaunitoutdoor + " - " + " ( "+(totalsewaunitoutdoordiskon / 100)+" * "+totalsewaunitoutdoor+" )";
-            // console.log(vlog);
-
-            totalsewaunitoutdoorafterdiskon= totalsewaunitoutdoor - ( (totalsewaunitoutdoordiskon / 100) * totalsewaunitoutdoor );
-            totalsewaunitoutdoorafterdiskon= setformat(totalsewaunitoutdoorafterdiskon);
-            $(this).closest('tr').find('.totalsewaunitoutdoorafterdiskon').val(totalsewaunitoutdoorafterdiskon);
-
-            // hitunghargasewa("totalsewaunitoutdoordiskon");
-
-            totalsewaunitoutdoorsewaluas= $(this).closest('tr').find('.totalsewaunitoutdoorsewaluas').val();
-            totalsewaunitoutdoorsewaluas= FormatAngkaNumber(totalsewaunitoutdoorsewaluas);
-            totalsewaunitoutdoorsewaluas= notnullval(totalsewaunitoutdoorsewaluas);
-
-            totalsewaunitoutdoorafterdiskon= $(this).closest('tr').find('.totalsewaunitoutdoorafterdiskon').val();
-            totalsewaunitoutdoorafterdiskon= FormatAngkaNumber(totalsewaunitoutdoorafterdiskon);
-            totalsewaunitoutdoorafterdiskon= notnullval(totalsewaunitoutdoorafterdiskon);
-
-            totalsewaunitoutdoorharga= totalsewaunitoutdoorafterdiskon * totalsewaunitoutdoorsewaluas;
-            totalsewaunitoutdoorharga= setformat(totalsewaunitoutdoorharga);
-            $(this).closest('tr').find('.totalsewaunitoutdoorharga').val(totalsewaunitoutdoorharga);
+            hitunghargasewa("totalsewaunitoutdoordiskon");
         });
 
+        $(".totalsewascindoordiskon").keyup(function() {
+            hitunghargasewa("totalsewascindoordiskon");
+        });
+
+        $(".totalsewascoutdoordiskon").keyup(function() {
+            hitunghargasewa("totalsewascoutdoordiskon");
+        });
+
+    });
+}
+
+function hapusgroupclass(vid)
+{
+    $.messager.confirm('Konfirmasi','Yakin menghapus data terpilih ?',function(r){
+        if (r){
+            $(".groupclass"+vid).remove();
+            hitungluas("totalluasoutdoor");
+            hitungluas("totalluasindoor");
+        }
     });
 }
 
@@ -693,22 +689,125 @@ function hitunghargasewa(vmode)
     vtotal= 0;
     vindex= 0;
     $("."+vmode).each(function(){
-        infoval= FormatAngkaNumber($(this).parents().find('.totalsewaunitindoorafterdiskon').val());
-        infoval= notnullval(infoval);
-        vtotal= parseFloat(vtotal) + parseFloat(infoval);
+        infoid= $(this).attr('id');
+        infoval= $(this).val();
+        infoval = infoval ? infoval : 0;
+        vdiskon= FormatAngkaNumber(infoval);
 
-        // console.log(vtotal);
-        vtotal= setformat(vtotal);
-
+        vawalharga= 0;
         if(vmode == "totalsewaunitindoordiskon")
         {
-            $(this).closest('tr').find('.totalsewaunitindoorharga').val(vtotal);
+            vawalharga= $(this).closest('tr').find('.totalsewaunitindoor').val();
         }
         else if(vmode == "totalsewaunitoutdoordiskon")
         {
-            $(this).closest('tr').find('.totalsewaunitoutdoorharga').val(vtotal);
+            vawalharga= $(this).closest('tr').find('.totalsewaunitoutdoor').val();
+        }
+        else if(vmode == "totalsewascindoordiskon")
+        {
+            vawalharga= $(this).closest('tr').find('.totalsewascindoor').val();
+        }
+        else if(vmode == "totalsewascoutdoordiskon")
+        {
+            vawalharga= $(this).closest('tr').find('.totalsewascoutdoor').val();
+        }
+
+        vawalharga= FormatAngkaNumber(vawalharga);
+        vawalharga= notnullval(vawalharga);
+
+        vafterdiskon= vawalharga - ( (vdiskon / 100) * vawalharga );
+
+        if(vmode == "totalsewaunitindoordiskon")
+        {
+            $(this).closest('tr').find('.totalsewaunitindoorafterdiskon').val(setformat(vafterdiskon));
+        }
+        else if(vmode == "totalsewaunitoutdoordiskon")
+        {
+            $(this).closest('tr').find('.totalsewaunitoutdoorafterdiskon').val(setformat(vafterdiskon));
+        }
+        else if(vmode == "totalsewascindoordiskon")
+        {
+            $(this).closest('tr').find('.totalsewascindoorafterdiskon').val(setformat(vafterdiskon));
+        }
+        else if(vmode == "totalsewascoutdoordiskon")
+        {
+            $(this).closest('tr').find('.totalsewascoutdoorafterdiskon').val(setformat(vafterdiskon));
+        }
+
+        if(vmode == "totalsewaunitindoordiskon" || "totalsewaunitoutdoordiskon")
+        {
+            vsewaluas= 0;
+            if(vmode == "totalsewaunitindoordiskon")
+            {
+                vsewaluas= $(this).closest('tr').find('.totalsewaunitindoorsewaluas').val();
+            }
+            else if(vmode == "totalsewaunitoutdoordiskon")
+            {
+                vsewaluas= $(this).closest('tr').find('.totalsewaunitoutdoorsewaluas').val();
+            }
+
+            vsewaluas= FormatAngkaNumber(vsewaluas);
+            vsewaluas= notnullval(vsewaluas);
+
+            vtotalharga= vafterdiskon * vsewaluas;
+            if(vmode == "totalsewaunitindoordiskon")
+            {
+                $(this).closest('tr').find('.totalsewaunitindoorharga').val(setformat(vtotalharga));
+            }
+            else if(vmode == "totalsewaunitoutdoordiskon")
+            {
+                $(this).closest('tr').find('.totalsewaunitoutdoorharga').val(setformat(vtotalharga));
+            }
         }
     });
+
+    vmodetotal= "";
+    if(vmode == "totalsewaunitindoordiskon")
+    {
+        vmodetotal= "totalsewaunitindoorharga";
+    }
+    else if(vmode == "totalsewaunitoutdoordiskon")
+    {
+        vmodetotal= "totalsewaunitoutdoorharga";
+    }
+    else if(vmode == "totalsewascindoordiskon")
+    {
+        vmodetotal= "totalsewascindoorafterdiskon";
+    }
+    else if(vmode == "totalsewascoutdoordiskon")
+    {
+        vmodetotal= "totalsewascoutdoorafterdiskon";
+    }
+
+    if(vmodetotal !== "")
+    {
+        vtotal= 0;
+        $("."+vmodetotal).each(function(){
+            infoval= $(this).val();
+            infoval = infoval ? infoval : 0;
+            infoval= FormatAngkaNumber(infoval);
+
+            vtotal= parseFloat(vtotal) + parseFloat(infoval);
+        });
+
+        vtotal= setformat(vtotal);
+        if(vmode == "totalsewaunitindoordiskon")
+        {
+            $("#reqHargaIndoorSewa").val(vtotal);
+        }
+        else if(vmode == "totalsewaunitoutdoordiskon")
+        {
+            $("#reqHargaOutdoorSewa").val(vtotal);
+        }
+        else if(vmode == "totalsewascindoordiskon")
+        {
+            $("#reqHargaIndoorService").val(vtotal);
+        }
+        else if(vmode == "totalsewascoutdoordiskon")
+        {
+            $("#reqHargaOutdoorService").val(vtotal);
+        }
+    }
 }
 
 function hitungluas(vmode)
@@ -726,7 +825,7 @@ function hitungluas(vmode)
         if(vmode == "totalluasindoor" || vmode == "totalluasoutdoor")
         {
             // $(this).parents().find('.valsetid').val(vindex);
-            $(this).closest('tr').find('.valsetid').val(vindex);
+            // $(this).closest('tr').find('.valsetid').val(vindex);
             vindex++;
         }
 
@@ -779,24 +878,18 @@ function submitPreview()
     parent.openAdd('app/loadUrl/report/template/?reqId=<?= $reqId ?>');
 }
 
-function submitForm(){
+function submitForm(reqStatusData){
     
-    $('#ff').form('submit',{
-        url:'web/lokasi_loo_detil_json/add',
-        onSubmit:function(){
-            // $("#reqKdLevel").val($("#reqKdLevelPilih").combotree("getValues")); 
-            // $("#reqNamaLevel").val($("#reqKdLevelPilih").combotree("getText")); 
+    $("#reqStatusData").val(reqStatusData);
 
-            // $("#reqKdLevelCabang").val($("#reqKdLevelCabangPilih").combotree("getValues")); 
-            // $("#reqNamaLevelCabang").val($("#reqKdLevelCabangPilih").combotree("getText")); 
-            
-            // $("#reqTipeNaskah").val($("#reqTipeNaskahPilih").combotree("getValues"));   
-            // $("#reqJenisTTD").val($("#reqJenisTTDPilih").combotree("getValues"));   
-            
+    $('#ff').form('submit',{
+        url:'web/trloo_json/add',
+        onSubmit:function(){
             return $(this).form('enableValidation').form('validate');
         },
         success:function(data){
-            $.messager.alertLink('Info', data, 'info', "main/index/lokasi_loo_detil");  
+            console.log(data);return false;
+            $.messager.alertLink('Info', data, 'info', "main/index/loo_add");
         }
     });
 }
@@ -820,5 +913,9 @@ function clearForm(){
 
     .labeltotal{
         width: 8%;
+    }
+
+    .labelsumtotal{
+        width: 40%;
     }
 </style>

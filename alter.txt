@@ -2,6 +2,7 @@ drop table if exists tr_loo;
 create table tr_loo
 (
 	tr_loo_id numeric not null
+	, status_data character varying
 	, produk_id integer
 	, customer_id integer
 	, lokasi_loo_id integer

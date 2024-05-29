@@ -200,13 +200,12 @@ class trloo_json extends CI_Controller
 	function add()
 	{
 		$this->load->model("TrLoo");
-		// $this->load->model("NaskahTemplate");
-		$trloo = new TrLoo();
-		// $naskah_template = new NaskahTemplate();
+		$this->load->model("TrLooDetil");
 
-		$reqMode 					= $this->input->post("reqMode");
-		$reqId 						= $this->input->post("reqId");
+		$reqMode= $this->input->post("reqMode");
+		$reqId= $this->input->post("reqId");
 
+		$reqStatusData= $this->input->post("reqStatusData");
 		$reqProdukId= $this->input->post("reqProdukId");
 		$reqCustomerId= $this->input->post("reqCustomerId");
 		$reqLokasiLooId= $this->input->post("reqLokasiLooId");
@@ -217,139 +216,70 @@ class trloo_json extends CI_Controller
 		$reqTotalDiscOutSewa= $this->input->post("reqTotalDiscOutSewa");
 		$reqTotalDiscInService= $this->input->post("reqTotalDiscInService");
 		$reqTotalDiscOutService= $this->input->post("reqTotalDiscOutService");
-		$reqHargaInSewa= $this->input->post("reqHargaInSewa");
-		$reqHargaOutSewa= $this->input->post("reqHargaOutSewa");
-		$reqHargaInService= $this->input->post("reqHargaInService");
-		$reqHargaOutService= $this->input->post("reqHargaOutService");
+		$reqHargaIndoorSewa= $this->input->post("reqHargaIndoorSewa");
+		$reqHargaOutdoorSewa= $this->input->post("reqHargaOutdoorSewa");
+		$reqHargaIndoorService= $this->input->post("reqHargaIndoorService");
+		$reqHargaOutdoorService= $this->input->post("reqHargaOutdoorService");
 		$reqDp= $this->input->post("reqDp");
 		$reqPeriodeSewa= $this->input->post("reqPeriodeSewa");
 
-		$reqLuasSewaIndoorId= $this->input->post("reqLuasSewaIndoorId");
-		$reqLuasSewaIndoor= $this->input->post("reqLuasSewaIndoor");
-		$reqLuasSewaIndoorLokId= $this->input->post("reqLuasSewaIndoorLokId");
-
-		$reqLuasSewaOutdoorId= $this->input->post("reqLuasSewaOutdoorId");
-		$reqLuasSewaOutdoor= $this->input->post("reqLuasSewaOutdoor");
-		$reqLuasSewaOutdoorLokId= $this->input->post("reqLuasSewaOutdoorLokId");
-
-
-		$reqIndoorTarifUnit= $this->input->post("reqIndoorTarifUnit");
-		$reqInTaUDisc= $this->input->post("reqInTaUDisc");
-		$reqTaSeSCIn= $this->input->post("reqTaSeSCIn");
-		$reqTaSeSCDisc= $this->input->post("reqTaSeSCDisc");
-
-
-		$trloo->setField("TR_LOO_ID", $reqId);
-		$trloo->setField("PRODUK_ID", ValToNullDB(dotToNo($reqProdukId));
-		$trloo->setField("CUSTOMER_ID", ValToNullDB(dotToNo($reqCustomerId));
-		$trloo->setField("LOKASI_LOO_ID", ValToNullDB(dotToNo($reqLokasiLooId));
-		$trloo->setField("TOTAL_LUAS_INDOOR", ValToNullDB(dotToNo($reqTotalLuasIndoor));
-		$trloo->setField("TOTAL_LUAS_OUTDOOR", ValToNullDB(dotToNo($reqTotalLuasOutdoor));
-		$trloo->setField("TOTAL_LUAS", ValToNullDB(dotToNo($reqTotalLuas));
-		$trloo->setField("TOTAL_DISKON_INDOOR_SEWA", ValToNullDB(dotToNo($reqTotalDiscInSewa));
-		$trloo->setField("TOTAL_DISKON_OUTDOOR_SEWA", ValToNullDB(dotToNo($reqTotalDiscOutSewa));
-		$trloo->setField("TOTAL_DISKON_INDOOR_SERVICE", ValToNullDB(dotToNo($reqTotalDiscInService));
-		$trloo->setField("TOTAL_DISKON_OUTDOOR_SERVICE", ValToNullDB(dotToNo($reqTotalDiscOutService));
-		$trloo->setField("HARGA_INDOOR_SEWA", ValToNullDB(dotToNo($reqHargaInSewa));
-		$trloo->setField("HARGA_OUTDOOR_SEWA", ValToNullDB(dotToNo($reqHargaOutSewa));
-		$trloo->setField("HARGA_INDOOR_SERVICE", ValToNullDB(dotToNo($reqHargaInService));
-		$trloo->setField("HARGA_OUTDOOR_SERVICE", ValToNullDB(dotToNo($reqHargaOutService));
-		$trloo->setField("DP", ValToNullDB(dotToNo($reqDp));
-		$trloo->setField("PERIODE_SEWA", $reqPeriodeSewa);
+		$set= new TrLoo();
+		$set->setField("TR_LOO_ID", $reqId);
+		$set->setField("PRODUK_ID", ValToNullDB($reqProdukId));
+		$set->setField("CUSTOMER_ID", ValToNullDB($reqCustomerId));
+		$set->setField("LOKASI_LOO_ID", ValToNullDB($reqLokasiLooId));
+		$set->setField("TOTAL_LUAS_INDOOR", ValToNullDB(dotToNo($reqTotalLuasIndoor)));
+		$set->setField("TOTAL_LUAS_OUTDOOR", ValToNullDB(dotToNo($reqTotalLuasOutdoor)));
+		$set->setField("TOTAL_LUAS", ValToNullDB(dotToNo($reqTotalLuas)));
+		$set->setField("TOTAL_DISKON_INDOOR_SEWA", ValToNullDB(dotToNo($req)));
+		$set->setField("TOTAL_DISKON_OUTDOOR_SEWA", ValToNullDB(dotToNo($req)));
+		$set->setField("TOTAL_DISKON_INDOOR_SERVICE", ValToNullDB(dotToNo($req)));
+		$set->setField("TOTAL_DISKON_OUTDOOR_SERVICE", ValToNullDB(dotToNo($req)));
+		$set->setField("HARGA_INDOOR_SEWA", ValToNullDB(dotToNo($reqHargaIndoorSewa)));
+		$set->setField("HARGA_OUTDOOR_SEWA", ValToNullDB(dotToNo($reqHargaOutdoorSewa)));
+		$set->setField("HARGA_INDOOR_SERVICE", ValToNullDB(dotToNo($reqHargaIndoorService)));
+		$set->setField("HARGA_OUTDOOR_SERVICE", ValToNullDB(dotToNo($reqHargaOutdoorService)));
+		$set->setField("DP", ValToNullDB(dotToNo($reqDp)));
+		$set->setField("PERIODE_SEWA", ValToNullDB(dotToNo($reqPeriodeSewa)));
+		$set->setField("LAST_CREATE_USER", $this->USERNAME);
+		$set->setField("LAST_UPDATE_USER", $this->USERNAME);
 
 		$reqSimpan="";
 		if ($reqMode == "insert") {
-			$trloo->setField("LAST_CREATE_USER", $this->USERNAME);
-			$trloo->insert();
 
-			$reqId= $trloo->id;
+			if($set->insert())
+			{
+				$reqSimpan=1;
+				$reqId= $set->id;
+			}
+		}
+		else 
+		{
+			if($set->update())
+			{
+				$reqSimpan=1;
+			}
 
-			$reqSimpan=1;
-		} else {
-			$trloo->setField("LAST_UPDATE_USER", $this->USERNAME);
-			$trloo->update();
-
-			$reqSimpan=1;
 		}
 
 		if ($reqSimpan==1) 
 		{
-			$trloodetil= new TrLooDetil();
-			if ($reqLuasSewaIndoor) 
-			{
-				for ($i=0; $i < count($reqLuasSewaIndoor); $i++) 
-				{ 
-					$trloodetil->setField("TR_LOO_DETIL_ID", $reqLuasSewaIndoorId[$i]);
-					$trloodetil->setField("TR_LOO_ID", $reqId);
-					$trloodetil->setField("VMODE", "Indoor");
-					$trloodetil->setField("VID", $reqLuasSewaIndoorLokId[$i]);
-					$trloodetil->setField("NILAI", ValToNullDB(dotToNo($reqLuasSewaIndoor[$i]));
-	  				$trloodetil->insert();
-				}
-			}
+			/*$setdetil= new TrLooDetil();
+			$setdetil->setField("TR_LOO_ID", $reqId);
+			$setdetil->delete();
 
-			$trloodetil= new TrLooDetil();
-			if ($reqLuasSewaOutdoor) 
-			{
-				for ($i=0; $i < count($reqLuasSewaOutdoor); $i++) 
-				{ 
-					$trloodetil->setField("TR_LOO_DETIL_ID", $reqLuasSewaOutdoorId[$i]);
-					$trloodetil->setField("TR_LOO_ID", $reqId);
-					$trloodetil->setField("VMODE", "Outdoor");
-					$trloodetil->setField("VID", $reqLuasSewaOutdoorLokId[$i]);
-					$trloodetil->setField("NILAI", ValToNullDB(dotToNo($reqLuasSewaOutdoor[$i]));
-	  				$trloodetil->insert();
-				}
-			}
-		}
-
-
-		echo "Data berhasil disimpan.";
-	}
-
-
-
-	function add_template()
-	{
-		$this->load->model("TrLoo");
-		$trloo = new TrLoo();
-
-		$reqMode 					= $this->input->post("reqMode");
-		$reqId 						= $this->input->post("reqId");
-
-
-		$this->load->library("FileHandler");
-		$file = new FileHandler();
-		$FILE_DIR = "uploads/";
-		$reqLinkFile 			= $_FILES["reqLinkFile"];
-		$reqLinkFileTempSize	=  $this->input->post("reqLinkFileTempSize");
-		$reqLinkFileTempTipe	=  $this->input->post("reqLinkFileTempTipe");
-		$reqLinkFileTemp		=  $this->input->post("reqLinkFileTemp");
-		$reqTrLooId		=  $this->input->post("reqTrLooId");
-
-		$trloo->setField("SATUAN_KERJA_ID", $reqId);
-		$trloo->deleteTemplate();
-
-		$reqJenis = "TEMPLATE" . generateZero($reqId, 4);
-		for ($i = 0; $i < count($reqLinkFile); $i++) {
-			$renameFile = $reqJenis . generateZero($reqTrLooId[$i], 4) . "." . getExtension($reqLinkFile['name'][$i]);
-
-			if ($file->uploadToDirArray('reqLinkFile', $FILE_DIR, $renameFile, $i)) {
-
-				$insertLinkSize = $file->uploadedSize;
-				$insertLinkTipe =  $file->uploadedExtension;
-				$insertLinkFile =  $renameFile;
-			} else
-				$insertLinkFile =  $reqLinkFileTemp[$i];
-
-			if ($reqTrLooId[$i] == "") {
-			} else {
-				$trloo->setField("SATUAN_KERJA_ID", $reqId);
-				$trloo->setField("CUSTOMER_ID", $reqTrLooId[$i]);
-				$trloo->setField("ATTACHMENT", $insertLinkFile);
-				$trloo->setField("LAST_CREATE_USER", $this->USERNAME);
-				$trloo->insertTemplate();
-			}
+			$vmode= $this->input->post("vmode");
+			$vid= $this->input->post("vid");
+			$vnilai= $this->input->post("vnilai");
+			
+			foreach ($vmode as $k => $v) {
+				$setdetil= new TrLooDetil();
+				$setdetil->setField("TR_LOO_ID", $reqId);
+				$setdetil->setField("VMODE", $v);
+				$setdetil->setField("VID", $vid[$k]);
+				$setdetil->setField("NILAI", ValToNullDB(dotToNo($vnilai[$k])));
+				$setdetil->insert();
+			}*/
 		}
 
 		echo "Data berhasil disimpan.";
@@ -371,116 +301,6 @@ class trloo_json extends CI_Controller
 		echo json_encode($arrJson);
 	}
 
-	function combo()
-	{
-		$this->load->model("TrLoo");
-		$trloo = new TrLoo();
 
-		$trloo->selectByParams(array("NOT CUSTOMER_ID" => "0"));
-		$i = 0;
-		while ($trloo->nextRow()) {
-			$arr_json[$i]['id']		= $trloo->getField("CUSTOMER_ID");
-			$arr_json[$i]['text']	= $trloo->getField("NAMA");
-			$arr_json[$i]['JENIS_TTD']	= $trloo->getField("JENIS_TTD");
-			$arr_json[$i]['PENERBIT_NOMOR']	= $trloo->getField("PENERBIT_NOMOR");
-			$i++;
-		}
-
-		echo json_encode($arr_json);
-	}
-
-
-	function combo_statement()
-	{
-		$this->load->model("TrLoo");
-		$trloo = new TrLoo();
-
-		$reqId = $this->input->get("reqId");
-		$reqKelompokJabatan = $this->input->get("reqKelompokJabatan");
-
-
-		$statement .= " AND TIPE_NASKAH LIKE '%" . $reqId . "%' ";
-
-		$arr_json = array();
-		$trloo->selectByParams(array("NOT CUSTOMER_ID" => "0"), -1, -1, $statement);
-		// echo $trloo->query;exit;
-		$i = 0;
-		while ($trloo->nextRow()) {
-			$arr_json[$i]['id']		= $trloo->getField("CUSTOMER_ID");
-			$arr_json[$i]['text']	= $trloo->getField("NAMA");
-			$arr_json[$i]['JENIS_TTD']	= $trloo->getField("JENIS_TTD");
-			$arr_json[$i]['PENERBIT_NOMOR']	= $trloo->getField("PENERBIT_NOMOR");
-
-			if ($this->CABANG_ID == "01") {
-				$arr_json[$i]['KD_LEVEL']	= $trloo->getField("KD_LEVEL");
-			} else {
-				$arr_json[$i]['KD_LEVEL']	= $trloo->getField("KD_LEVEL_CABANG");
-			}
-
-			$i++;
-		}
-
-		echo json_encode($arr_json);
-	}
-
-
-
-
-	function combo_request()
-	{
-		$this->load->model("TrLoo");
-		$trloo = new TrLoo();
-
-		$reqId = $this->input->get("reqId");
-
-
-		$statement = " AND TIPE_NASKAH LIKE '%" . $reqId . "%' ";
-		$statement .= " AND NOT COALESCE(NULLIF(KODE_SURAT, ''), 'X') = 'X' ";
-
-		$arr_json = array();
-		$trloo->selectByParams(array("NOT CUSTOMER_ID" => "0"), -1, -1, $statement);
-		$i = 0;
-		while ($trloo->nextRow()) {
-			$arr_json[$i]['id']		= $trloo->getField("CUSTOMER_ID");
-			$arr_json[$i]['text']	= $trloo->getField("NAMA");
-			$arr_json[$i]['PENERBIT_NOMOR']	= $trloo->getField("PENERBIT_NOMOR");
-			if ($this->CABANG_ID == "01")
-				$arr_json[$i]['KD_LEVEL']	= $trloo->getField("KD_LEVEL");
-			else
-				$arr_json[$i]['KD_LEVEL']	= $trloo->getField("KD_LEVEL_CABANG");
-			$i++;
-		}
-
-		echo json_encode($arr_json);
-	}
-
-
-	function combo_level()
-	{
-		$this->load->model("TrLoo");
-		$trloo = new TrLoo();
-
-		$reqId = $this->input->get("reqId");
-
-
-		$statement = " AND TIPE_NASKAH LIKE '%" . $reqId . "%' ";
-
-
-		$trloo->selectByParams(array("NOT CUSTOMER_ID" => "0"), -1, -1, $statement);
-		$i = 0;
-		$arr_json = array();
-		while ($trloo->nextRow()) {
-			$arr_json[$i]['id']		= $trloo->getField("CUSTOMER_ID");
-			$arr_json[$i]['text']	= $trloo->getField("NAMA");
-			if ($this->CABANG_ID == "01")
-				$arr_json[$i]['KD_LEVEL']	= $trloo->getField("KD_LEVEL");
-			else
-				$arr_json[$i]['KD_LEVEL']	= $trloo->getField("KD_LEVEL_CABANG");
-
-			$i++;
-		}
-
-		echo json_encode($arr_json);
-	}
 }
 

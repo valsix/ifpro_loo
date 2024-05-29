@@ -473,7 +473,7 @@ class combo_json extends CI_Controller {
 		$i = 0;
 
 		while($combo->nextRow()){
-			$arr_json[$i]['id']		= $combo->getField("LOKASI_LOO_ID");
+			$arr_json[$i]['id']		= $combo->getField("PRODUK_ID");
 			$arr_json[$i]['text']	= $combo->getField("NAMA");
 			$i++;
 		}

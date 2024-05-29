@@ -31,7 +31,7 @@ DESCRIPTION			:
 		$str = "
 		INSERT INTO tr_loo 
 		(
-			TR_LOO_ID, PRODUK_ID, CUSTOMER_ID, LOKASI_LOO_ID, TOTAL_LUAS_INDOOR, TOTAL_LUAS_OUTDOOR
+			TR_LOO_ID, STATUS_DATA, PRODUK_ID, CUSTOMER_ID, LOKASI_LOO_ID, TOTAL_LUAS_INDOOR, TOTAL_LUAS_OUTDOOR
 			, TOTAL_LUAS, TOTAL_DISKON_INDOOR_SEWA, TOTAL_DISKON_OUTDOOR_SEWA, TOTAL_DISKON_INDOOR_SERVICE
 			, TOTAL_DISKON_OUTDOOR_SERVICE, HARGA_INDOOR_SEWA, HARGA_OUTDOOR_SEWA, HARGA_INDOOR_SERVICE
 			, HARGA_OUTDOOR_SERVICE, DP, PERIODE_SEWA
@@ -39,6 +39,7 @@ DESCRIPTION			:
 		VALUES 
 		(
 			".$this->getField("TR_LOO_ID")."
+			, '".$this->getField("STATUS_DATA")."'
 			, ".$this->getField("PRODUK_ID")."
 			, ".$this->getField("CUSTOMER_ID")."
 			, ".$this->getField("LOKASI_LOO_ID")."
@@ -58,7 +59,7 @@ DESCRIPTION			:
 		)";
 		$this->id = $this->getField("TR_LOO_ID");
 		$this->query = $str;
-
+		// echo $str;exit;
 		return $this->execQuery($str);
     }
 
@@ -66,8 +67,9 @@ DESCRIPTION			:
 	{
 		$str = "
 		UPDATE tr_loo
-		SET   
-		PRODUK_ID= ".$this->getField("PRODUK_ID")."
+		SET
+		STATUS_DATA= '".$this->getField("STATUS_DATA")."'
+		, PRODUK_ID= ".$this->getField("PRODUK_ID")."
 		, CUSTOMER_ID= ".$this->getField("CUSTOMER_ID")."
 		, LOKASI_LOO_ID= ".$this->getField("LOKASI_LOO_ID")."
 		, TOTAL_LUAS_INDOOR= ".$this->getField("TOTAL_LUAS_INDOOR")."
