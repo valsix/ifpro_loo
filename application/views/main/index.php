@@ -1025,6 +1025,7 @@ include_once("functions/date.func.php");
                                 <a class="menu-utama" href="main/index/jenis_perusahaan">Jenis Perusahaan</a>
                                 <a class="menu-utama" href="main/index/customer">Customer</a>
                                 <a class="menu-utama" href="main/index/produk">Produk</a>
+                                <a class="menu-utama" href="main/index/utility_charge">Utility Charge</a>
                                 <a class="menu-utama" href="main/index/lokasi_loo">Lokasi</a>
                                 <a class="menu-utama" href="main/index/lokasi_loo_detil">Lokasi Detil</a>
                                 <!-- <a class="menu-utama" href="main/index/user_pengelola">User Pengelola</a> -->
