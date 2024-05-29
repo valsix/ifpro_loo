@@ -100,6 +100,27 @@ DESCRIPTION			:
 		$this->query = $str;
 		return $this->selectLimit($str,$limit,$from); 
     }
+
+    function selectlokasi($paramsArray=array(),$limit=-1,$from=-1,$statement="", $order=" ORDER BY A.VID ASC")
+	{
+		$str = "
+		SELECT
+		A1.KODE, A1.NAMA, A1.LANTAI
+		, A.*
+		FROM tr_loo_detil A
+		INNER JOIN lokasi_loo_detil A1 ON A.VID = A1.LOKASI_LOO_DETIL_ID
+		WHERE 1=1
+		"; 
+		
+		while(list($key,$val) = each($paramsArray))
+		{
+			$str .= " AND $key = '$val' ";
+		}
+		
+		$str .= $statement." ".$order;
+		$this->query = $str;
+		return $this->selectLimit($str,$limit,$from); 
+    }
 	
     /** 
     * Hitung jumlah record berdasarkan parameter (array). 

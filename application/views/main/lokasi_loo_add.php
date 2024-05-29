@@ -143,7 +143,7 @@ $(function(){
                             <td>Service Charge</td>
                             <td>:</td>
                             <td>
-                                <input type="text" id="reqServiceCharge" class="vlxuangclass easyui-validatebox textbox form-control totalluasoutdoor" required name="reqServiceCharge"  value="<?=$reqServiceCharge ?>" data-options="required:true" style="width:50%" /><label style="width: 8%;">Rp / m² / bulan</label>
+                                <input type="text" id="reqServiceCharge" class="vlxuangclass easyui-validatebox textbox form-control totalluasoutdoor" required name="reqServiceCharge"  value="<?=$reqServiceCharge ?>" data-options="required:true" style="width:10%; display: inline; text-align: right;" /><label style="width: 8%;"> Rp / m² / bulan</label>
                             </td>
                         </tr>
                         <tr>
