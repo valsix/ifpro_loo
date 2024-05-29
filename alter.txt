@@ -30,8 +30,10 @@ create table tr_loo_detil
 	, vmode character varying
 	, vid numeric
 	, nilai numeric
+	, keterangan character varying
 	, constraint pk_tr_loo_detil primary key (tr_loo_detil_id)
 );
+
 
 drop table if exists utility_charge;
 create table utility_charge

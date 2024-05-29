@@ -271,6 +271,7 @@ class trloo_json extends CI_Controller
 			$vmode= $this->input->post("vmode");
 			$vid= $this->input->post("vid");
 			$vnilai= $this->input->post("vnilai");
+			$vketerangan= $this->input->post("vketerangan");
 			
 			foreach ($vmode as $k => $v) {
 				$setdetil= new TrLooDetil();
@@ -278,11 +279,17 @@ class trloo_json extends CI_Controller
 				$setdetil->setField("VMODE", $v);
 				$setdetil->setField("VID", $vid[$k]);
 				$setdetil->setField("NILAI", ValToNullDB(dotToNo($vnilai[$k])));
+				$setdetil->setField("KETERANGAN", $vketerangan[$k]);
 				$setdetil->insert();
 			}
-		}
 
-		echo "Data berhasil disimpan.";
+			echo $reqId."xxxData berhasil disimpan.";
+		}
+		else
+		{
+			echo "xxxData gagal disimpan.";
+		}
+		
 	}
 
 	function delete()
