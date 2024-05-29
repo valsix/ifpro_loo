@@ -480,6 +480,23 @@ class combo_json extends CI_Controller {
 
 		echo json_encode($arr_json);
 	}
+
+	function comboUtilityCharge() 
+	{
+		$this->load->model("Combo");
+		$combo = new Combo();
+		$combo->comboUtilityCharge(array());
+		$i = 0;
+
+		while($combo->nextRow()){
+			$arr_json[$i]['id']		= $combo->getField("utility_charge_id");
+			$arr_json[$i]['text']	= $combo->getField("NAMA");
+			$i++;
+		}
+
+		echo json_encode($arr_json);
+	}
+	
 	
 		
 }

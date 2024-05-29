@@ -173,6 +173,22 @@ DESCRIPTION			:
 			return $this->selectLimit($str,$limit,$from); 
 	  }
 
+	  function comboUtilityCharge($paramsArray=array(),$limit=-1,$from=-1,$statement="", $order="")
+		{ 
+			$str = "
+			SELECT * from utility_charge WHERE 1 = 1
+			"; 
+			
+			while(list($key,$val) = each($paramsArray))
+			{
+				$str .= " AND $key = '$val' ";
+			}
+			
+			$str .= $statement." ".$order;
+			$this->query = $str;
+			return $this->selectLimit($str,$limit,$from); 
+	  }
+
    
   } 
 ?>

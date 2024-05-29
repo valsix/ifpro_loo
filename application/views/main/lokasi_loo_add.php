@@ -23,6 +23,8 @@ else
     $reqNama= $lokasi_loo->getField("NAMA");
     $reqServiceCharge= currencyToPage($lokasi_loo->getField("SERVICE_CHARGE"), false);
     $reqDeskripsi= $lokasi_loo->getField("DESKRIPSI");
+    $reqUtilityCharge= $lokasi_loo->getField("Utility_Charge");
+    $reqUtilityChargeId= $lokasi_loo->getField("Utility_Charge");
     
 }
 ?>
@@ -143,7 +145,8 @@ $(function(){
                             <td>Service Charge</td>
                             <td>:</td>
                             <td>
-                                <input type="text" id="reqServiceCharge" class="vlxuangclass easyui-validatebox textbox form-control totalluasoutdoor" required name="reqServiceCharge"  value="<?=$reqServiceCharge ?>" data-options="required:true" style="width:10%; display: inline; text-align: right;" /><label style="width: 8%;"> Rp / m² / bulan</label>
+                                <input type="text" id="reqServiceCharge" class="vlxuangclass easyui-validatebox textbox form-control totalluasoutdoor" required name="reqServiceCharge"  value="<?=$reqServiceCharge ?>" data-options="required:true" style="width:10%; display: inline; text-align: right;" />
+                                <label> Rp / m² / bulan</label>
                             </td>
                         </tr>
                         <tr>
@@ -153,6 +156,29 @@ $(function(){
                                 <textarea name="reqDeskripsi" class="easyui-validatebox textbox form-control" style="width:90%; height:100px"><?=$reqDeskripsi ?></textarea>
                             </td>
                         </tr>
+                        <tr>
+                            <td>Utility Charge</td>
+                            <td>:</td>
+                            <td>
+                                <?
+                                $reqUtilityCharge = str_replace(",", "','", $reqUtilityCharge);
+                                ?>
+                                <input type="text" name="reqUtilityCharge" class="easyui-combotree"  id="reqUtilityCharge" 
+                                        data-options="width:'300',valueField:'id',
+                                        textField:'text', editable:false,url:'combo_json/comboUtilityCharge',multiple:true,value:['<?=$reqUtilityCharge?>'],
+                                            onClick: function(node){
+                                                var values= $('#reqUtilityCharge').combotree('getValues');
+                                                // $('#reqUserGroupId').val(rec.id);
+                                                $('#reqUtilityChargeId').val(values);
+                                            },
+                                            onCheck: function(node, checked){
+                                                var values= $('#reqUtilityCharge').combotree('getValues');
+                                                // $('#reqUserGroupId').val(rec.id);
+                                                $('#reqUtilityChargeId').val(values);
+                                            }" required />
+                                <input type="hidden" name="reqUtilityChargeId" id="reqUtilityChargeId"   value="<?=$reqUtilityChargeId?>">
+                            </td>
+                        </tr> 
                     </thead>
                 </table>
 

@@ -215,6 +215,7 @@ class lokasi_loo_json extends CI_Controller
 		$reqNama= $this->input->post("reqNama");
 		$reqServiceCharge= $this->input->post("reqServiceCharge");
 		$reqDeskripsi= $this->input->post("reqDeskripsi");
+		$reqUtilityChargeId= $this->input->post("reqUtilityChargeId");
 
 
 		$set->setField("LOKASI_LOO_ID", $reqId);
@@ -222,13 +223,25 @@ class lokasi_loo_json extends CI_Controller
 		$set->setField("NAMA", $reqNama);
 		$set->setField("SERVICE_CHARGE", dotToNo($reqServiceCharge));
 		$set->setField("DESKRIPSI", $reqDeskripsi);
+		$set->setField("Utility_Charge", $reqUtilityChargeId);
 
 		if ($reqMode == "insert") {
 			$set->setField("LAST_CREATE_USER", $this->USERNAME);
 			$set->insert();
+			$reqId= $set->pegawai_id;
 		} else {
 			$set->setField("LAST_UPDATE_USER", $this->USERNAME);
 			$set->update();
+		}
+
+		$reqUtilityChargeIdPecah=explode(',', $reqUtilityChargeId);
+
+		$set->deleteUtilityCharge();
+		// print_r($reqUtilityChargeId);exit;
+		for($i=0;$i<count($reqUtilityChargeIdPecah);$i++){
+			$set->setField("Utility_Charge_id", $reqUtilityChargeIdPecah[$i]);
+			$set->setField("LOKASI_LOO_ID", $reqId);
+			$set->insertUtilityCharge();
 		}
 
 		echo "Data berhasil disimpan.";

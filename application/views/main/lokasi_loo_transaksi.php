@@ -281,11 +281,36 @@ $('#btnAdd').on('click', function() {
         </td>
         <td> <input type="text" name="reqMin[]" class="easyui-validatebox textbox form-control" oninput="this.value = this.value.replace(/[^0-9.]/g, '')"/></td>
         <td> <input type="text" name="reqMax[]" class="easyui-validatebox textbox form-control" oninput="this.value = this.value.replace(/[^0-9.]/g, '')"/></td>
-        <td> <input type="text" name="reqNilai[]" class="easyui-validatebox textbox form-control" oninput="this.value = this.value.replace(/[^0-9.]/g, '')"/></td>
+        <td> <input type="text" name="reqNilai[]" class="vlxuangclass easyui-validatebox textbox form-control"/></td>
     </tr>
     `;
 
    $('#myTable tr:last').after(table);
+
+   var vlxformat = function(num){
+        var str = num.toString().replace("", ""), parts = false, output = [], i = 1, formatted = null;
+        if(str.indexOf(",") > 0) {
+            parts = str.split(",");
+            str = parts[0];
+        }
+        str = str.split("").reverse();
+        for(var j = 0, len = str.length; j < len; j++) {
+            if(str[j] != ".") {
+                output.push(str[j]);
+                if(i%3 == 0 && j < (len - 1)) {
+                    output.push(".");
+                }
+                i++;
+            }
+        }
+        formatted = output.reverse().join("");
+        return( formatted + ((parts) ? "," + parts[1].substr(0, 2) : ""));
+    };
+
+    $('.vlxuangclass').bind('keyup paste', function(){
+       var numeric = this.value.replace(/[^0-9\,]/g, '');
+       $(this).val(vlxformat(numeric));
+    });
 
 });
 

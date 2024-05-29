@@ -31,16 +31,37 @@ DESCRIPTION			:
 		// $this->setField("LOKASI_LOO_ID", $this->getNextId("LOKASI_LOO_ID","LOKASI_LOO")); 
 		$str = "
 				INSERT INTO LOKASI_LOO (
-				   KODE, NAMA, SERVICE_CHARGE, DESKRIPSI
+				   KODE, NAMA, SERVICE_CHARGE, DESKRIPSI,Utilitu_Charge
 				   ) 
 				VALUES (
 					'".$this->getField("KODE")."', 
 					'".$this->getField("NAMA")."', 
 					'".$this->getField("SERVICE_CHARGE")."', 
-					'".$this->getField("DESKRIPSI")."'
+					'".$this->getField("DESKRIPSI")."',
+					'".$this->getField("Utilitu_Charge")."'
 				)"; 
 		$this->id = $this->getField("LOKASI_LOO_ID");
 		$this->query = $str;
+
+		return $this->execQuery($str);
+    }
+
+  function insertUtilityCharge()
+	{
+		/*Auto-generate primary key(s) by next max value (integer) */
+		$this->setField("LOO_UTILITY_CHARGE_ID", $this->getNextId("LOO_UTILITY_CHARGE_ID","LOO_UTILITY_CHARGE")); 
+		$str = "
+				INSERT INTO LOO_UTILITY_CHARGE (
+				   LOO_UTILITY_CHARGE_ID, Utility_Charge_id, LOKASI_LOO_ID
+				   ) 
+				VALUES (
+					'".$this->getField("LOO_UTILITY_CHARGE_ID")."', 
+					'".$this->getField("Utility_Charge_id")."', 
+					'".$this->getField("LOKASI_LOO_ID")."'
+				)"; 
+		$this->id = $this->getField("LOO_UTILITY_CHARGE_ID");
+		$this->query = $str;
+		// echo $str;exit;
 
 		return $this->execQuery($str);
     }
@@ -66,6 +87,7 @@ DESCRIPTION			:
 					   KODE      	= '".$this->getField("KODE")."',
 					   NAMA      	= '".$this->getField("NAMA")."',
 					   SERVICE_CHARGE      	= '".$this->getField("SERVICE_CHARGE")."',
+					   Utility_Charge      	= '".$this->getField("Utility_Charge")."',
 					   DESKRIPSI		= '".$this->getField("DESKRIPSI")."'
 				WHERE  LOKASI_LOO_ID    	= '".$this->getField("LOKASI_LOO_ID")."'
 				"; 
@@ -88,6 +110,16 @@ DESCRIPTION			:
 	function delete()
 	{
         $str = "DELETE FROM LOKASI_LOO
+                WHERE 
+                  LOKASI_LOO_ID = ".$this->getField("LOKASI_LOO_ID").""; 
+				  
+		$this->query = $str;
+        return $this->execQuery($str);
+    }
+
+    function deleteUtilityCharge()
+	{
+        $str = "DELETE FROM LOO_UTILITY_CHARGE
                 WHERE 
                   LOKASI_LOO_ID = ".$this->getField("LOKASI_LOO_ID").""; 
 				  
