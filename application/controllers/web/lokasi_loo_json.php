@@ -234,6 +234,50 @@ class lokasi_loo_json extends CI_Controller
 		echo "Data berhasil disimpan.";
 	}
 
+	function addTransksi()
+	{
+		$this->load->model("LokasiLooTransaksi");
+
+		$set = new LokasiLooTransaksi();
+		
+		$reqId= $this->input->post("reqId");
+
+		$reqArea= $this->input->post("reqArea");
+		$reqLantai= $this->input->post("reqLantai");
+		$reqMin= $this->input->post("reqMin");
+		$reqMax= $this->input->post("reqMax");
+		$reqNilai= $this->input->post("reqNilai");
+		$reqLantaiLooDetilId= $this->input->post("reqLantaiLooDetilId");
+		// print_r($reqArea); exit;
+		for($i=0;$i<count($reqArea);$i++){
+			$set->setField("LOKASI_LOO_ID", $reqId);
+			$set->setField("AREA", $reqArea[$i]);
+			$set->setField("LANTAI_LOO_ID", ValToNullDB($reqLantai[$i]));
+			$set->setField("AWAL", ValToNullDB($reqMin[$i]));
+			$set->setField("AKHIR", ValToNullDB($reqMax[$i]));
+			$set->setField("NILAI", ValToNullDB($reqNilai[$i]));
+			if($reqLantaiLooDetilId[$i]==''){
+				$set->insert();
+			}
+			else
+			{
+				$set->setField("Lantai_Loo_Detil_Id", $reqLantaiLooDetilId[$i]);
+				$set->update();
+			}
+		}
+
+
+		// if ($reqMode == "insert") {
+		// 	$set->setField("LAST_CREATE_USER", $this->USERNAME);
+		// 	$set->insert();
+		// } else {
+		// 	$set->setField("LAST_UPDATE_USER", $this->USERNAME);
+		// 	$set->update();
+		// }
+
+		echo "Data berhasil disimpan.";
+	}
+
 
 
 	function add_template()
@@ -290,6 +334,22 @@ class lokasi_loo_json extends CI_Controller
 
 
 		$set->setField("LOKASI_LOO_ID", $reqId);
+		if ($set->delete())
+			$arrJson["PESAN"] = "Data berhasil dihapus.";
+		else
+			$arrJson["PESAN"] = "Data gagal dihapus.";
+
+		echo json_encode($arrJson);
+	}
+
+	function deleteTransaksi()
+	{
+		$reqId	= $this->input->get('reqId');
+		$this->load->model("LokasiLooTransaksi");
+		$set = new LokasiLooTransaksi();
+
+
+		$set->setField("LANTAI_LOO_DETIL_id", $reqId);
 		if ($set->delete())
 			$arrJson["PESAN"] = "Data berhasil dihapus.";
 		else

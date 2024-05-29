@@ -140,6 +140,18 @@ $tinggi = 360;
 				$('div.flexoverlay').css('display', 'none')
 			});
 
+			$('#btnTransaksi').on('click', function() {
+				if (anSelectedData == "")
+					return false;
+				<?php /*?>window.parent.openPopup("<?=base_url()?>app/loadUrl/main/<?=$reqFilename?>_transaksi/?reqId="+anSelectedId);<?php */ ?>
+				window.location = ("<?= base_url() ?>main/index/<?= $reqFilename ?>_transaksi/?reqId=" + anSelectedId);
+
+
+				// tutup flex dropdown => untuk versi mobile
+				$('div.flexmenumobile').hide()
+				$('div.flexoverlay').css('display', 'none')
+			});
+
 			$('#btnDelete').on('click', function() {
 				if (anSelectedData == "") {
 					alert("Pilih data terlebih dahulu!");
@@ -212,6 +224,7 @@ $tinggi = 360;
 					<a id="btnAdd" title="Tambah"><img src="<?= base_url() ?>images/icon-tambah.png" /> Tambah</a>
 					<a id="btnEdit" title="Ubah"><img src="<?= base_url() ?>images/icon-edit.png" /> Ubah</a>
 					<a id="btnDelete" title="Hapus"><img src="<?= base_url() ?>images/icon-hapus.png" /> Hapus</a>
+					<a id="btnTransaksi" title="Transaksi"><img src="<?= base_url() ?>images/icon-course.png" /> Tranksi</a>
 				</li>
 			</ul>
 		</div>
