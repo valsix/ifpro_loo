@@ -264,7 +264,7 @@ class trloo_json extends CI_Controller
 
 		if ($reqSimpan==1) 
 		{
-			/*$setdetil= new TrLooDetil();
+			$setdetil= new TrLooDetil();
 			$setdetil->setField("TR_LOO_ID", $reqId);
 			$setdetil->delete();
 
@@ -279,7 +279,7 @@ class trloo_json extends CI_Controller
 				$setdetil->setField("VID", $vid[$k]);
 				$setdetil->setField("NILAI", ValToNullDB(dotToNo($vnilai[$k])));
 				$setdetil->insert();
-			}*/
+			}
 		}
 
 		echo "Data berhasil disimpan.";

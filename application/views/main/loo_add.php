@@ -8,6 +8,7 @@ $this->load->model("TrLooDetil");
 
 $reqId= $this->input->get("reqId");
 
+$arrdetil= $arrlokasi= [];
 if(empty($reqId))
 {
     $reqMode= "insert";
@@ -22,26 +23,60 @@ else
     $reqProdukId= $set->getField("PRODUK_ID");
     $reqCustomerId= $set->getField("CUSTOMER_ID");
     $reqLokasiLooId= $set->getField("LOKASI_LOO_ID");
+    $reqTotalLuasIndoor= $set->getField("TOTAL_LUAS_INDOOR");
+    $reqTotalLuasOutdoor= $set->getField("TOTAL_LUAS_OUTDOOR");
+    $reqTotalLuas= $set->getField("TOTAL_LUAS");
+    $reqHargaIndoorSewa= $set->getField("HARGA_INDOOR_SEWA");
+    $reqHargaOutdoorSewa= $set->getField("HARGA_OUTDOOR_SEWA");
+    $reqHargaIndoorService= $set->getField("HARGA_INDOOR_SERVICE");
+    $reqHargaOutdoorService= $set->getField("HARGA_OUTDOOR_SERVICE");
 
     /*
-    
-        $set->setField("TOTAL_LUAS_INDOOR", ValToNullDB(dotToNo($reqTotalLuasIndoor)));
-        $set->setField("TOTAL_LUAS_OUTDOOR", ValToNullDB(dotToNo($reqTotalLuasOutdoor)));
-        $set->setField("TOTAL_LUAS", ValToNullDB(dotToNo($reqTotalLuas)));
+
         $set->setField("TOTAL_DISKON_INDOOR_SEWA", ValToNullDB(dotToNo($req)));
         $set->setField("TOTAL_DISKON_OUTDOOR_SEWA", ValToNullDB(dotToNo($req)));
         $set->setField("TOTAL_DISKON_INDOOR_SERVICE", ValToNullDB(dotToNo($req)));
         $set->setField("TOTAL_DISKON_OUTDOOR_SERVICE", ValToNullDB(dotToNo($req)));
-        $set->setField("HARGA_INDOOR_SEWA", ValToNullDB(dotToNo($reqHargaIndoorSewa)));
-        $set->setField("HARGA_OUTDOOR_SEWA", ValToNullDB(dotToNo($reqHargaOutdoorSewa)));
-        $set->setField("HARGA_INDOOR_SERVICE", ValToNullDB(dotToNo($reqHargaIndoorService)));
-        $set->setField("HARGA_OUTDOOR_SERVICE", ValToNullDB(dotToNo($reqHargaOutdoorService)));
         $set->setField("DP", ValToNullDB(dotToNo($reqDp)));
         $set->setField("PERIODE_SEWA", ValToNullDB(dotToNo($reqPeriodeSewa)));*/
-    
-}
-?>
 
+    $statement= " AND A.TR_LOO_ID = ".$reqId." AND VMODE ILIKE '%luas_sewa%'";
+    $set= new TrLooDetil();
+    $set->selectlokasi(array(), -1,-1, $statement);
+    while($set->nextRow())
+    {
+        $arrdata= [];
+        $arrdata["rowdetilid"]= $set->getField("TR_LOO_DETIL_ID");
+        $arrdata["rowid"]= $set->getField("TR_LOO_ID");
+        $arrdata["vmode"]= $set->getField("VMODE");
+        $arrdata["vid"]= $set->getField("VID");
+        $arrdata["vnilai"]= $set->getField("NILAI");
+        $arrdata["kode"]= $set->getField("KODE");
+        $arrdata["nama"]= $set->getField("NAMA");
+        $arrdata["lantai"]= $set->getField("LANTAI");
+        array_push($arrlokasi, $arrdata);
+    }
+
+    $statement= " AND A.TR_LOO_ID = ".$reqId;
+    $set= new TrLooDetil();
+    $set->selectByParams(array(), -1,-1, $statement);
+    while($set->nextRow())
+    {
+        $valid= $set->getField("VID");
+        $valmode= $set->getField("VMODE");
+        $arrdata= [];
+        $arrdata["keyrowdetil"]= $valid."-".$valmode;
+        $arrdata["rowdetilid"]= $set->getField("TR_LOO_DETIL_ID");;
+        $arrdata["rowid"]= $set->getField("TR_LOO_ID");
+        $arrdata["vmode"]= $valmode;
+        $arrdata["vid"]= $valid;
+        $arrdata["vnilai"]= $set->getField("NILAI");
+        array_push($arrdetil, $arrdata);
+    }
+}
+// print_r($arrlokasi);exit;
+// print_r($arrdetil);exit;
+?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -202,13 +237,38 @@ $(function(){
                                 <td style="width: 50%">
                                     <table class="table">
                                         <tbody id="luassewaindoor">
-                                            
+                                            <?
+                                            foreach ($arrlokasi as $k => $v)
+                                            {
+                                                $vkeyid= $v["rowdetilid"];
+                                                // $vlabel= $v["kode"]." - ".$v["nama"];
+                                                $vlabel= $v["kode"]." - ".$v["lantai"];
+                                                $vnilai= $v["vnilai"];
+                                                $vmode= $v["vmode"];
+                                                if($vmode == "luas_sewa_indoor")
+                                                {
+                                            ?>
+                                            <tr class="groupclass<?=$vkeyid?>">
+                                                <td>
+                                                    <?=$vlabel?> <i style="cursor:pointer" class="fa fa-times-circle text-danger" aria-hidden="true" onclick="hapusgroupclass('<?=$vkeyid?>');"></i>
+                                                </td>
+                                                <td>:</td>
+                                                <td style="width:30%">
+                                                    <input type="hidden" name="vmode[]" value="luas_sewa_indoor" />
+                                                    <input type="hidden" name="vid[]" class="valsetid" value="<?=$vkeyid?>" />
+                                                    <input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control totalluasindoor" name="vnilai[]" placeholder="Isi Luas (m2)" data-options="required:true" style="width:85%; display: inline; text-align: right;" value="<?=numberToIna($vnilai)?>" /> <label class="labeltotal">m2</label>'
+                                                </td>
+                                            </tr>
+                                            <?
+                                                }
+                                            }
+                                            ?>
                                         </tbody>
                                         <tfoot>
                                             <tr>
                                                 <td colspan="2" style="text-align: right;">Total Luas Indoor</td>
                                                 <td style="width: 20%">
-                                                    <input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control" name="reqTotalLuasIndoor" id="reqTotalLuasIndoor" style="width:85%; display: inline; text-align: right;" value="<?=$reqTotalLuasIndoor?>" /> <label class="labeltotal">m2</label>
+                                                    <input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control" name="reqTotalLuasIndoor" id="reqTotalLuasIndoor" style="width:85%; display: inline; text-align: right;" value="<?=numberToIna($reqTotalLuasIndoor)?>" /> <label class="labeltotal">m2</label>
                                                 </td>
                                             </tr>
                                         </tfoot>
@@ -217,13 +277,38 @@ $(function(){
                                 <td style="width: 50%">
                                     <table class="table">
                                         <tbody id="luassewaoutdoor">
-                                            
+                                            <?
+                                            foreach ($arrlokasi as $k => $v)
+                                            {
+                                                $vkeyid= $v["rowdetilid"];
+                                                // $vlabel= $v["kode"]." - ".$v["nama"];
+                                                $vlabel= $v["kode"]." - ".$v["lantai"];
+                                                $vnilai= $v["vnilai"];
+                                                $vmode= $v["vmode"];
+                                                if($vmode == "luas_sewa_outdoor")
+                                                {
+                                            ?>
+                                            <tr class="groupclass<?=$vkeyid?>">
+                                                <td>
+                                                    <?=$vlabel?> <i style="cursor:pointer" class="fa fa-times-circle text-danger" aria-hidden="true" onclick="hapusgroupclass('<?=$vkeyid?>');"></i>
+                                                </td>
+                                                <td>:</td>
+                                                <td style="width:30%">
+                                                    <input type="hidden" name="vmode[]" value="luas_sewa_outdoor" />
+                                                    <input type="hidden" name="vid[]" class="valsetid" value="<?=$vkeyid?>" />
+                                                    <input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control totalluasoutdoor" name="vnilai[]" placeholder="Isi Luas (m2)" data-options="required:true" style="width:85%; display: inline; text-align: right;" value="<?=numberToIna($vnilai)?>" /> <label class="labeltotal">m2</label>'
+                                                </td>
+                                            </tr>
+                                            <?
+                                                }
+                                            }
+                                            ?>
                                         </tbody>
                                         <tfoot>
                                             <tr>
                                                 <td colspan="2" style="text-align: right;">Total Luas Outdoor</td>
                                                 <td style="width: 20%">
-                                                    <input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control" name="reqTotalLuasOutdoor" id="reqTotalLuasOutdoor" style="width:85%; display: inline; text-align: right;" value="<?=$reqTotalLuasOutdoor?>" /> <label class="labeltotal">m2</label>
+                                                    <input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control" name="reqTotalLuasOutdoor" id="reqTotalLuasOutdoor" style="width:85%; display: inline; text-align: right;" value="<?=numberToIna($reqTotalLuasOutdoor)?>" /> <label class="labeltotal">m2</label>
                                                 </td>
                                             </tr>
                                         </tfoot>
@@ -233,7 +318,7 @@ $(function(){
                             <tr>
                                 <td colspan="2" style="text-align: right;">
                                     Total Luas Sewa
-                                    <input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control" name="reqTotalLuas" id="reqTotalLuas" style="width:15%; display: inline; text-align: right;" value="<?=$reqTotalLuas?>" /> <label class="labeltotal">m2</label>
+                                    <input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control" name="reqTotalLuas" id="reqTotalLuas" style="width:15%; display: inline; text-align: right;" value="<?=numberToIna($reqTotalLuas)?>" /> <label class="labeltotal">m2</label>
                                 </td>
                             </tr>
                         </tbody>
@@ -264,6 +349,92 @@ $(function(){
                                                 <td class="tdcolor" style="width: 29%">Tarif (after discount)</td>
                                                 <td class="tdcolor" style="width: 29%">Harga Sewa</td>
                                             </tr>
+                                            <?
+                                            foreach ($arrlokasi as $k => $v)
+                                            {
+                                                $vkeyid= $v["rowdetilid"];
+                                                // $vlabel= $v["kode"]." - ".$v["nama"];
+                                                $vlabel= $v["kode"]." - ".$v["lantai"];
+                                                $vluas= $v["vnilai"];
+                                                $vmode= $v["vmode"];
+                                                if($vmode == "luas_sewa_indoor")
+                                                {
+                                            ?>
+                                            <tr class="groupclass<?=$vkeyid?>">
+                                                <td colspan="4"><?=$vlabel?></td>
+                                            </tr>
+                                            <tr class="groupclass<?=$vkeyid?>">
+                                                <td>
+                                                    <?
+                                                    $valnilai= 0;
+                                                    $valmode= "tarif_sewa_unit_indoor";
+                                                    $infocarikey= $vkeyid."-".$valmode;
+                                                    $arrkondisicheck= in_array_column($infocarikey, "keyrowdetil", $arrdetil);
+                                                    if(!empty($arrkondisicheck))
+                                                    {
+                                                        $vindex= $arrkondisicheck[0];
+                                                        $valnilai= $arrdetil[$vindex]["vnilai"];
+                                                    }
+                                                    ?>
+                                                    <input type="hidden" name="vmode[]" value="<?=$valmode?>" />
+                                                    <input type="hidden" name="vid[]" class="valsetid" value="<?=$vkeyid?>" />
+                                                    <input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control totalsewaunitindoor" name="vnilai[]" placeholder="Isi Rp/m2" data-options="required:true" style="width:65%; display: inline; text-align: right;" value="<?=numberToIna($valnilai)?>" /> <label class="labeltotal">Rp/m2</label>
+                                                </td>
+                                                <td>
+                                                    <?
+                                                    $valnilai= 0;
+                                                    $valmode= "tarif_sewa_unit_indoor_diskon";
+                                                    $infocarikey= $vkeyid."-".$valmode;
+                                                    $arrkondisicheck= in_array_column($infocarikey, "keyrowdetil", $arrdetil);
+                                                    if(!empty($arrkondisicheck))
+                                                    {
+                                                        $vindex= $arrkondisicheck[0];
+                                                        $valnilai= $arrdetil[$vindex]["vnilai"];
+                                                    }
+                                                    ?>
+                                                    <input type="hidden" name="vmode[]" value="<?=$valmode?>" />
+                                                    <input type="hidden" name="vid[]" class="valsetid" value="<?=$vkeyid?>" />
+                                                    <input type="text" class="vlxuangclass easyui-validatebox textbox form-control totalsewaunitindoordiskon" name="vnilai[]" placeholder="Isi %" data-options="required:true" style="width:65%; display: inline; text-align: right;" value="<?=numberToIna($valnilai)?>" /> <label class="labeltotal">%</label>
+                                                </td>
+                                                <td>
+                                                    <?
+                                                    $valnilai= 0;
+                                                    $valmode= "tarif_sewa_unit_indoor_after_diskon";
+                                                    $infocarikey= $vkeyid."-".$valmode;
+                                                    $arrkondisicheck= in_array_column($infocarikey, "keyrowdetil", $arrdetil);
+                                                    if(!empty($arrkondisicheck))
+                                                    {
+                                                        $vindex= $arrkondisicheck[0];
+                                                        $valnilai= $arrdetil[$vindex]["vnilai"];
+                                                    }
+                                                    ?>
+                                                    <input type="hidden" name="vmode[]" value="<?=$valmode?>" />
+                                                    <input type="hidden" name="vid[]" class="valsetid" value="<?=$vkeyid?>" />
+                                                    <input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control totalsewaunitindoorafterdiskon" name="vnilai[]" placeholder="Isi Rp/m2" data-options="required:true" style="width:65%; display: inline; text-align: right;" value="<?=numberToIna($valnilai)?>" /> <label class="labeltotal">Rp/m2</label>
+                                                </td>
+                                                <td>
+                                                    <?
+                                                    $valnilai= 0;
+                                                    $valmode= "tarif_sewa_unit_indoor_harga";
+                                                    $infocarikey= $vkeyid."-".$valmode;
+                                                    $arrkondisicheck= in_array_column($infocarikey, "keyrowdetil", $arrdetil);
+                                                    if(!empty($arrkondisicheck))
+                                                    {
+                                                        $vindex= $arrkondisicheck[0];
+                                                        $valnilai= $arrdetil[$vindex]["vnilai"];
+                                                    }
+                                                    ?>
+                                                    <input type="hidden" name="vmode[]" value="<?=$valmode?>" />
+                                                    <input type="hidden" name="vid[]" class="valsetid" value="<?=$vkeyid?>" />
+                                                    <input type="hidden" class="totalsewaunitindoorsewaluas" value="<?=$vluas?>" />
+                                                    <input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control totalsewaunitindoorharga" name="vnilai[]" style="display: inline; text-align: right;" value="<?=numberToIna($valnilai)?>" />
+                                                </td>
+                                            </tr>
+                                            <?
+                                                }
+                                            }
+                                            ?>
+
                                         </tbody>
                                     </table>
                                 </td>
@@ -276,6 +447,91 @@ $(function(){
                                                 <td class="tdcolor" style="width: 29%">Tarif (after discount)</td>
                                                 <td class="tdcolor" style="width: 29%">Harga Sewa</td>
                                             </tr>
+                                            <?
+                                            foreach ($arrlokasi as $k => $v)
+                                            {
+                                                $vkeyid= $v["rowdetilid"];
+                                                // $vlabel= $v["kode"]." - ".$v["nama"];
+                                                $vlabel= $v["kode"]." - ".$v["lantai"];
+                                                $vluas= $v["vnilai"];
+                                                $vmode= $v["vmode"];
+                                                if($vmode == "luas_sewa_outdoor")
+                                                {
+                                            ?>
+                                            <tr class="groupclass<?=$vkeyid?>">
+                                                <td colspan="4"><?=$vlabel?></td>
+                                            </tr>
+                                            <tr class="groupclass<?=$vkeyid?>">
+                                                <td>
+                                                    <?
+                                                    $valnilai= 0;
+                                                    $valmode= "tarif_sewa_unit_outdoor";
+                                                    $infocarikey= $vkeyid."-".$valmode;
+                                                    $arrkondisicheck= in_array_column($infocarikey, "keyrowdetil", $arrdetil);
+                                                    if(!empty($arrkondisicheck))
+                                                    {
+                                                        $vindex= $arrkondisicheck[0];
+                                                        $valnilai= $arrdetil[$vindex]["vnilai"];
+                                                    }
+                                                    ?>
+                                                    <input type="hidden" name="vmode[]" value="<?=$valmode?>" />
+                                                    <input type="hidden" name="vid[]" class="valsetid" value="<?=$vkeyid?>" />
+                                                    <input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control totalsewaunitoutdoor" name="vnilai[]" placeholder="Isi Rp/m2" data-options="required:true" style="width:65%; display: inline; text-align: right;" value="<?=numberToIna($valnilai)?>" /> <label class="labeltotal">Rp/m2</label>
+                                                </td>
+                                                <td>
+                                                    <?
+                                                    $valnilai= 0;
+                                                    $valmode= "tarif_sewa_unit_outdoor_diskon";
+                                                    $infocarikey= $vkeyid."-".$valmode;
+                                                    $arrkondisicheck= in_array_column($infocarikey, "keyrowdetil", $arrdetil);
+                                                    if(!empty($arrkondisicheck))
+                                                    {
+                                                        $vindex= $arrkondisicheck[0];
+                                                        $valnilai= $arrdetil[$vindex]["vnilai"];
+                                                    }
+                                                    ?>
+                                                    <input type="hidden" name="vmode[]" value="<?=$valmode?>" />
+                                                    <input type="hidden" name="vid[]" class="valsetid" value="<?=$vkeyid?>" />
+                                                    <input type="text" class="vlxuangclass easyui-validatebox textbox form-control totalsewaunitoutdoordiskon" name="vnilai[]" placeholder="Isi %" data-options="required:true" style="width:65%; display: inline; text-align: right;" value="<?=numberToIna($valnilai)?>" /> <label class="labeltotal">%</label>
+                                                </td>
+                                                <td>
+                                                    <?
+                                                    $valnilai= 0;
+                                                    $valmode= "tarif_sewa_unit_outdoor_after_diskon";
+                                                    $infocarikey= $vkeyid."-".$valmode;
+                                                    $arrkondisicheck= in_array_column($infocarikey, "keyrowdetil", $arrdetil);
+                                                    if(!empty($arrkondisicheck))
+                                                    {
+                                                        $vindex= $arrkondisicheck[0];
+                                                        $valnilai= $arrdetil[$vindex]["vnilai"];
+                                                    }
+                                                    ?>
+                                                    <input type="hidden" name="vmode[]" value="<?=$valmode?>" />
+                                                    <input type="hidden" name="vid[]" class="valsetid" value="<?=$vkeyid?>" />
+                                                    <input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control totalsewaunitoutdoorafterdiskon" name="vnilai[]" placeholder="Isi Rp/m2" data-options="required:true" style="width:65%; display: inline; text-align: right;" value="<?=numberToIna($valnilai)?>" /> <label class="labeltotal">Rp/m2</label>
+                                                </td>
+                                                <td>
+                                                    <?
+                                                    $valnilai= 0;
+                                                    $valmode= "tarif_sewa_unit_outdoor_harga";
+                                                    $infocarikey= $vkeyid."-".$valmode;
+                                                    $arrkondisicheck= in_array_column($infocarikey, "keyrowdetil", $arrdetil);
+                                                    if(!empty($arrkondisicheck))
+                                                    {
+                                                        $vindex= $arrkondisicheck[0];
+                                                        $valnilai= $arrdetil[$vindex]["vnilai"];
+                                                    }
+                                                    ?>
+                                                    <input type="hidden" name="vmode[]" value="<?=$valmode?>" />
+                                                    <input type="hidden" name="vid[]" class="valsetid" value="<?=$vkeyid?>" />
+                                                    <input type="hidden" class="totalsewaunitoutdoorsewaluas" value="<?=$vluas?>" />
+                                                    <input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control totalsewaunitoutdoorharga" name="vnilai[]" style="display: inline; text-align: right;" value="<?=numberToIna($valnilai)?>" />
+                                                </td>
+                                            </tr>
+                                            <?
+                                                }
+                                            }
+                                            ?>
                                         </tbody>
                                     </table>
                                 </td>
@@ -289,6 +545,74 @@ $(function(){
                                                 <td class="tdcolor" style="width: 30%">Discount</td>
                                                 <td class="tdcolor" style="width: 35%">Tarif (after discount)</td>
                                             </tr>
+                                            <?
+                                            foreach ($arrlokasi as $k => $v)
+                                            {
+                                                $vkeyid= $v["rowdetilid"];
+                                                // $vlabel= $v["kode"]." - ".$v["nama"];
+                                                $vlabel= $v["kode"]." - ".$v["lantai"];
+                                                $vluas= $v["vnilai"];
+                                                $vmode= $v["vmode"];
+                                                if($vmode == "luas_sewa_indoor")
+                                                {
+                                            ?>
+                                            <tr class="groupclass<?=$vkeyid?>">
+                                                <td colspan="4"><?=$vlabel?></td>
+                                            </tr>
+                                            <tr class="groupclass<?=$vkeyid?>">
+                                                <td>
+                                                    <?
+                                                    $valnilai= 0;
+                                                    $valmode= "tarif_sewa_sc_indoor";
+                                                    $infocarikey= $vkeyid."-".$valmode;
+                                                    $arrkondisicheck= in_array_column($infocarikey, "keyrowdetil", $arrdetil);
+                                                    if(!empty($arrkondisicheck))
+                                                    {
+                                                        $vindex= $arrkondisicheck[0];
+                                                        $valnilai= $arrdetil[$vindex]["vnilai"];
+                                                    }
+                                                    ?>
+                                                    <input type="hidden" name="vmode[]" value="<?=$valmode?>" />
+                                                    <input type="hidden" name="vid[]" class="valsetid" value="<?=$vkeyid?>" />
+                                                    <input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control totalsewascindoor" name="vnilai[]" placeholder="Isi Rp/m2" data-options="required:true" style="width:65%; display: inline; text-align: right;" value="<?=numberToIna($valnilai)?>" /> <label class="labeltotal">Rp/m2</label>
+                                                </td>
+                                                <td>
+                                                    <?
+                                                    $valnilai= 0;
+                                                    $valmode= "tarif_sewa_sc_indoor_diskon";
+                                                    $infocarikey= $vkeyid."-".$valmode;
+                                                    $arrkondisicheck= in_array_column($infocarikey, "keyrowdetil", $arrdetil);
+                                                    if(!empty($arrkondisicheck))
+                                                    {
+                                                        $vindex= $arrkondisicheck[0];
+                                                        $valnilai= $arrdetil[$vindex]["vnilai"];
+                                                    }
+                                                    ?>
+                                                    <input type="hidden" name="vmode[]" value="<?=$valmode?>" />
+                                                    <input type="hidden" name="vid[]" class="valsetid" value="<?=$vkeyid?>" />
+                                                    <input type="text" class="vlxuangclass easyui-validatebox textbox form-control totalsewascindoordiskon" name="vnilai[]" placeholder="Isi %" data-options="required:true" style="width:65%; display: inline; text-align: right;" value="<?=numberToIna($valnilai)?>" /> <label class="labeltotal">%</label>
+                                                </td>
+                                                <td>
+                                                    <?
+                                                    $valnilai= 0;
+                                                    $valmode= "tarif_sewa_sc_indoor_after_diskon";
+                                                    $infocarikey= $vkeyid."-".$valmode;
+                                                    $arrkondisicheck= in_array_column($infocarikey, "keyrowdetil", $arrdetil);
+                                                    if(!empty($arrkondisicheck))
+                                                    {
+                                                        $vindex= $arrkondisicheck[0];
+                                                        $valnilai= $arrdetil[$vindex]["vnilai"];
+                                                    }
+                                                    ?>
+                                                    <input type="hidden" name="vmode[]" value="<?=$valmode?>" />
+                                                    <input type="hidden" name="vid[]" class="valsetid" value="<?=$vkeyid?>" />
+                                                    <input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control totalsewascindoorafterdiskon" name="vnilai[]" placeholder="Isi Rp/m2" data-options="required:true" style="width:65%; display: inline; text-align: right;" value="<?=numberToIna($valnilai)?>" /> <label class="labeltotal">Rp/m2</label>
+                                                </td>
+                                            </tr>
+                                            <?
+                                                }
+                                            }
+                                            ?>
                                         </tbody>
                                     </table>
                                 </td>
@@ -300,6 +624,74 @@ $(function(){
                                                 <td class="tdcolor" style="width: 30%">Discount</td>
                                                 <td class="tdcolor" style="width: 35%">Tarif (after discount)</td>
                                             </tr>
+                                            <?
+                                            foreach ($arrlokasi as $k => $v)
+                                            {
+                                                $vkeyid= $v["rowdetilid"];
+                                                // $vlabel= $v["kode"]." - ".$v["nama"];
+                                                $vlabel= $v["kode"]." - ".$v["lantai"];
+                                                $vluas= $v["vnilai"];
+                                                $vmode= $v["vmode"];
+                                                if($vmode == "luas_sewa_outdoor")
+                                                {
+                                            ?>
+                                            <tr class="groupclass<?=$vkeyid?>">
+                                                <td colspan="4"><?=$vlabel?></td>
+                                            </tr>
+                                            <tr class="groupclass<?=$vkeyid?>">
+                                                <td>
+                                                    <?
+                                                    $valnilai= 0;
+                                                    $valmode= "tarif_sewa_sc_outdoor";
+                                                    $infocarikey= $vkeyid."-".$valmode;
+                                                    $arrkondisicheck= in_array_column($infocarikey, "keyrowdetil", $arrdetil);
+                                                    if(!empty($arrkondisicheck))
+                                                    {
+                                                        $vindex= $arrkondisicheck[0];
+                                                        $valnilai= $arrdetil[$vindex]["vnilai"];
+                                                    }
+                                                    ?>
+                                                    <input type="hidden" name="vmode[]" value="<?=$valmode?>" />
+                                                    <input type="hidden" name="vid[]" class="valsetid" value="<?=$vkeyid?>" />
+                                                    <input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control totalsewascoutdoor" name="vnilai[]" placeholder="Isi Rp/m2" data-options="required:true" style="width:65%; display: inline; text-align: right;" value="<?=numberToIna($valnilai)?>" /> <label class="labeltotal">Rp/m2</label>
+                                                </td>
+                                                <td>
+                                                    <?
+                                                    $valnilai= 0;
+                                                    $valmode= "tarif_sewa_sc_outdoor_diskon";
+                                                    $infocarikey= $vkeyid."-".$valmode;
+                                                    $arrkondisicheck= in_array_column($infocarikey, "keyrowdetil", $arrdetil);
+                                                    if(!empty($arrkondisicheck))
+                                                    {
+                                                        $vindex= $arrkondisicheck[0];
+                                                        $valnilai= $arrdetil[$vindex]["vnilai"];
+                                                    }
+                                                    ?>
+                                                    <input type="hidden" name="vmode[]" value="<?=$valmode?>" />
+                                                    <input type="hidden" name="vid[]" class="valsetid" value="<?=$vkeyid?>" />
+                                                    <input type="text" class="vlxuangclass easyui-validatebox textbox form-control totalsewascoutdoordiskon" name="vnilai[]" placeholder="Isi %" data-options="required:true" style="width:65%; display: inline; text-align: right;" value="<?=numberToIna($valnilai)?>" /> <label class="labeltotal">%</label>
+                                                </td>
+                                                <td>
+                                                    <?
+                                                    $valnilai= 0;
+                                                    $valmode= "tarif_sewa_sc_outdoor_after_diskon";
+                                                    $infocarikey= $vkeyid."-".$valmode;
+                                                    $arrkondisicheck= in_array_column($infocarikey, "keyrowdetil", $arrdetil);
+                                                    if(!empty($arrkondisicheck))
+                                                    {
+                                                        $vindex= $arrkondisicheck[0];
+                                                        $valnilai= $arrdetil[$vindex]["vnilai"];
+                                                    }
+                                                    ?>
+                                                    <input type="hidden" name="vmode[]" value="<?=$valmode?>" />
+                                                    <input type="hidden" name="vid[]" class="valsetid" value="<?=$vkeyid?>" />
+                                                    <input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control totalsewascoutdoorafterdiskon" name="vnilai[]" placeholder="Isi Rp/m2" data-options="required:true" style="width:65%; display: inline; text-align: right;" value="<?=numberToIna($valnilai)?>" /> <label class="labeltotal">Rp/m2</label>
+                                                </td>
+                                            </tr>
+                                            <?
+                                                }
+                                            }
+                                            ?>
                                         </tbody>
                                     </table>
                                 </td>
@@ -318,19 +710,19 @@ $(function(){
                             <tr>
                                 <td style="width: 25%; text-align: right;">
                                     Sewa Indoor
-                                    <input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control" name="reqHargaIndoorSewa" id="reqHargaIndoorSewa" style="width:40%; display: inline; text-align: right;" /> <label class="labelsumtotal">/ m2 / bulan</label>
+                                    <input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control" name="reqHargaIndoorSewa" id="reqHargaIndoorSewa" style="width:40%; display: inline; text-align: right;" value="<?=numberToIna($reqHargaIndoorSewa)?>" /> <label class="labelsumtotal">/ m2 / bulan</label>
                                 </td>
                                 <td style="width: 25%; text-align: right;">
                                     Sewa Outdoor
-                                    <input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control" name="reqHargaOutdoorSewa" id="reqHargaOutdoorSewa" style="width:40%; display: inline; text-align: right;" /> <label class="labelsumtotal">/ m2 / bulan</label>
+                                    <input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control" name="reqHargaOutdoorSewa" id="reqHargaOutdoorSewa" style="width:40%; display: inline; text-align: right;" value="<?=numberToIna($reqHargaOutdoorSewa)?>" /> <label class="labelsumtotal">/ m2 / bulan</label>
                                 </td>
                                 <td style="width: 25%; text-align: right;">
                                     Service Charge Indoor
-                                    <input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control" name="reqHargaIndoorService" id="reqHargaIndoorService" style="width:40%; display: inline; text-align: right;" /> <label class="labelsumtotal">/ m2 / bulan</label>
+                                    <input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control" name="reqHargaIndoorService" id="reqHargaIndoorService" style="width:40%; display: inline; text-align: right;" value="<?=numberToIna($reqHargaIndoorService)?>" /> <label class="labelsumtotal">/ m2 / bulan</label>
                                 </td>
                                 <td style="width: 25%; text-align: right;">
                                     Service Charge Outdoor
-                                    <input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control" name="reqHargaOutdoorService" id="reqHargaOutdoorService" style="width:40%; display: inline; text-align: right;" /> <label class="labelsumtotal">/ m2 / bulan</label>
+                                    <input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control" name="reqHargaOutdoorService" id="reqHargaOutdoorService" style="width:40%; display: inline; text-align: right;" value="<?=numberToIna($reqHargaOutdoorService)?>" /> <label class="labelsumtotal">/ m2 / bulan</label>
                                 </td>
                             </tr>
                         </tbody>
@@ -611,6 +1003,33 @@ function appenddata(vtipe, vdetilparam)
         ;
         $("#tarifinfosewaoutdoor").append(vtable);
         hitunghargasewa("totalsewaunitoutdoordiskon");
+
+        vtable= ''
+        +'<tr class="groupclass'+id+'">'
+        +   '<td colspan="4">'
+        +       kode+' - '+lantai
+        +   '</td>'
+        +'</tr>'
+        +'<tr class="groupclass'+id+'">'
+        +   '<td>'
+        +       '<input type="hidden" name="vmode[]" value="tarif_sewa_sc_outdoor" />'
+        +       '<input type="hidden" name="vid[]" class="valsetid" value="'+id+'" />'
+        +       '<input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control totalsewascoutdoor" name="vnilai[]" placeholder="Isi Rp/m2" data-options="required:true" style="width:65%; display: inline; text-align: right;" value="'+vtarifsc+'" /> <label class="labeltotal">Rp/m2</label>'
+        +   '</td>'
+        +   '<td>'
+        +       '<input type="hidden" name="vmode[]" value="tarif_sewa_sc_outdoor_diskon" />'
+        +       '<input type="hidden" name="vid[]" class="valsetid" value="'+id+'" />'
+        +       '<input type="text" class="vlxuangclass easyui-validatebox textbox form-control totalsewascoutdoordiskon" name="vnilai[]" placeholder="Isi %" data-options="required:true" style="width:65%; display: inline; text-align: right;" value="0" /> <label class="labeltotal">%</label>'
+        +   '</td>'
+        +   '<td>'
+        +       '<input type="hidden" name="vmode[]" value="tarif_sewa_sc_outdoor_after_diskon" />'
+        +       '<input type="hidden" name="vid[]" class="valsetid" value="'+id+'" />'
+        +       '<input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control totalsewascoutdoorafterdiskon" name="vnilai[]" placeholder="Isi Rp/m2" data-options="required:true" style="width:65%; display: inline; text-align: right;" /> <label class="labeltotal">Rp/m2</label>'
+        +   '</td>'
+        +'</tr>'
+        ;
+        $("#tarifinfosewascoutdoor").append(vtable);
+        hitunghargasewa("totalsewascoutdoordiskon");
     }
 
     callformatdyna();
@@ -669,6 +1088,11 @@ function callformatdyna()
         $(".totalsewascoutdoordiskon").keyup(function() {
             hitunghargasewa("totalsewascoutdoordiskon");
         });
+
+
+        // default awal
+        // hitungluas("totalluasindoor");
+        // hitungluas("totalluasoutdoor");
 
     });
 }
