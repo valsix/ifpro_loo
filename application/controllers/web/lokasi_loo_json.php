@@ -255,7 +255,7 @@ class lokasi_loo_json extends CI_Controller
 			$set->setField("LANTAI_LOO_ID", ValToNullDB($reqLantai[$i]));
 			$set->setField("AWAL", ValToNullDB($reqMin[$i]));
 			$set->setField("AKHIR", ValToNullDB($reqMax[$i]));
-			$set->setField("NILAI", ValToNullDB($reqNilai[$i]));
+			$set->setField("NILAI", ValToNullDB(dotToNo($reqNilai[$i])));
 			if($reqLantaiLooDetilId[$i]==''){
 				$set->insert();
 			}

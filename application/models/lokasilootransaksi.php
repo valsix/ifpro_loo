@@ -58,8 +58,8 @@ DESCRIPTION			:
 					   LANTAI_LOO_ID      	= ".$this->getField("LANTAI_LOO_ID").",
 					   AWAL      	= ".$this->getField("AWAL").",
 					   AKHIR      	= ".$this->getField("AKHIR").",
-					   NILAI		= ".$this->getField("NILAI")."
-					   LOKASI_LOO_ID		= ".$this->getField("LOKASI_LOO_ID")."
+					   NILAI		= ".$this->getField("NILAI").",
+					   LOKASI_LOO_ID		= ".$this->getField("LOKASI_LOO_ID").",
 					   AREA		= '".$this->getField("AREA")."'
 				WHERE  LANTAI_LOO_DETIL_id    	= ".$this->getField("LANTAI_LOO_DETIL_id")."
 				"; 

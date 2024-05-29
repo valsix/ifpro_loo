@@ -199,7 +199,7 @@ $(function(){
                                                 <input type="text" name="reqMax[]" class="easyui-validatebox textbox form-control" oninput="this.value = this.value.replace(/[^0-9.]/g, '')" value="<?=$table->getField("AKHIR")?>"/>
                                             </td>
                                             <td> 
-                                                <input type="text" name="reqNilai[]" class="easyui-validatebox textbox form-control" oninput="this.value = this.value.replace(/[^0-9.]/g, '')" value="<?=$table->getField("NILAI")?>"/>
+                                                <input type="text" name="reqNilai[]" class="vlxuangclass easyui-validatebox textbox form-control" value="<?=currencyToPage($table->getField("NILAI"),false)?>"/>
                                             </td>
                                             <td>
                                                 <a onclick="btnDelete(<?=$table->getField("LANTAI_LOO_DETIL_ID")?>)" title="Hapus"><img src="<?= base_url() ?>images/icon-hapus.png" /></a>                    
