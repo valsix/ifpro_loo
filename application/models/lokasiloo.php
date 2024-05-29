@@ -31,11 +31,12 @@ DESCRIPTION			:
 		// $this->setField("LOKASI_LOO_ID", $this->getNextId("LOKASI_LOO_ID","LOKASI_LOO")); 
 		$str = "
 				INSERT INTO LOKASI_LOO (
-				   KODE, NAMA, DESKRIPSI
+				   KODE, NAMA, SERVICE_CHARGE, DESKRIPSI
 				   ) 
 				VALUES (
 					'".$this->getField("KODE")."', 
 					'".$this->getField("NAMA")."', 
+					'".$this->getField("SERVICE_CHARGE")."', 
 					'".$this->getField("DESKRIPSI")."'
 				)"; 
 		$this->id = $this->getField("LOKASI_LOO_ID");
@@ -64,6 +65,7 @@ DESCRIPTION			:
 				SET   
 					   KODE      	= '".$this->getField("KODE")."',
 					   NAMA      	= '".$this->getField("NAMA")."',
+					   SERVICE_CHARGE      	= '".$this->getField("SERVICE_CHARGE")."',
 					   DESKRIPSI		= '".$this->getField("DESKRIPSI")."'
 				WHERE  LOKASI_LOO_ID    	= '".$this->getField("LOKASI_LOO_ID")."'
 				"; 
@@ -114,7 +116,7 @@ DESCRIPTION			:
 	{
 		$str = "
 				SELECT 
-					A.LOKASI_LOO_ID, A.KODE, A.NAMA, A.DESKRIPSI
+					A.*
 				FROM LOKASI_LOO A
 				WHERE 1 = 1
 			"; 

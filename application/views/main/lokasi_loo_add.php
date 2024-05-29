@@ -21,6 +21,7 @@ else
     $reqId= $lokasi_loo->getField("LOKASI_LOO_ID");
     $reqKode= $lokasi_loo->getField("KODE");
     $reqNama= $lokasi_loo->getField("NAMA");
+    $reqServiceCharge= currencyToPage($lokasi_loo->getField("SERVICE_CHARGE"), false);
     $reqDeskripsi= $lokasi_loo->getField("DESKRIPSI");
     
 }
@@ -136,6 +137,13 @@ $(function(){
                             <td>:</td>
                             <td>
                                 <input type="text" id="reqNama" class="easyui-validatebox textbox form-control" required name="reqNama"  value="<?=$reqNama ?>" data-options="required:true" style="width:90%" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Service Charge</td>
+                            <td>:</td>
+                            <td>
+                                <input type="text" id="reqServiceCharge" class="vlxuangclass easyui-validatebox textbox form-control totalluasoutdoor" required name="reqServiceCharge"  value="<?=$reqServiceCharge ?>" data-options="required:true" style="width:50%" /><label style="width: 8%;">Rp / m² / bulan</label>
                             </td>
                         </tr>
                         <tr>

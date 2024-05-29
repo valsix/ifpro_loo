@@ -50,7 +50,7 @@ $tinggi = 360;
 
 	<?php
 	// Header Nama TABEL TH
-	$aColumns = array("LOKASI_LOO_ID", "KODE", "NAMA", "DESKRIPSI");
+	$aColumns = array("LOKASI_LOO_ID", "KODE", "NAMA", "SERVICE CHARGE", "DESKRIPSI");
 	?>
 
 	<script type="text/javascript" charset="utf-8">
