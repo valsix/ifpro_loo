@@ -41,7 +41,7 @@ class lokasi_loo_detil_json extends CI_Controller
 		$reqKategori = $this->input->get("reqKategori");
 		// echo $reqKategori;exit;
 
-		$aColumns		= array("LOKASI_LOO_DETIL_ID", "NAMA_LOKASI_LOO", "KODE", "NAMA", "LANTAI", "AREA_INFO", "JENIS_INFO", "PRIME_INFO", "LUAS", "KD_TARIF", "DESKRIPSI");
+		$aColumns		= array("LOKASI_LOO_DETIL_ID", "NAMA_LOKASI_LOO", "KODE", "NAMA", "NAMA_LANTAI", "AREA_INFO", "JENIS_INFO", "PRIME_INFO", "LUAS", "KD_TARIF", "DESKRIPSI");
 		$aColumnsAlias	= $aColumns;
 
 
@@ -189,8 +189,8 @@ class lokasi_loo_detil_json extends CI_Controller
 					$row[] = truncate($set->getField($aColumns[$i]), 2);
 				elseif ($aColumns[$i] == "ATTACHMENT")
 					$row[] = "<a href='uploads/'" . $set->getField($aColumns[$i]) . " target='_blank'>" . $set->getField($aColumns[$i]) . "</a>";
-				elseif ($aColumns[$i] == "LANTAI")
-					$row[] = $set->getField('NAMA_LANTAI')." (".$set->getField('TIPE_LANTAI_INFO').")";
+				// elseif ($aColumns[$i] == "LANTAI")
+				// 	$row[] = $set->getField('NAMA_LANTAI')." (".$set->getField('TIPE_LANTAI_INFO').")";
 				elseif ($aColumns[$i] == "KD_TARIF")
 					$row[] = currencyToPage($set->getField($aColumns[$i]),false);
 				elseif ($aColumns[$i] == "LUAS")

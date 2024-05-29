@@ -5,3 +5,11 @@ ALTER TABLE lokasi_loo_detil ALTER COLUMN luas TYPE numeric;
 ALTER TABLE lokasi_loo_detil ADD COLUMN area CHARACTER VARYING;
 
 ALTER TABLE lokasi_loo_detil ADD COLUMN jenis CHARACTER VARYING;
+
+ALTER TABLE lantai_loo_detil ADD COLUMN lokasi_loo_id INTEGER;
+
+ALTER TABLE lantai_loo DROP COLUMN tipe;
+
+ALTER TABLE lantai_loo_detil ADD COLUMN area CHARACTER VARYING;
+
+ALTER TABLE lokasi_loo ADD COLUMN service_charge CHARACTER VARYING;

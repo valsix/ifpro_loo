@@ -36,12 +36,12 @@ class lokasi_loo_json extends CI_Controller
 	function json()
 	{
 		$this->load->model("LokasiLoo");
-		$lokasi_loo = new LokasiLoo();
+		$set = new LokasiLoo();
 
 		$reqKategori = $this->input->get("reqKategori");
 		// echo $reqKategori;exit;
 
-		$aColumns		= array("LOKASI_LOO_ID", "KODE", "NAMA", "DESKRIPSI");
+		$aColumns		= array("LOKASI_LOO_ID", "KODE", "NAMA", "SERVICE_CHARGE", "DESKRIPSI");
 		$aColumnsAlias	= $aColumns;
 
 
@@ -161,15 +161,15 @@ class lokasi_loo_json extends CI_Controller
 
 
 		$statement = " AND (UPPER(A.NAMA) LIKE '%" . strtoupper($_GET['sSearch']) . "%')";
-		$allRecord = $lokasi_loo->getCountByParams(array(), $statement_privacy . $statement);
+		$allRecord = $set->getCountByParams(array(), $statement_privacy . $statement);
 		// echo $allRecord;exit;
 		if ($_GET['sSearch'] == "")
 			$allRecordFilter = $allRecord;
 		else
-			$allRecordFilter =  $lokasi_loo->getCountByParams(array(), $statement_privacy . $statement);
+			$allRecordFilter =  $set->getCountByParams(array(), $statement_privacy . $statement);
 
-		$lokasi_loo->selectByParams(array(), $dsplyRange, $dsplyStart, $statement_privacy . $statement, $sOrder);
-		// echo $lokasi_loo ->query; exit;
+		$set->selectByParams(array(), $dsplyRange, $dsplyStart, $statement_privacy . $statement, $sOrder);
+		// echo $set ->query; exit;
 		// echo "IKI ".$_GET['iDisplayStart'];
 
 		/*
@@ -182,15 +182,19 @@ class lokasi_loo_json extends CI_Controller
 			"aaData" => array()
 		);
 
-		while ($lokasi_loo->nextRow()) {
+		while ($set->nextRow()) {
 			$row = array();
 			for ($i = 0; $i < count($aColumns); $i++) {
 				if ($aColumns[$i] == "KETERANGAN")
-					$row[] = truncate($lokasi_loo->getField($aColumns[$i]), 2);
+					$row[] = truncate($set->getField($aColumns[$i]), 2);
 				elseif ($aColumns[$i] == "ATTACHMENT")
-					$row[] = "<a href='uploads/'" . $lokasi_loo->getField($aColumns[$i]) . " target='_blank'>" . $lokasi_loo->getField($aColumns[$i]) . "</a>";
+					$row[] = "<a href='uploads/'" . $set->getField($aColumns[$i]) . " target='_blank'>" . $set->getField($aColumns[$i]) . "</a>";
+				elseif ($aColumns[$i] == "SERVICE_CHARGE")
+				{
+					$row[] = currencyToPage($set->getField($aColumns[$i]),false);				
+				}
 				else
-					$row[] = $lokasi_loo->getField($aColumns[$i]);
+					$row[] = $set->getField($aColumns[$i]);
 			}
 			$output['aaData'][] = $row;
 		}
@@ -201,7 +205,7 @@ class lokasi_loo_json extends CI_Controller
 	{
 		$this->load->model("LokasiLoo");
 		// $this->load->model("NaskahTemplate");
-		$lokasi_loo = new LokasiLoo();
+		$set = new LokasiLoo();
 		// $naskah_template = new NaskahTemplate();
 
 		$reqMode 					= $this->input->post("reqMode");
@@ -209,46 +213,22 @@ class lokasi_loo_json extends CI_Controller
 
 		$reqKode= $this->input->post("reqKode");
 		$reqNama= $this->input->post("reqNama");
+		$reqServiceCharge= $this->input->post("reqServiceCharge");
 		$reqDeskripsi= $this->input->post("reqDeskripsi");
 
 
-		// $naskah_template->selectByParams(array("A.LINK_URL" => $reqNaskahTemplate));
-		// $naskah_template->firstRow();
-
-		// $reqNaskahTemplateId = $naskah_template->getField("NASKAH_TEMPLATE_ID");;
-
-		// $this->load->library("FileHandler");
-		// $file = new FileHandler();
-		// $FILE_DIR = "uploads/";
-		// $reqLinkFile 			= $_FILES["reqLinkFile"];
-		// $reqLinkFileTempSize	=  $this->input->post("reqLinkFileTempSize");
-		// $reqLinkFileTempTipe	=  $this->input->post("reqLinkFileTempTipe");
-		// $reqLinkFileTemp		=  $this->input->post("reqLinkFileTemp");
-
-		$lokasi_loo->setField("LOKASI_LOO_ID", $reqId);
-		$lokasi_loo->setField("KODE", $reqKode);
-		$lokasi_loo->setField("NAMA", $reqNama);
-		$lokasi_loo->setField("DESKRIPSI", $reqDeskripsi);
-
-		// $reqJenis = "JENIS-NASKAH-" . generateZero($reqId, 4);
-		// for ($i = 0; $i < count($reqLinkFile); $i++) {
-		// 	$renameFile = $reqJenis . date("Ymdhis") . rand() . "." . getExtension($reqLinkFile['name'][$i]);
-
-		// 	if ($file->uploadToDirArray('reqLinkFile', $FILE_DIR, $renameFile, $i)) {
-		// 		$insertLinkSize = $file->uploadedSize;
-		// 		$insertLinkTipe =  $file->uploadedExtension;
-		// 		$insertLinkFile =  $renameFile;
-		// 	}
-		// }
-
-		// $lokasi_loo->setField("ATTACHMENT", $insertLinkFile);
+		$set->setField("LOKASI_LOO_ID", $reqId);
+		$set->setField("KODE", $reqKode);
+		$set->setField("NAMA", $reqNama);
+		$set->setField("SERVICE_CHARGE", dotToNo($reqServiceCharge));
+		$set->setField("DESKRIPSI", $reqDeskripsi);
 
 		if ($reqMode == "insert") {
-			$lokasi_loo->setField("LAST_CREATE_USER", $this->USERNAME);
-			$lokasi_loo->insert();
+			$set->setField("LAST_CREATE_USER", $this->USERNAME);
+			$set->insert();
 		} else {
-			$lokasi_loo->setField("LAST_UPDATE_USER", $this->USERNAME);
-			$lokasi_loo->update();
+			$set->setField("LAST_UPDATE_USER", $this->USERNAME);
+			$set->update();
 		}
 
 		echo "Data berhasil disimpan.";
@@ -259,7 +239,7 @@ class lokasi_loo_json extends CI_Controller
 	function add_template()
 	{
 		$this->load->model("LokasiLoo");
-		$lokasi_loo = new LokasiLoo();
+		$set = new LokasiLoo();
 
 		$reqMode 					= $this->input->post("reqMode");
 		$reqId 						= $this->input->post("reqId");
@@ -274,8 +254,8 @@ class lokasi_loo_json extends CI_Controller
 		$reqLinkFileTemp		=  $this->input->post("reqLinkFileTemp");
 		$reqLokasiLooId		=  $this->input->post("reqLokasiLooId");
 
-		$lokasi_loo->setField("SATUAN_KERJA_ID", $reqId);
-		$lokasi_loo->deleteTemplate();
+		$set->setField("SATUAN_KERJA_ID", $reqId);
+		$set->deleteTemplate();
 
 		$reqJenis = "TEMPLATE" . generateZero($reqId, 4);
 		for ($i = 0; $i < count($reqLinkFile); $i++) {
@@ -291,11 +271,11 @@ class lokasi_loo_json extends CI_Controller
 
 			if ($reqLokasiLooId[$i] == "") {
 			} else {
-				$lokasi_loo->setField("SATUAN_KERJA_ID", $reqId);
-				$lokasi_loo->setField("LOKASI_LOO_ID", $reqLokasiLooId[$i]);
-				$lokasi_loo->setField("ATTACHMENT", $insertLinkFile);
-				$lokasi_loo->setField("LAST_CREATE_USER", $this->USERNAME);
-				$lokasi_loo->insertTemplate();
+				$set->setField("SATUAN_KERJA_ID", $reqId);
+				$set->setField("LOKASI_LOO_ID", $reqLokasiLooId[$i]);
+				$set->setField("ATTACHMENT", $insertLinkFile);
+				$set->setField("LAST_CREATE_USER", $this->USERNAME);
+				$set->insertTemplate();
 			}
 		}
 
@@ -306,11 +286,11 @@ class lokasi_loo_json extends CI_Controller
 	{
 		$reqId	= $this->input->get('reqId');
 		$this->load->model("LokasiLoo");
-		$lokasi_loo = new LokasiLoo();
+		$set = new LokasiLoo();
 
 
-		$lokasi_loo->setField("LOKASI_LOO_ID", $reqId);
-		if ($lokasi_loo->delete())
+		$set->setField("LOKASI_LOO_ID", $reqId);
+		if ($set->delete())
 			$arrJson["PESAN"] = "Data berhasil dihapus.";
 		else
 			$arrJson["PESAN"] = "Data gagal dihapus.";
@@ -321,15 +301,15 @@ class lokasi_loo_json extends CI_Controller
 	function combo()
 	{
 		$this->load->model("LokasiLoo");
-		$lokasi_loo = new LokasiLoo();
+		$set = new LokasiLoo();
 
-		$lokasi_loo->selectByParams(array("NOT LOKASI_LOO_ID" => "0"));
+		$set->selectByParams(array("NOT LOKASI_LOO_ID" => "0"));
 		$i = 0;
-		while ($lokasi_loo->nextRow()) {
-			$arr_json[$i]['id']		= $lokasi_loo->getField("LOKASI_LOO_ID");
-			$arr_json[$i]['text']	= $lokasi_loo->getField("NAMA");
-			$arr_json[$i]['JENIS_TTD']	= $lokasi_loo->getField("JENIS_TTD");
-			$arr_json[$i]['PENERBIT_NOMOR']	= $lokasi_loo->getField("PENERBIT_NOMOR");
+		while ($set->nextRow()) {
+			$arr_json[$i]['id']		= $set->getField("LOKASI_LOO_ID");
+			$arr_json[$i]['text']	= $set->getField("NAMA");
+			$arr_json[$i]['JENIS_TTD']	= $set->getField("JENIS_TTD");
+			$arr_json[$i]['PENERBIT_NOMOR']	= $set->getField("PENERBIT_NOMOR");
 			$i++;
 		}
 
@@ -340,7 +320,7 @@ class lokasi_loo_json extends CI_Controller
 	function combo_statement()
 	{
 		$this->load->model("LokasiLoo");
-		$lokasi_loo = new LokasiLoo();
+		$set = new LokasiLoo();
 
 		$reqId = $this->input->get("reqId");
 		$reqKelompokJabatan = $this->input->get("reqKelompokJabatan");
@@ -349,19 +329,19 @@ class lokasi_loo_json extends CI_Controller
 		$statement .= " AND TIPE_NASKAH LIKE '%" . $reqId . "%' ";
 
 		$arr_json = array();
-		$lokasi_loo->selectByParams(array("NOT LOKASI_LOO_ID" => "0"), -1, -1, $statement);
-		// echo $lokasi_loo->query;exit;
+		$set->selectByParams(array("NOT LOKASI_LOO_ID" => "0"), -1, -1, $statement);
+		// echo $set->query;exit;
 		$i = 0;
-		while ($lokasi_loo->nextRow()) {
-			$arr_json[$i]['id']		= $lokasi_loo->getField("LOKASI_LOO_ID");
-			$arr_json[$i]['text']	= $lokasi_loo->getField("NAMA");
-			$arr_json[$i]['JENIS_TTD']	= $lokasi_loo->getField("JENIS_TTD");
-			$arr_json[$i]['PENERBIT_NOMOR']	= $lokasi_loo->getField("PENERBIT_NOMOR");
+		while ($set->nextRow()) {
+			$arr_json[$i]['id']		= $set->getField("LOKASI_LOO_ID");
+			$arr_json[$i]['text']	= $set->getField("NAMA");
+			$arr_json[$i]['JENIS_TTD']	= $set->getField("JENIS_TTD");
+			$arr_json[$i]['PENERBIT_NOMOR']	= $set->getField("PENERBIT_NOMOR");
 
 			if ($this->CABANG_ID == "01") {
-				$arr_json[$i]['KD_LEVEL']	= $lokasi_loo->getField("KD_LEVEL");
+				$arr_json[$i]['KD_LEVEL']	= $set->getField("KD_LEVEL");
 			} else {
-				$arr_json[$i]['KD_LEVEL']	= $lokasi_loo->getField("KD_LEVEL_CABANG");
+				$arr_json[$i]['KD_LEVEL']	= $set->getField("KD_LEVEL_CABANG");
 			}
 
 			$i++;
@@ -376,7 +356,7 @@ class lokasi_loo_json extends CI_Controller
 	function combo_request()
 	{
 		$this->load->model("LokasiLoo");
-		$lokasi_loo = new LokasiLoo();
+		$set = new LokasiLoo();
 
 		$reqId = $this->input->get("reqId");
 
@@ -385,16 +365,16 @@ class lokasi_loo_json extends CI_Controller
 		$statement .= " AND NOT COALESCE(NULLIF(KODE_SURAT, ''), 'X') = 'X' ";
 
 		$arr_json = array();
-		$lokasi_loo->selectByParams(array("NOT LOKASI_LOO_ID" => "0"), -1, -1, $statement);
+		$set->selectByParams(array("NOT LOKASI_LOO_ID" => "0"), -1, -1, $statement);
 		$i = 0;
-		while ($lokasi_loo->nextRow()) {
-			$arr_json[$i]['id']		= $lokasi_loo->getField("LOKASI_LOO_ID");
-			$arr_json[$i]['text']	= $lokasi_loo->getField("NAMA");
-			$arr_json[$i]['PENERBIT_NOMOR']	= $lokasi_loo->getField("PENERBIT_NOMOR");
+		while ($set->nextRow()) {
+			$arr_json[$i]['id']		= $set->getField("LOKASI_LOO_ID");
+			$arr_json[$i]['text']	= $set->getField("NAMA");
+			$arr_json[$i]['PENERBIT_NOMOR']	= $set->getField("PENERBIT_NOMOR");
 			if ($this->CABANG_ID == "01")
-				$arr_json[$i]['KD_LEVEL']	= $lokasi_loo->getField("KD_LEVEL");
+				$arr_json[$i]['KD_LEVEL']	= $set->getField("KD_LEVEL");
 			else
-				$arr_json[$i]['KD_LEVEL']	= $lokasi_loo->getField("KD_LEVEL_CABANG");
+				$arr_json[$i]['KD_LEVEL']	= $set->getField("KD_LEVEL_CABANG");
 			$i++;
 		}
 
@@ -405,7 +385,7 @@ class lokasi_loo_json extends CI_Controller
 	function combo_level()
 	{
 		$this->load->model("LokasiLoo");
-		$lokasi_loo = new LokasiLoo();
+		$set = new LokasiLoo();
 
 		$reqId = $this->input->get("reqId");
 
@@ -413,16 +393,16 @@ class lokasi_loo_json extends CI_Controller
 		$statement = " AND TIPE_NASKAH LIKE '%" . $reqId . "%' ";
 
 
-		$lokasi_loo->selectByParams(array("NOT LOKASI_LOO_ID" => "0"), -1, -1, $statement);
+		$set->selectByParams(array("NOT LOKASI_LOO_ID" => "0"), -1, -1, $statement);
 		$i = 0;
 		$arr_json = array();
-		while ($lokasi_loo->nextRow()) {
-			$arr_json[$i]['id']		= $lokasi_loo->getField("LOKASI_LOO_ID");
-			$arr_json[$i]['text']	= $lokasi_loo->getField("NAMA");
+		while ($set->nextRow()) {
+			$arr_json[$i]['id']		= $set->getField("LOKASI_LOO_ID");
+			$arr_json[$i]['text']	= $set->getField("NAMA");
 			if ($this->CABANG_ID == "01")
-				$arr_json[$i]['KD_LEVEL']	= $lokasi_loo->getField("KD_LEVEL");
+				$arr_json[$i]['KD_LEVEL']	= $set->getField("KD_LEVEL");
 			else
-				$arr_json[$i]['KD_LEVEL']	= $lokasi_loo->getField("KD_LEVEL_CABANG");
+				$arr_json[$i]['KD_LEVEL']	= $set->getField("KD_LEVEL_CABANG");
 
 			$i++;
 		}
