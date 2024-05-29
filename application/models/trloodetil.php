@@ -31,7 +31,7 @@ DESCRIPTION			:
 		$str = "
 		INSERT INTO tr_loo_detil 
 		(
-			TR_LOO_DETIL_ID, TR_LOO_ID, VMODE, VID, NILAI
+			TR_LOO_DETIL_ID, TR_LOO_ID, VMODE, VID, NILAI, KETERANGAN
 		)
 		VALUES 
 		(
@@ -40,6 +40,7 @@ DESCRIPTION			:
 			, '".$this->getField("VMODE")."'
 			, ".$this->getField("VID")."
 			, ".$this->getField("NILAI")."
+			, '".$this->getField("KETERANGAN")."'
 		)";
 		$this->id = $this->getField("TR_LOO_DETIL_ID");
 		$this->query = $str;
