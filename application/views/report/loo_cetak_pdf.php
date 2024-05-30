@@ -23,15 +23,86 @@ $reqCustomerTlp= $set->getField("TELP");
 $reqCustomerEmail= $set->getField("EMAIL");
 $reqCustomerBrand= $set->getField("NAMA_BRAND");
 $reqProdukNama= $set->getField("PRODUK_NAMA");
+$reqTotalLuas= $set->getField("TOTAL_LUAS");
+$reqHargaIndoorSewa= $set->getField("HARGA_INDOOR_SEWA");
+$reqHargaOutdoorSewa= $set->getField("HARGA_OUTDOOR_SEWA");
+$reqHargaIndoorService= $set->getField("HARGA_INDOOR_SERVICE");
+$reqHargaOutdoorService= $set->getField("HARGA_OUTDOOR_SERVICE");
+$reqDp= $set->getField("DP");
+$reqPeriodeSewa= $set->getField("PERIODE_SEWA");
+
+$arrlokasi= [];
+$statement= " AND A.TR_LOO_ID = ".$reqId." AND VMODE ILIKE '%luas_sewa%'";
+$set= new TrLooDetil();
+$set->selectlokasi(array(), -1,-1, $statement);
+while($set->nextRow())
+{
+    $valid= $set->getField("TR_LOO_DETIL_ID");
+    $valmode= $set->getField("VMODE");
+
+    $arrdata= [];
+    $arrdata["key"]= $valid."-".$valmode;
+    $arrdata["rowdetilid"]= $valid;
+    $arrdata["rowid"]= $set->getField("TR_LOO_ID");
+    $arrdata["vmode"]= $valmode;
+    $arrdata["vid"]= $set->getField("VID");
+    $arrdata["vnilai"]= $set->getField("NILAI");
+    $arrdata["kode"]= $set->getField("KODE");
+    $arrdata["nama"]= $set->getField("NAMA");
+    $arrdata["lantai"]= $set->getField("LANTAI");
+    array_push($arrlokasi, $arrdata);
+}
+// print_r($arrlokasi);exit;
+
+$arrdetil= [];
+$statement= " AND A.TR_LOO_ID = ".$reqId;
+$set= new TrLooDetil();
+$set->selectByParams(array(), -1,-1, $statement);
+while($set->nextRow())
+{
+    $valid= $set->getField("VID");
+    $valmode= $set->getField("VMODE");
+    $arrdata= [];
+    $arrdata["keyrowdetil"]= $valid."-".$valmode;
+    $arrdata["rowdetilid"]= $set->getField("TR_LOO_DETIL_ID");;
+    $arrdata["rowid"]= $set->getField("TR_LOO_ID");
+    $arrdata["vmode"]= $valmode;
+    $arrdata["vid"]= $valid;
+    $arrdata["vnilai"]= $set->getField("NILAI");
+    $arrdata["vketerangan"]= $set->getField("KETERANGAN");
+
+    $keymodesewa= "";
+    if(isStrContain($valmode, "tarif_sewa_unit_indoor"))
+      $keymodesewa= $valid."-"."tarif_sewa_unit_indoor";
+    else if(isStrContain($valmode, "tarif_sewa_unit_outdoor"))
+      $keymodesewa= $valid."-"."tarif_sewa_unit_outdoor";
+    $arrdata["keymodesewa"]= $keymodesewa;
+
+    array_push($arrdetil, $arrdata);
+}
+// print_r($arrdetil);exit;
+
+$arrutilitycharge= [];
+$set= new Combo();
+$set->comboUtilityCharge(array(), -1,-1, "", "ORDER BY UTILITY_CHARGE_ID");
+while($set->nextRow())
+{
+    $arrdata= [];
+    $arrdata["id"]= $set->getField("UTILITY_CHARGE_ID");
+    $arrdata["nama"]= $set->getField("NAMA");
+    $arrdata["ket"]= $set->getField("KETERANGAN");
+    array_push($arrutilitycharge, $arrdata);
+}
+// print_r($arrutilitycharge);exit;
 ?>
 <base href="<?=base_url();?>">
 <link href="css/gaya-surat.css" rel="stylesheet" type="text/css">
 <link href="lib/froala_editor_2.9.8/css/froala_style.css" rel="stylesheet" type="text/css">
 <style>
   body{
-/*      background-image:url('<?= base_url() ?>images/bg_cetak.jpg')  ;
-      background-image-resize:6;
-      background-size: cover;*/
+  /*background-image:url('<?= base_url() ?>images/bg_cetak.jpg')  ;
+    background-image-resize:6;
+    background-size: cover;*/
   }
 </style>
 <body>
@@ -114,290 +185,677 @@ $reqProdukNama= $set->getField("PRODUK_NAMA");
     <tr>
       <td><br></td>
     </tr>
+    <?
+    $nomorhead= 1;
+    ?>
     <tr>
-      <td style="width:3%">1</td>
+      <td style="width:3%"><?=$nomorhead?></td>
       <td colspan="4">NAMA PEMILIK</td>
       <td ><b>:</b></td>
       <td colspan="3"><b><?=$reqCustomerNama?></b></td>
     </tr>
+    <?
+    $nomorhead+=1;
+    ?>
     <tr>
-      <td style="width:3%">2</td>
+      <td style="width:3%"><?=$nomorhead?></td>
       <td colspan="4">NAMA BRAND</td>
       <td ><b>:</b></td>
       <td colspan="3"><b><?=$reqCustomerBrand?></b></td>
     </tr>
+    <?
+    $nomorhead+=1;
+    ?>
     <tr>
-      <td style="width:3%">3</td>
+      <td style="width:3%"><?=$nomorhead?></td>
       <td colspan="4">PRODUK</td>
       <td ><b>:</b></td>
       <td colspan="3"><b><?=$reqProdukNama?></b></td>
     </tr>
+    <?
+    $nomorhead+=1;
+    ?>
     <tr>
-      <td style="width:3%">5</td>
+      <td style="width:3%"><?=$nomorhead?></td>
       <td colspan="4" >LUAS SEWA</td>
     </tr>
-    <tr>
-      <td></td>
-      <td style="width:5%">5.1</td>
-      <td colspan="5">Indoor</td>
-    </tr>
-    <tr>
-      <td></td>
-      <td></td>
-      <td style="width:5%">5.1.1</td>
-      <td style="width:10%">GF</td>
-      <td style="width:10%">01</td>
-      <td style="width:5%">:</td>
-      <td style="width:10%">95,58 </td>
-      <td style="width:10%">m2</td>
-    </tr>
-    <tr>
-      <td></td>
-      <td></td>
-      <td style="width:5%">5.1.2</td>
-      <td style="width:5%">L1</td>
-      <td style="width:5%">02</td>
-      <td style="width:5%">:</td>
-      <td style="width:10%"></td>
-      <td style="width:5%">m2</td>
+    <?
+    $nomorsubhead= 0;
+    $nomorsubheaddetil= 0;
+
+    $infocarikey= "luas_sewa_indoor";
+    $arrkondisicheck= in_array_column($infocarikey, "vmode", $arrdetil);
+    if(count($arrkondisicheck) > 0)
+    {
+      $nomorsubhead+=1;
+      $vnomordetil= $nomorhead.".".$nomorsubhead;
+    ?>
+      <tr>
+        <td></td>
+        <td style="width:5%"><?=$vnomordetil?></td>
+        <td colspan="5">Indoor</td>
       </tr>
-    <tr>
-      <td></td>
-      <td style="width:5%">5.2</td>
-      <td colspan="5">outdor</td>
-    </tr>
-    <tr>
-      <td></td>
-      <td></td>
-      <td style="width:5%">5.2.1</td>
-      <td colspan="2"></td>
-      <td style="width:5%">:</td>
-      <td style="width:10%">95,58 </td>
-      <td style="width:5%">m2</td>
+    <?
+      foreach ($arrkondisicheck as $k)
+      {
+        $v= $arrdetil[$k];
+        // print_r($v);exit;
+        $nomorsubheaddetil+=1;
+
+        $vkode= $vlantai= "";
+        $infocarikey= $v["keyrowdetil"];
+        $arrkondisicheckdetil= in_array_column($infocarikey, "key", $arrlokasi);
+        if(!empty($arrkondisicheckdetil))
+        {
+          $vd= $arrlokasi[$arrkondisicheckdetil[0]];
+          $vkode= $vd["kode"];
+          $vlantai= $vd["lantai"];
+        }
+    ?>
+        <tr>
+          <td></td>
+          <td></td>
+          <td style="width:5%"><?=$vnomordetil.".".$nomorsubheaddetil?></td>
+          <td style="width:10%"><?=$vkode?></td>
+          <td style="width:10%"><?=$vlantai?></td>
+          <td style="width:5%">:</td>
+          <td style="width:10%"><?=numberToIna($v["vnilai"])?></td>
+          <td style="width:10%">m2</td>
+        </tr>
+    <?
+      }
+    }
+    ?>
+
+    <?
+    $infocarikey= "luas_sewa_outdoor";
+    $arrkondisicheck= in_array_column($infocarikey, "vmode", $arrdetil);
+    if(count($arrkondisicheck) > 0)
+    {
+      $nomorsubhead+=1;
+      $vnomordetil= $nomorhead.".".$nomorsubhead;
+    ?>
+      <tr>
+        <td></td>
+        <td style="width:5%"><?=$vnomordetil?></td>
+        <td colspan="5">Outdor</td>
       </tr>
+    <?
+      foreach ($arrkondisicheck as $k)
+      {
+        $v= $arrdetil[$k];
+        // print_r($v);exit;
+        $nomorsubheaddetil+=1;
+
+        $vkode= $vlantai= "";
+        $infocarikey= $v["keyrowdetil"];
+        $arrkondisicheckdetil= in_array_column($infocarikey, "key", $arrlokasi);
+        if(!empty($arrkondisicheckdetil))
+        {
+          $vd= $arrlokasi[$arrkondisicheckdetil[0]];
+          $vkode= $vd["kode"];
+          $vlantai= $vd["lantai"];
+        }
+    ?>
+        <tr>
+          <td></td>
+          <td></td>
+          <td style="width:5%"><?=$vnomordetil.".".$nomorsubheaddetil?></td>
+          <td style="width:10%"><?=$vkode?></td>
+          <td style="width:10%"><?=$vlantai?></td>
+          <td style="width:5%">:</td>
+          <td style="width:10%"><?=numberToIna($v["vnilai"])?></td>
+          <td style="width:10%">m2</td>
+        </tr>
+    <?
+      }
+    }
+    ?>
+
+    <?
+    $nomorsubhead+=1;
+    $vnomordetil= $nomorhead.".".$nomorsubhead;
+    ?>
     <tr>
       <td></td>
-      <td></td>
-      <td style="width:5%">5.2.2</td>
-      <td colspan="2"></td>
-      <td style="width:5%">:</td>
-      <td style="width:10%"></td>
-      <td style="width:5%">m2</td>
-      </tr>
-    <tr>
-      <td></td>
-      <td style="width:5%">5.3</td>
+      <td style="width:5%"><?=$vnomordetil?></td>
       <td colspan="3">Total Luas Sewa</td>
       <td style="width:5%">:</td>
-      <td style="width:10%">95,58</td>
-      <td style="width:5%">m2</td>
+      <td style="width:10%"><?=numberToIna($reqTotalLuas)?></td>
+      <td style="width:10%">m2</td>
     </tr>
+
+    <?
+    $nomorhead+=1;
+    ?>
     <tr>
-      <td style="width:3%">6</td>
+      <td style="width:3%"><?=$nomorhead?></td>
       <td colspan="4" >TARIF SEWA</td>
     </tr>
+
+    <?
+    $nomorsubhead= 0;
+    $nomorsubheaddetil= 0;
+
+    $nomorsubhead+=1;
+    $vnomordetil= $nomorhead.".".$nomorsubhead;
+    ?>
     <tr>
       <td></td>
-      <td style="width:5%">6.1</td>
+      <td style="width:5%"><?=$vnomordetil?></td>
       <td colspan="5">Unit</td>
     </tr>
+
+    <?
+    $infocarikey= "luas_sewa_indoor";
+    $arrkondisicheck= in_array_column($infocarikey, "vmode", $arrdetil);
+    if(count($arrkondisicheck) > 0)
+    {
+      foreach ($arrkondisicheck as $k)
+      {
+        $v= $arrdetil[$k];
+        // print_r($v);exit;
+        $nomorsubheaddetil+=1;
+
+        $vkode= $vlantai= "";
+        $infocarikey= $v["keyrowdetil"];
+        $arrkondisicheckdetil= in_array_column($infocarikey, "key", $arrlokasi);
+        if(!empty($arrkondisicheckdetil))
+        {
+          $vd= $arrlokasi[$arrkondisicheckdetil[0]];
+          $vid= $vd["vid"];
+          $vkode= $vd["kode"];
+          $vlantai= $vd["lantai"];
+        }
+
+        $vnilai= "";
+        $infocarikey= $vid."-tarif_sewa_unit_indoor";
+        $arrcheck= in_array_column($infocarikey, "keyrowdetil", $arrdetil);
+        if(!empty($arrcheck))
+        {
+          $vnilai= numberToIna($arrdetil[$arrcheck[0]]["vnilai"]);
+        }
+    ?>
+      <tr>
+        <td></td>
+        <td></td>
+        <td style="width:5%"><?=$vnomordetil.".".$nomorsubheaddetil?></td>
+        <td colspan="2">Indoor <?=$vkode." ".$vlantai?></td>
+        <td style="width:5%">:</td>
+        <td style="width:10%"> <?=$vnilai?></td>
+        <td style="width:5%">Rp / m2</td>
+      </tr>
+
+      <?
+      $vnilai= "";
+      $infocarikey= $vid."-tarif_sewa_unit_indoor_diskon";
+      $arrcheck= in_array_column($infocarikey, "keyrowdetil", $arrdetil);
+      if(!empty($arrcheck))
+      {
+        $vnilai= numberToIna($arrdetil[$arrcheck[0]]["vnilai"]);
+      }
+      ?>
+      <tr>
+        <td colspan="3"></td>
+        <td colspan="2">Discount</td>
+        <td style="width:5%">:</td>
+        <td style="width:10%"> <?=$vnilai?></td>
+        <td style="width:5%">%</td>
+      </tr>
+
+      <?
+      $vnilai= "";
+      $infocarikey= $vid."-tarif_sewa_unit_indoor_after_diskon";
+      $arrcheck= in_array_column($infocarikey, "keyrowdetil", $arrdetil);
+      if(!empty($arrcheck))
+      {
+        $vnilai= numberToIna($arrdetil[$arrcheck[0]]["vnilai"]);
+      }
+      ?>
+      <tr>
+        <td colspan="3"></td>
+        <td colspan="2">Tarif (after discount)</td>
+        <td style="width:5%">:</td>
+        <td style="width:10%"> <?=$vnilai?></td>
+        <td style="width:5%">Rp / m2</td>
+      </tr>
+    <?
+      }
+    }
+    ?>
+
+    <?
+    $infocarikey= "luas_sewa_outdoor";
+    $arrkondisicheck= in_array_column($infocarikey, "vmode", $arrdetil);
+    if(count($arrkondisicheck) > 0)
+    {
+      foreach ($arrkondisicheck as $k)
+      {
+        $v= $arrdetil[$k];
+        // print_r($v);exit;
+        $nomorsubheaddetil+=1;
+
+        $vkode= $vlantai= "";
+        $infocarikey= $v["keyrowdetil"];
+        $arrkondisicheckdetil= in_array_column($infocarikey, "key", $arrlokasi);
+        if(!empty($arrkondisicheckdetil))
+        {
+          $vd= $arrlokasi[$arrkondisicheckdetil[0]];
+          $vid= $vd["vid"];
+          $vkode= $vd["kode"];
+          $vlantai= $vd["lantai"];
+        }
+
+        $vnilai= "";
+        $infocarikey= $vid."-tarif_sewa_unit_outdoor";
+        $arrcheck= in_array_column($infocarikey, "keyrowdetil", $arrdetil);
+        if(!empty($arrcheck))
+        {
+          $vnilai= numberToIna($arrdetil[$arrcheck[0]]["vnilai"]);
+        }
+    ?>
+      <tr>
+        <td></td>
+        <td></td>
+        <td style="width:5%"><?=$vnomordetil.".".$nomorsubheaddetil?></td>
+        <td colspan="2">Outdoor <?=$vkode." ".$vlantai?></td>
+        <td style="width:5%">:</td>
+        <td style="width:10%"> <?=$vnilai?></td>
+        <td style="width:5%">Rp / m2</td>
+      </tr>
+
+      <?
+      $vnilai= "";
+      $infocarikey= $vid."-tarif_sewa_unit_outdoor_diskon";
+      $arrcheck= in_array_column($infocarikey, "keyrowdetil", $arrdetil);
+      if(!empty($arrcheck))
+      {
+        $vnilai= numberToIna($arrdetil[$arrcheck[0]]["vnilai"]);
+      }
+      ?>
+      <tr>
+        <td colspan="3"></td>
+        <td colspan="2">Discount</td>
+        <td style="width:5%">:</td>
+        <td style="width:10%"> <?=$vnilai?></td>
+        <td style="width:5%">%</td>
+      </tr>
+
+      <?
+      $vnilai= "";
+      $infocarikey= $vid."-tarif_sewa_unit_outdoor_after_diskon";
+      $arrcheck= in_array_column($infocarikey, "keyrowdetil", $arrdetil);
+      if(!empty($arrcheck))
+      {
+        $vnilai= numberToIna($arrdetil[$arrcheck[0]]["vnilai"]);
+      }
+      ?>
+      <tr>
+        <td colspan="3"></td>
+        <td colspan="2">Tarif (after discount)</td>
+        <td style="width:5%">:</td>
+        <td style="width:10%"> <?=$vnilai?></td>
+        <td style="width:5%">Rp / m2</td>
+      </tr>
+    <?
+      }
+    }
+    ?>
+
+    <?
+    $nomorsubheaddetil= 0;
+
+    $nomorsubhead+=1;
+    $vnomordetil= $nomorhead.".".$nomorsubhead;
+    ?>
     <tr>
       <td></td>
-      <td></td>
-      <td style="width:5%">6.1.1</td>
-      <td colspan="2">Indor</td>
-      <td style="width:5%">:</td>
-      <td style="width:10%"> 200.000   </td>
-      <td style="width:5%">Rp / m2</td>
-      </tr>
-    <tr>
-      <td colspan="3"></td>
-      <td colspan="2">Discount</td>
-      <td style="width:5%">:</td>
-      <td style="width:10%"> 30   </td>
-      <td style="width:5%">%</td>
-      </tr>
-    <tr>
-      <td colspan="3"></td>
-      <td colspan="2">Tarif (after discount)</td>
-      <td style="width:5%">:</td>
-      <td style="width:10%">  140.000 </td>
-      <td style="width:5%">Rp / m2</td>
-      </tr>
-    <tr>
-      <td></td>
-      <td></td>
-      <td style="width:5%">6.1.2</td>
-      <td colspan="2">Outdoor</td>
-      <td style="width:5%">:</td>
-      <td style="width:10%">- </td>
-      <td style="width:5%">Rp / m2</td>
-      </tr>
-    <tr>
-      <td colspan="3"></td>
-      <td colspan="2">Discount</td>
-      <td style="width:5%">:</td>
-      <td style="width:10%"> -   </td>
-      <td style="width:5%">%</td>
-      </tr>
-    <tr>
-      <td colspan="3"></td>
-      <td colspan="2">Tarif (after discount)</td>
-      <td style="width:5%">:</td>
-      <td style="width:10%">  - </td>
-      <td style="width:5%">Rp / m2</td>
-      </tr>
-    <tr>
-      <td></td>
-      <td style="width:5%">6.2</td>
+      <td style="width:5%"><?=$vnomordetil?></td>
       <td colspan="5">Service Charge</td>
     </tr>
-    <tr>
-      <td></td>
-      <td></td>
-      <td style="width:5%">6.2.1</td>
-      <td colspan="2">Indor</td>
-      <td style="width:5%">:</td>
-      <td style="width:10%">  83.243</td>
-      <td style="width:5%">Rp / m2</td>
+
+    <?
+    $infocarikey= "luas_sewa_indoor";
+    $arrkondisicheck= in_array_column($infocarikey, "vmode", $arrdetil);
+    if(count($arrkondisicheck) > 0)
+    {
+      foreach ($arrkondisicheck as $k)
+      {
+        $v= $arrdetil[$k];
+        // print_r($v);exit;
+        $nomorsubheaddetil+=1;
+
+        $vkode= $vlantai= "";
+        $infocarikey= $v["keyrowdetil"];
+        $arrkondisicheckdetil= in_array_column($infocarikey, "key", $arrlokasi);
+        if(!empty($arrkondisicheckdetil))
+        {
+          $vd= $arrlokasi[$arrkondisicheckdetil[0]];
+          $vid= $vd["vid"];
+          $vkode= $vd["kode"];
+          $vlantai= $vd["lantai"];
+        }
+
+        $vnilai= "";
+        $infocarikey= $vid."-tarif_sewa_sc_indoor";
+        $arrcheck= in_array_column($infocarikey, "keyrowdetil", $arrdetil);
+        if(!empty($arrcheck))
+        {
+          $vnilai= numberToIna($arrdetil[$arrcheck[0]]["vnilai"]);
+        }
+    ?>
+      <tr>
+        <td></td>
+        <td></td>
+        <td style="width:5%"><?=$vnomordetil.".".$nomorsubheaddetil?></td>
+        <td colspan="2">Indoor <?=$vkode." ".$vlantai?></td>
+        <td style="width:5%">:</td>
+        <td style="width:10%"> <?=$vnilai?></td>
+        <td style="width:5%">Rp / m2</td>
       </tr>
-    <tr>
-      <td colspan="3"></td>
-      <td colspan="2">Discount</td>
-      <td style="width:5%">:</td>
-      <td style="width:10%">-</td>
-      <td style="width:5%">%</td>
+
+      <?
+      $vnilai= "";
+      $infocarikey= $vid."-tarif_sewa_sc_indoor_diskon";
+      $arrcheck= in_array_column($infocarikey, "keyrowdetil", $arrdetil);
+      if(!empty($arrcheck))
+      {
+        $vnilai= numberToIna($arrdetil[$arrcheck[0]]["vnilai"]);
+      }
+      ?>
+      <tr>
+        <td colspan="3"></td>
+        <td colspan="2">Discount</td>
+        <td style="width:5%">:</td>
+        <td style="width:10%"> <?=$vnilai?></td>
+        <td style="width:5%">%</td>
       </tr>
-    <tr>
-      <td colspan="3"></td>
-      <td colspan="2">Tarif (after discount)</td>
-      <td style="width:5%">:</td>
-      <td style="width:10%">   83.243    </td>
-      <td style="width:5%">Rp / m2</td>
+
+      <?
+      $vnilai= "";
+      $infocarikey= $vid."-tarif_sewa_sc_indoor_after_diskon";
+      $arrcheck= in_array_column($infocarikey, "keyrowdetil", $arrdetil);
+      if(!empty($arrcheck))
+      {
+        $vnilai= numberToIna($arrdetil[$arrcheck[0]]["vnilai"]);
+      }
+      ?>
+      <tr>
+        <td colspan="3"></td>
+        <td colspan="2">Tarif (after discount)</td>
+        <td style="width:5%">:</td>
+        <td style="width:10%"> <?=$vnilai?></td>
+        <td style="width:5%">Rp / m2</td>
       </tr>
-    <tr>
-      <td></td>
-      <td></td>
-      <td style="width:5%">6.1.2</td>
-      <td colspan="2">Outdoor</td>
-      <td style="width:5%">:</td>
-      <td style="width:10%"> 41.622    </td>
-      <td style="width:5%">Rp / m2</td>
+    <?
+      }
+    }
+    ?>
+
+    <?
+    $infocarikey= "luas_sewa_outdoor";
+    $arrkondisicheck= in_array_column($infocarikey, "vmode", $arrdetil);
+    if(count($arrkondisicheck) > 0)
+    {
+      foreach ($arrkondisicheck as $k)
+      {
+        $v= $arrdetil[$k];
+        // print_r($v);exit;
+        $nomorsubheaddetil+=1;
+
+        $vkode= $vlantai= "";
+        $infocarikey= $v["keyrowdetil"];
+        $arrkondisicheckdetil= in_array_column($infocarikey, "key", $arrlokasi);
+        if(!empty($arrkondisicheckdetil))
+        {
+          $vd= $arrlokasi[$arrkondisicheckdetil[0]];
+          $vid= $vd["vid"];
+          $vkode= $vd["kode"];
+          $vlantai= $vd["lantai"];
+        }
+
+        $vnilai= "";
+        $infocarikey= $vid."-tarif_sewa_sc_outdoor";
+        $arrcheck= in_array_column($infocarikey, "keyrowdetil", $arrdetil);
+        if(!empty($arrcheck))
+        {
+          $vnilai= numberToIna($arrdetil[$arrcheck[0]]["vnilai"]);
+        }
+    ?>
+      <tr>
+        <td></td>
+        <td></td>
+        <td style="width:5%"><?=$vnomordetil.".".$nomorsubheaddetil?></td>
+        <td colspan="2">Outdoor <?=$vkode." ".$vlantai?></td>
+        <td style="width:5%">:</td>
+        <td style="width:10%"> <?=$vnilai?></td>
+        <td style="width:5%">Rp / m2</td>
       </tr>
-    <tr>
-      <td colspan="3"></td>
-      <td colspan="2">Discount</td>
-      <td style="width:5%">:</td>
-      <td style="width:10%"> -</td>
-      <td style="width:5%">%</td>
+
+      <?
+      $vnilai= "";
+      $infocarikey= $vid."-tarif_sewa_sc_outdoor_diskon";
+      $arrcheck= in_array_column($infocarikey, "keyrowdetil", $arrdetil);
+      if(!empty($arrcheck))
+      {
+        $vnilai= numberToIna($arrdetil[$arrcheck[0]]["vnilai"]);
+      }
+      ?>
+      <tr>
+        <td colspan="3"></td>
+        <td colspan="2">Discount</td>
+        <td style="width:5%">:</td>
+        <td style="width:10%"> <?=$vnilai?></td>
+        <td style="width:5%">%</td>
       </tr>
-    <tr>
-      <td colspan="3"></td>
-      <td colspan="2">Tarif (after discount)</td>
-      <td style="width:5%">:</td>
-      <td style="width:10%">   41.622    </td>
-      <td style="width:5%">Rp / m2</td>
+
+      <?
+      $vnilai= "";
+      $infocarikey= $vid."-tarif_sewa_sc_outdoor_after_diskon";
+      $arrcheck= in_array_column($infocarikey, "keyrowdetil", $arrdetil);
+      if(!empty($arrcheck))
+      {
+        $vnilai= numberToIna($arrdetil[$arrcheck[0]]["vnilai"]);
+      }
+      ?>
+      <tr>
+        <td colspan="3"></td>
+        <td colspan="2">Tarif (after discount)</td>
+        <td style="width:5%">:</td>
+        <td style="width:10%"> <?=$vnilai?></td>
+        <td style="width:5%">Rp / m2</td>
       </tr>
+    <?
+      }
+    }
+    ?>
+
+    <?
+    $nomorhead+=1;
+
+    $nomorsubhead= 0;
+
+    $nomorsubhead+=1;
+    $vnomordetil= $nomorhead.".".$nomorsubhead;
+    ?>
     <tr>
-      <td style="width:3%">7</td>
+      <td style="width:3%"><?=$nomorhead?></td>
       <td colspan="4" >HARGA SEWA</td>
     </tr>
     <tr>
       <td></td>
-      <td style="width:5%">7.1</td>
+      <td style="width:5%"><?=$vnomordetil?></td>
       <td colspan="3">Indoor</td>
       <td style="width:5%">:</td>
-      <td style="width:10%"> Rp  13.381.200</td>
+      <td style="width:10%"> Rp  <?=numberToIna($reqHargaIndoorSewa)?></td>
       <td style="width:5%">/ m2 / bulan</td>
-      </tr>
+    </tr>
+    <?
+    $nomorsubhead+=1;
+    $vnomordetil= $nomorhead.".".$nomorsubhead;
+    ?>
     <tr>
       <td></td>
-      <td style="width:5%">7.2</td>
+      <td style="width:5%"><?=$vnomordetil?></td>
       <td colspan="3">Outdoor</td>
       <td style="width:5%">:</td>
-      <td style="width:10%">Rp  -</td>
+      <td style="width:10%"> Rp  <?=numberToIna($reqHargaOutdoorSewa)?></td>
       <td style="width:5%">/ m2 / bulan</td>
-      </tr>
+    </tr>
+
+    <?
+    $nomorhead+=1;
+
+    $nomorsubhead= 0;
+
+    $nomorsubhead+=1;
+    $vnomordetil= $nomorhead.".".$nomorsubhead;
+    ?>
     <tr>
-      <td style="width:3%">8</td>
+      <td style="width:3%"><?=$nomorhead?></td>
       <td colspan="4" >HARGA SERVICE CHARGE</td>
     </tr>
     <tr>
       <td></td>
-      <td style="width:5%">8.1</td>
+      <td style="width:5%"><?=$vnomordetil?></td>
       <td colspan="3">Indoor</td>
       <td style="width:5%">:</td>
-      <td style="width:10%"> Rp   7.956.389</td>
+      <td style="width:10%"> Rp  <?=numberToIna($reqHargaIndoorService)?></td>
       <td style="width:5%">/ m2 / bulan</td>
-      </tr>
+    </tr>
+    <?
+    $nomorsubhead+=1;
+    $vnomordetil= $nomorhead.".".$nomorsubhead;
+    ?>
     <tr>
       <td></td>
-      <td style="width:5%">8.2</td>
+      <td style="width:5%"><?=$vnomordetil?></td>
       <td colspan="3">Outdoor</td>
       <td style="width:5%">:</td>
-      <td style="width:10%">Rp  -</td>
+      <td style="width:10%"> Rp  <?=numberToIna($reqHargaOutdoorService)?></td>
       <td style="width:5%">/ m2 / bulan</td>
-      </tr>
+    </tr>
+
+    <?
+    $nomorhead+=1;
+
+    $nomorsubhead= 0;
+    ?>
     <tr>
-      <td style="width:3%">9</td>
+      <td style="width:3%"><?=$nomorhead?></td>
       <td colspan="4" >HARGA SERVICE CHARGE</td>
     </tr>
+    <?
+    foreach ($arrdetil as $k => $v)
+    {
+        $valid= $v["vid"];
+        $valnilai= $v["vnilai"];
+        $valketerangan= $v["vketerangan"];
+        $vmode= $v["vmode"];
+        $valmode= "harga_utility_charge";
+        if($vmode == $valmode)
+        {
+          $nomorsubhead+=1;
+          $vnomordetil= $nomorhead.".".$nomorsubhead;
+
+          $vnama= "";
+          $infocarikey= $valid;
+          $arrkondisicheck= in_array_column($infocarikey, "id", $arrutilitycharge);
+          if(!empty($arrkondisicheck))
+          {
+              $vindex= $arrkondisicheck[0];
+              $vnama= $arrutilitycharge[$vindex]["nama"];
+          }
+    ?>
     <tr>
       <td></td>
-      <td style="width:5%">9.1</td>
-      <td colspan="3">Listrik</td>
+      <td style="width:5%"><?=$vnomordetil?></td>
+      <td colspan="3"><?=$vnama?></td>
       <td style="width:5%">:</td>
-      <td style="width:10%"> Rp   1.647,20    </td>
-      <td style="width:5%">/ kwh</td>
-      </tr>
+      <td style="width:10%"> Rp   <?=numberToIna($valnilai)?></td>
+      <td style="width:5%">/ <?=$valketerangan?></td>
+    </tr>
+    <?
+        }
+    }
+    ?>
+
+    <?
+    $nomorhead+=1;
+    ?>
     <tr>
-      <td></td>
-      <td style="width:5%">9.2</td>
-      <td colspan="3">Gas</td>
-      <td style="width:5%">:</td>
-      <td style="width:10%">Rp  19.200    </td>
-      <td style="width:5%">/ kg</td>
-      </tr>
-    <tr>
-      <td></td>
-      <td style="width:5%">9.3</td>
-      <td colspan="3">Air</td>
-      <td style="width:5%">:</td>
-      <td style="width:10%">Rp  25.000        </td>
-      <td style="width:5%">/ m3</td>
-      </tr>
-    <tr>
-      <td style="width:3%">10</td>
+      <td style="width:3%"><?=$nomorhead?></td>
       <td colspan="4">DOWN PAYMENT</td>
       <td >:</td>
-      <td>20</td>
+      <td><?=numberToIna($reqDp)?></td>
       <td>%</td>
     </tr>
+
+    <?
+    $nomorhead+=1;
+    ?>
     <tr>
-      <td style="width:3%">11</td>
+      <td style="width:3%"><?=$nomorhead?></td>
       <td colspan="4">PERIODE SEWA</td>
       <td >:</td>
-      <td>24  </td>
+      <td><?=numberToIna($reqPeriodeSewa)?></td>
       <td>bulan</td>
     </tr>
+
+    <?
+    $nomorhead+=1;
+    $nomorsubhead= 0;
+    ?>
     <tr>
-      <td style="width:3%">12</td>
+      <td style="width:3%"><?=$nomorhead?></td>
       <td colspan="4" >JAM OPERASIONAL</td>
     </tr>
+
+    <?
+
+    $nomorsubhead+=1;
+    $vnomordetil= $nomorhead.".".$nomorsubhead;
+
+    $vkeyid= 1;
+    $valmode= "jam_operasional_gedung";
+    $infocarikey= $vkeyid."-".$valmode;
+    $arrkondisicheck= in_array_column($infocarikey, "keyrowdetil", $arrdetil);
+    if(!empty($arrkondisicheck))
+    {
+        $vindex= $arrkondisicheck[0];
+        $valketerangan= $arrdetil[$vindex]["vketerangan"];
+    }
+    ?>
     <tr>
       <td></td>
-      <td style="width:5%">12.1</td>
+      <td style="width:5%"><?=$vnomordetil?></td>
       <td colspan="3">Gedung</td>
       <td style="width:5%">:</td>
-      <td colspan="2">10:00 s/d 22:00 </td>
-      </tr>
+      <td colspan="2"><?=$valketerangan?></td>
+    </tr>
+
+    <?
+
+    $nomorsubhead+=1;
+    $vnomordetil= $nomorhead.".".$nomorsubhead;
+    
+    $vkeyid= 2;
+    $valmode= "jam_operasional_tenan";
+    $infocarikey= $vkeyid."-".$valmode;
+    $arrkondisicheck= in_array_column($infocarikey, "keyrowdetil", $arrdetil);
+    if(!empty($arrkondisicheck))
+    {
+        $vindex= $arrkondisicheck[0];
+        $valketerangan= $arrdetil[$vindex]["vketerangan"];
+    }
+    ?>
     <tr>
       <td></td>
-      <td style="width:5%">12.2</td>
+      <td style="width:5%"><?=$vnomordetil?></td>
       <td colspan="3">Tenant</td>
       <td style="width:5%">:</td>
       <td colspan="2">10:00 s/d 22:00 </td>
-      </tr>
+    </tr>
   </table>
   <!-- rincian sewa -->
   <table style="width: 100%;">

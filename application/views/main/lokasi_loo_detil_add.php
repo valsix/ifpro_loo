@@ -135,8 +135,12 @@ $(function(){
                             <td>Lokasi</td>
                             <td>:</td>
                             <td>
-                                <input type="text" name="reqLokasiLooId" class="easyui-combobox"  id="reqLokasiLooId"
-                                       data-options="width:'350', valueField:'id', textField:'text', editable:false, url:'combo_json/comboLokasiLoo'" required value="<?=$reqLokasiLooId?>" />
+                                <input type="text" name="reqLokasiLooId" class="easyui-combobox" id="reqLokasiLooId"
+                                data-options="
+                                onChange: function(node){
+                                    setKdTarif();
+                                }
+                                , width:'350', valueField:'id', textField:'text', editable:false, url:'combo_json/comboLokasiLoo'" required value="<?=$reqLokasiLooId?>" />
                             </td>
                         </tr>
                         <tr>
@@ -157,46 +161,57 @@ $(function(){
                             <td>Lantai</td>
                             <td>:</td>
                             <td>
-                                <input type="text" name="reqLantaiLooId" class="easyui-combobox"  id="reqLantaiLooId"
-                                       data-options="width:'350', valueField:'id', textField:'text', editable:false, url:'combo_json/comboLantaiLoo'" required value="<?=$reqLantaiLooId?>" />
+                                <input type="text" name="reqLantaiLooId" class="easyui-combobox" id="reqLantaiLooId"
+                                data-options="
+                                onChange: function(node){
+                                    setKdTarif();
+                                }
+                                , width:'350', valueField:'id', textField:'text', editable:false, url:'combo_json/comboLantaiLoo'" required value="<?=$reqLantaiLooId?>" />
                             </td>
                         </tr>
                         <tr>
                             <td>Area</td>
                             <td>:</td>
                             <td>
-                                <input type="text" name="reqArea" class="easyui-combobox"  id="reqArea"
-                                       data-options="width:'350', valueField:'id', textField:'text', editable:false, url:'combo_json/comboTipeLokasiDetilLoo'" required value="<?=$reqArea?>" />
+                                <input type="text" name="reqArea" class="easyui-combobox" id="reqArea"
+                                data-options="
+                                onChange: function(node){
+                                    setKdTarif();
+                                }
+                                , width:'350', valueField:'id', textField:'text', editable:false, url:'combo_json/comboTipeLokasiDetilLoo'" required value="<?=$reqArea?>" />
                             </td>
                         </tr>
                         <tr>
                             <td>Jenis</td>
                             <td>:</td>
                             <td>
-                                <input type="text" name="reqJenis" class="easyui-combobox"  id="reqJenis"
-                                       data-options="width:'350', valueField:'id', textField:'text', editable:false, url:'combo_json/comboJenis'" required value="<?=$reqJenis?>" />
+                                <input type="text" name="reqJenis" class="easyui-combobox" id="reqJenis"
+                                data-options="
+                                onChange: function(node){
+                                    setKdTarif();
+                                }
+                                , width:'350', valueField:'id', textField:'text', editable:false, url:'combo_json/comboJenis'" required value="<?=$reqJenis?>" />
                             </td>
                         </tr>
                         <tr>           
                             <td>Prime</td>
                             <td>:</td>
                             <td>
-                                <input type="text" name="reqPrime" class="easyui-combobox"  id="reqPrime"
-                                       data-options="width:'350', valueField:'id', textField:'text', editable:false, url:'combo_json/comboPrime'" required value="<?=$reqPrime?>" />
+                                <input type="text" name="reqPrime" class="easyui-combobox" id="reqPrime" data-options="width:'350', valueField:'id', textField:'text', editable:false, url:'combo_json/comboPrime'" required value="<?=$reqPrime?>" />
                             </td>
                         </tr>
                         <tr>
                             <td>Luas</td>
                             <td>:</td>
                             <td>
-                                <input type="text" id="reqLuas" class="vlxuangclass easyui-validatebox textbox form-control totalluasoutdoor" required name="reqLuas"  value="<?=$reqLuas ?>" data-options="required:true" style="width:90%" />
+                                <input type="text" id="reqLuas" class="vlxuangclass easyui-validatebox textbox form-control" required name="reqLuas"  value="<?=$reqLuas ?>" data-options="required:true" style="width:90%" />
                             </td>
                         </tr>
                         <tr>
                             <td>KD Tarif</td>
                             <td>:</td>
                             <td>
-                                <input type="text" id="reqKdTarif" class="vlxuangclass easyui-validatebox textbox form-control totalluasoutdoor" required name="reqKdTarif"  value="<?=$reqKdTarif ?>" data-options="required:true" style="width:90%" />
+                                <input type="text" readonly id="reqKdTarif" class="vlxuangclass easyui-validatebox textbox form-control" required name="reqKdTarif"  value="<?=$reqKdTarif ?>" data-options="required:true" style="width:90%" />
                             </td>
                         </tr>
                         <tr>
@@ -226,8 +241,33 @@ $(function(){
 <script>
 
 $(document).ready(function() {
-    
+    $("#reqLuas").keyup(function(){
+      setKdTarif();
+    });
 });
+
+function setKdTarif()
+{
+    var reqLokasiLooId= reqLantaiLooId= reqArea= reqLuas= "";
+    reqLokasiLooId= $("#reqLokasiLooId").combobox("getValue");
+    reqLantaiLooId= $("#reqLantaiLooId").combobox("getValue");
+    reqArea= $("#reqArea").combobox("getValue");
+    reqJenis= $("#reqJenis").combobox("getValue");
+
+    if(reqJenis == "CL")
+    {
+        reqArea= "CL"
+    }
+
+    reqLuas= $("#reqLuas").val();
+
+    urlAjax= "combo_json/kdtarif?reqLokasiLooId="+reqLokasiLooId+"&reqLantaiLooId="+reqLantaiLooId+"&reqArea="+reqArea+"&reqLuas="+reqLuas;
+    $.ajax({'url': urlAjax,'success': function(data){
+      reqKdTarif= parseFloat(data);
+      // console.log(reqKdTarif);
+      $("#reqKdTarif").val(FormatCurrency(reqKdTarif));
+    }});
+}
 
 function submitForm(){
     

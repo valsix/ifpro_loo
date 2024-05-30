@@ -88,7 +88,7 @@ DESCRIPTION			:
     * @param int from Awal record yang diambil 
     * @return boolean True jika sukses, false jika tidak 
     **/ 
-  function selectByParams($paramsArray=array(),$limit=-1,$from=-1,$statement="", $order=" ORDER BY LANTAI_LOO_ID ASC")
+  	function selectByParams($paramsArray=array(),$limit=-1,$from=-1,$statement="", $order=" ORDER BY LANTAI_LOO_ID ASC")
 	{
 		$str = "
 				SELECT 
@@ -105,7 +105,26 @@ DESCRIPTION			:
 		$str .= $statement." ".$order;
 		$this->query = $str;
 		return $this->selectLimit($str,$limit,$from); 
-  }
+  	}
+
+  	function selectdetil($paramsArray=array(),$limit=-1,$from=-1,$statement="", $order=" ORDER BY A.AWAL ASC")
+	{
+		$str = "
+		SELECT 
+			A.*
+		FROM lantai_loo_detil A
+		WHERE 1 = 1
+		"; 
+		
+		while(list($key,$val) = each($paramsArray))
+		{
+			$str .= " AND $key = '$val' ";
+		}
+		
+		$str .= $statement." ".$order;
+		$this->query = $str;
+		return $this->selectLimit($str,$limit,$from); 
+  	}
 	
     function selectByParamsEntri($satuanKerjaId, $paramsArray=array(),$limit=-1,$from=-1,$statement="", $order=" ORDER BY A.LANTAI_LOO_ID ASC")
 	{

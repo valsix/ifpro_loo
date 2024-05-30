@@ -499,8 +499,29 @@ class combo_json extends CI_Controller {
 
 		echo json_encode($arr_json);
 	}
-	
-	
+
+	function kdtarif()
+	{
+		$this->load->model("LantaiLoo");
+		$set= new LantaiLoo();
+
+		$reqLokasiLooId= $this->input->get("reqLokasiLooId"); if(empty($reqLokasiLooId)) $reqLokasiLooId= -1;
+		$reqLantaiLooId= $this->input->get("reqLantaiLooId"); if(empty($reqLantaiLooId)) $reqLantaiLooId= -1;
+		$reqArea= $this->input->get("reqArea"); if(empty($reqArea)) $reqArea= "x";
+		$reqLuas= $this->input->get("reqLuas"); if(empty($reqLuas)) $reqLuas= -1;
+		$reqLuas= dotToNo($reqLuas);
+
+		// AND A.AREA IN ('I', 'O', 'CL')
+		$statement= " AND A.LOKASI_LOO_ID = ".$reqLokasiLooId." AND A.LANTAI_LOO_ID = ".$reqLantaiLooId." AND A.AREA IN ('".$reqArea."') AND ".$reqLuas." >= A.AWAL AND ".$reqLuas." <= COALESCE(A.AKHIR, ".$reqLuas.")";
+
+		$set->selectdetil(array(), -1,-1, $statement);
+		// echo $set->query;exit;
+		$set->firstRow();
+		$vreturn= $set->getField("NILAI");
+
+		if(empty($vreturn)) $vreturn= 0;
+		echo $vreturn;
+	}
 		
 }
 
