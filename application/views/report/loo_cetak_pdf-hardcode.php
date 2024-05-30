@@ -1,32 +1,12 @@
 <?php
+/* INCLUDE FILE */
 include_once("functions/date.func.php");
 include_once("functions/default.func.php");
 include_once("functions/string.func.php");
 include_once("libraries/vendor/autoload.php");
-
-$this->load->model("TrLoo");
-$this->load->model("TrLooDetil");
-$this->load->model("Combo");
-
-$reqId= $this->input->get("reqId");
-
-if(empty($reqId)) $reqId= -1;
-
-$statement= " AND A.TR_LOO_ID = ".$reqId;
-$set= new TrLoo();
-$set->selectcetak(array(), -1,-1, $statement);
-$set->firstRow();
-$reqLokasiNama= $set->getField("LOKASI_NAMA");
-$reqCustomerNama= $set->getField("NAMA_PEMILIK");
-$reqCustomerTempat= $set->getField("TEMPAT");
-$reqCustomerTlp= $set->getField("TELP");
-$reqCustomerEmail= $set->getField("EMAIL");
-$reqCustomerBrand= $set->getField("NAMA_BRAND");
-$reqProdukNama= $set->getField("PRODUK_NAMA");
 ?>
-<base href="<?=base_url();?>">
-<link href="css/gaya-surat.css" rel="stylesheet" type="text/css">
-<link href="lib/froala_editor_2.9.8/css/froala_style.css" rel="stylesheet" type="text/css">
+<link href="<?= base_url() ?>css/gaya-surat.css" rel="stylesheet" type="text/css">
+<link href="<?= base_url() ?>lib/froala_editor_2.9.8/css/froala_style.css" rel="stylesheet" type="text/css">
 <style>
   body{
 /*      background-image:url('<?= base_url() ?>images/bg_cetak.jpg')  ;
@@ -39,7 +19,7 @@ $reqProdukNama= $set->getField("PRODUK_NAMA");
   <table style="width: 100%;">
     <tr>
       <td colspan="7">
-        <img src="<?='images/logo.png'?>" height="100px">
+        <img src="<?=base_url().'images/logo.png'?>" height="100px">
       </td>
     </tr>
     <tr>
@@ -67,7 +47,7 @@ $reqProdukNama= $set->getField("PRODUK_NAMA");
     </tr>
     <tr>
       <td colspan=7>
-        <?=$reqLokasiNama?>
+        SOSORO MALL - MERAK <br> ANJUNGAN AGUNG MALL - BAKAUHENI <br> PLAZA MARINA - LABUAN BAJO
       </td>
     </tr>
     <tr>
@@ -77,10 +57,10 @@ $reqProdukNama= $set->getField("PRODUK_NAMA");
       <td colspan="3">Kepada Yth.</td>
     </tr>
     <tr>
-      <td colspan="3">Bapak <?=$reqCustomerNama?></td>
+      <td colspan="3">Bapak S. Hannie Krisdianta</td>
     </tr>
     <tr>
-      <td colspan="3"><?=$reqCustomerTempat?></td>
+      <td colspan="3">PT Indomarco Prismatama</td>
     </tr>
     <tr>
       <td colspan="3">
@@ -88,12 +68,12 @@ $reqProdukNama= $set->getField("PRODUK_NAMA");
           <tr>
             <td>Telp./HP</td>
             <td>:</td>
-            <td><?=$reqCustomerTlp?></td>
+            <td>021 - 508 97 400</td>
           </tr>
           <tr>
-            <td>Email</td>
+            <td>Email   </td>
             <td>:</td>
-            <td><?=$reqCustomerEmail?></td>
+            <td>-</td>
           </tr>
         </table>
       </td>
@@ -118,20 +98,27 @@ $reqProdukNama= $set->getField("PRODUK_NAMA");
       <td style="width:3%">1</td>
       <td colspan="4">NAMA PEMILIK</td>
       <td ><b>:</b></td>
-      <td colspan="3"><b><?=$reqCustomerNama?></b></td>
+      <td colspan="3"><b>S. Hannie Krisdianta</b></td>
     </tr>
     <tr>
       <td style="width:3%">2</td>
       <td colspan="4">NAMA BRAND</td>
       <td ><b>:</b></td>
-      <td colspan="3"><b><?=$reqCustomerBrand?></b></td>
+      <td colspan="3"><b>INDOMARET</b></td>
     </tr>
     <tr>
       <td style="width:3%">3</td>
       <td colspan="4">PRODUK</td>
       <td ><b>:</b></td>
-      <td colspan="3"><b><?=$reqProdukNama?></b></td>
+      <td colspan="3"><b>Retail</b></td>
     </tr>
+    <tr>
+      <td style="width:3%">4</td>
+      <td colspan="4">LOKASI / ID / LANTAI</td>
+      <td ><b>:</b></td>
+      <td colspan="3"><b>L1. 11</b></td>
+    </tr>
+    
     <tr>
       <td style="width:3%">5</td>
       <td colspan="4" >LUAS SEWA</td>
@@ -796,7 +783,7 @@ $reqProdukNama= $set->getField("PRODUK_NAMA");
       </td>
       <td style="width:40%"></td>
       <td style="width:30%;text-align: center;">
-        <b><?=$reqCustomerTempat?></b>
+        <b>PT Indomarco Prismatama </b>           
       </td>
     </tr>
     <tr>
@@ -817,7 +804,7 @@ $reqProdukNama= $set->getField("PRODUK_NAMA");
       </td>
       <td style="width:40%"></td>
       <td style="width:30%;text-align: center;">
-        <u><b><?=$reqCustomerNama?></b></u>                       
+        <u><b>S. Hannie Krisdianta</b></u>                       
       </td>
     </tr>
     <tr>

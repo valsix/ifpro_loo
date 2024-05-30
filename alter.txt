@@ -3,6 +3,12 @@ create table tr_loo
 (
 	tr_loo_id numeric not null
 	, status_data character varying
+	, nomor_surat character varying
+	, user_pembuat_id character varying
+	, user_pengirim_id character varying
+	, user_pengirim_nama character varying
+	, user_pengirim_jabatan character varying
+	, satuan_kerja_pengirim_id character varying
 	, produk_id integer
 	, customer_id integer
 	, lokasi_loo_id integer
@@ -19,8 +25,52 @@ create table tr_loo
 	, harga_outdoor_service numeric
 	, dp numeric
 	, periode_sewa numeric
+	, approval_qr_date timestamp without time zone
+	, ttd_kode character varying
+	, paksa_db character varying
 	, constraint pk_tr_loo primary key (tr_loo_id)
 );
+
+create or replace function p_tr_loo()
+  returns trigger as
+$body$
+declare
+
+pejabatnip character varying;
+pejabatnama character varying;
+pejabatjabatan character varying;
+statuspejabatganti character varying;
+vquery text;
+
+begin
+
+	if lower(new.paksa_db) = lower('paksa') then
+		new.paksa_db:= null;
+		return new;
+	end if;
+
+	select
+	nip, nama_pegawai, jabatan, status_pejabat_ganti
+	into pejabatnip, pejabatnama, pejabatjabatan, statuspejabatganti
+	from satuan_kerja_fix where satuan_kerja_id = new.satuan_kerja_pengirim_id;
+
+	new.user_pengirim_id:= pejabatnip;
+	new.user_pengirim_nama:= pejabatnama;
+	new.user_pengirim_jabatan:= pejabatjabatan;
+
+	return new;
+
+end;
+$body$
+language plpgsql volatile cost 100;
+alter function p_tr_loo() owner to postgres;
+
+drop trigger if exists trg_tr_loo on tr_loo;
+create trigger trg_tr_loo
+before insert or update
+on tr_loo
+for each row
+execute procedure p_tr_loo();
 
 drop table if exists tr_loo_detil;
 create table tr_loo_detil
@@ -34,6 +84,107 @@ create table tr_loo_detil
 	, constraint pk_tr_loo_detil primary key (tr_loo_detil_id)
 );
 
+drop table if exists tr_loo_paraf;
+create table tr_loo_paraf
+(
+	tr_loo_paraf_id numeric not null
+	, tr_loo_id numeric
+	, satuan_kerja_id_tujuan character varying
+	, user_id character varying
+	, nama_user character varying
+	, nama_satker character varying
+	, status_paraf character varying
+	, kode_paraf character varying
+	, terbaca numeric
+	, no_urut integer
+	, next_urut integer
+	, status_bantu integer
+	, status_pejabat_ganti character varying
+	, nip_mutasi character varying
+	, kondisi_paraf character varying
+	, constraint pk_tr_loo_paraf primary key (tr_loo_paraf_id)
+	, constraint u_loo_paraf unique (tr_loo_id, user_id)
+);
+
+create or replace function p_tr_loo_paraf()
+  returns trigger as
+$body$
+
+declare 
+psatkernip character varying;
+psatkernama character varying;
+psatkerpegawai character varying;
+statuspejabatganti character varying;
+kelompokjabatan character varying;
+ceknexturut integer;
+posisinexturut integer;
+totalparafstatus integer;
+totalparaf integer;
+batasawal integer;
+batasakhir integer;
+cekdatanexturut integer;
+
+    begin
+
+	if new.status_bantu = 1 then
+		select
+			user_bantu, 'Sekretaris ' || nama, user_bantu_nama, status_pejabat_ganti, kelompok_jabatan
+			into psatkernip, psatkernama, psatkerpegawai, statuspejabatganti, kelompokjabatan
+		from satuan_kerja_fix 
+		where satuan_kerja_id = new.satuan_kerja_id_tujuan;
+	else
+		select
+			nip, jabatan, nama_pegawai, status_pejabat_ganti, kelompok_jabatan
+			into psatkernip, psatkernama, psatkerpegawai, statuspejabatganti, kelompokjabatan
+		from satuan_kerja_fix 
+		where satuan_kerja_id = new.satuan_kerja_id_tujuan;
+	end if;
+
+	if lower(tg_op) = lower('update') and coalesce(nullif(old.status_paraf, ''), null) is null and coalesce(nullif(new.status_paraf, ''), null) is not null 
+	then
+		select count(1) into totalparafstatus from tr_loo_paraf where tr_loo_id = new.tr_loo_id
+		and status_paraf = '1';
+		
+		select max(next_urut) posisinexturut into posisinexturut
+		from tr_loo_paraf where tr_loo_id = new.tr_loo_id;
+		
+		posisinexturut:= coalesce(posisinexturut,0) + 1;
+
+		if totalparafstatus > 0 then
+			if new.kondisi_paraf != 'paralel' then
+				--raise notice '-,%', 'x';
+				return new;
+			end if;
+		else
+			--kalau next urut lanjut tidak sama maka tidak update karena bukan saatnya
+			if posisinexturut != new.no_urut or old.next_urut is null then
+				if posisinexturut = new.no_urut then
+					--raise notice '-,%', 'a';
+					return new;
+				else
+					--raise notice '-,%', 'b';
+					return old;
+				end if;
+			end if;
+		end if;
+	end if;
+	
+	new.user_id := psatkernip;
+	new.status_pejabat_ganti:= statuspejabatganti;
+	new.nama_user := psatkerpegawai;
+	new.nama_satker := psatkernama;
+    return new;
+    end;
+$body$
+language plpgsql volatile cost 100;
+alter function p_tr_loo_paraf() owner to postgres;
+
+drop trigger if exists trg_tr_loo_paraf on tr_loo_paraf;
+create trigger trg_tr_loo_paraf
+before insert or update
+on tr_loo_paraf
+for each row
+execute procedure p_tr_loo_paraf();
 
 drop table if exists utility_charge;
 create table utility_charge

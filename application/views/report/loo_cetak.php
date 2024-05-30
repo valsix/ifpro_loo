@@ -13,8 +13,9 @@ $reqId = $this->input->get("reqId");
 $templateSurat= $this->input->get("templateSurat");
 $vlihat= $this->input->get("lihat");
 
-$report = new ReportLoo();
-$docPDF = $report->generate($reqId, $templateSurat, $reqJenisReport, $vlihat);
+$arrparam= array("reqId"=>$reqId, "reqTemplate"=>$templateSurat, "lihat"=>$vlihat);
+$report= new ReportLoo();
+$docPDF= $report->generate($arrparam);
 
 $url = 'uploads/' . $reqId . '/' . $docPDF;
 // echo $url; exit;

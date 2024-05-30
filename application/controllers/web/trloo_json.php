@@ -201,11 +201,15 @@ class trloo_json extends CI_Controller
 	{
 		$this->load->model("TrLoo");
 		$this->load->model("TrLooDetil");
+		$this->load->model("TrLooParaf");
+		$this->load->model("SatuanKerja");
 
 		$reqMode= $this->input->post("reqMode");
 		$reqId= $this->input->post("reqId");
+		$cekquery= $this->input->post("cekquery");
 
 		$reqStatusData= $this->input->post("reqStatusData");
+		$reqSatuanKerjaPengirimId= $this->input->post("reqSatuanKerjaPengirimId");
 		$reqProdukId= $this->input->post("reqProdukId");
 		$reqCustomerId= $this->input->post("reqCustomerId");
 		$reqLokasiLooId= $this->input->post("reqLokasiLooId");
@@ -223,6 +227,31 @@ class trloo_json extends CI_Controller
 		$reqDp= $this->input->post("reqDp");
 		$reqPeriodeSewa= $this->input->post("reqPeriodeSewa");
 
+		if($reqStatusData == "UBAHDATAPARAF" || $reqStatusData == "UBAHDATAREVISI")
+		{
+			$reqKondisiStatusData= $reqStatusData;
+			$reqStatusData= "DRAFT";
+		}
+
+		if($reqStatusData == "UBAHDATADRAFTPARAF")
+		{
+			$reqKondisiStatusData= $reqStatusData;
+			$reqStatusData= "PARAF";
+		}
+
+		if($reqStatusData == "UBAHDATAPOSTING")
+		{
+			$reqKondisiStatusData= $reqStatusData;
+			$reqStatusData= "POSTING";
+		}
+
+		if($reqStatusData == "UBAHDATAVALIDASI")
+		{
+			$reqKondisiStatusData= $reqStatusData;
+			$reqStatusData= "VALIDASI";
+		}
+
+		$sesid= $this->ID;
 		$set= new TrLoo();
 		$set->setField("TR_LOO_ID", $reqId);
 		$set->setField("PRODUK_ID", ValToNullDB($reqProdukId));
@@ -241,8 +270,10 @@ class trloo_json extends CI_Controller
 		$set->setField("HARGA_OUTDOOR_SERVICE", ValToNullDB(dotToNo($reqHargaOutdoorService)));
 		$set->setField("DP", ValToNullDB(dotToNo($reqDp)));
 		$set->setField("PERIODE_SEWA", ValToNullDB(dotToNo($reqPeriodeSewa)));
-		$set->setField("LAST_CREATE_USER", $this->USERNAME);
-		$set->setField("LAST_UPDATE_USER", $this->USERNAME);
+
+		$set->setField("USER_PEMBUAT_ID", $sesid);
+		$set->setField("STATUS_DATA", $reqStatusData);
+		$set->setField("SATUAN_KERJA_PENGIRIM_ID", $reqSatuanKerjaPengirimId);
 
 		$reqSimpan="";
 		if ($reqMode == "insert") {
@@ -259,7 +290,11 @@ class trloo_json extends CI_Controller
 			{
 				$reqSimpan=1;
 			}
+		}
 
+		if($cekquery == "1")
+		{
+			echo $set->query;exit;
 		}
 
 		if ($reqSimpan==1) 
@@ -282,6 +317,135 @@ class trloo_json extends CI_Controller
 				$setdetil->setField("KETERANGAN", $vketerangan[$k]);
 				$setdetil->insert();
 			}
+
+			// untuk data pemaraf
+			$reqSatuanKerjaIdParaf= $this->input->post("reqSatuanKerjaIdParaf");
+			if ( ($reqStatusData == "DRAFT" && empty($reqKondisiStatusSurat)) || ($reqStatusData == "PARAF" && $reqKondisiStatusSurat == "UBAHDATADRAFTPARAF") || ($reqStatusData == "DRAFT" && $reqKondisiStatusSurat == "UBAHDATAREVISI") )
+			{
+				$setdetil= new TrLooParaf();
+				$setdetil->setField("TR_LOO_ID", $reqId);
+				$setdetil->setField("LAST_CREATE_USER", $sesid);
+				$setdetil->deleteParent();
+				
+				// tambahan khusus
+				if(!empty($reqSatuanKerjaIdParaf))
+				{
+					// $reqSatuanKerjaIdParaf= explode(",", $reqSatuanKerjaIdParaf);
+					for ($i = 0; $i < count($reqSatuanKerjaIdParaf); $i++) {
+						if ($reqSatuanKerjaIdParaf[$i] == "") {
+						} else {
+							$setdetil = new TrLooParaf();
+
+							$adaData= $setdetil->getCountByParams(array("TR_LOO_ID" => $reqId, "SATUAN_KERJA_ID_TUJUAN" => $reqSatuanKerjaIdParaf[$i]));
+
+							// kalau satuan kerja sebagai pengirim, maka jangan di simpan
+							if( $reqSatuanKerjaId !== $reqSatuanKerjaIdParaf[$i])
+							{
+								if ($adaData == 0) 
+								{
+									// tambahan khusus
+									$userbantu= new SatuanKerja();
+									$userbantu->selectByParams(array(),-1,-1, " AND A.SATUAN_KERJA_ID = '".$reqSatuanKerjaIdParaf[$i]."'");
+									$userbantu->firstRow();
+									$userbantuuserid= $userbantu->getField("USER_BANTU");
+									unset($userbantu);
+
+									if(!empty($userbantuuserid))
+									{
+										$setdetil = new TrLooParaf();
+										$setdetil->setField("TR_LOO_ID", $reqId);
+										$setdetil->setField("SATUAN_KERJA_ID_TUJUAN", $reqSatuanKerjaIdParaf[$i]);
+										$setdetil->setField("LAST_CREATE_USER", $sesid);
+										$setdetil->insertbantu();
+									}
+						
+									$setdetil->setField("TR_LOO_ID", $reqId);
+									$setdetil->setField("SATUAN_KERJA_ID_TUJUAN", $reqSatuanKerjaIdParaf[$i]);
+									$setdetil->setField("LAST_CREATE_USER", $sesid);
+									$setdetil->insert();
+
+									if($cekquery == "2")
+									{
+										echo $setdetil->query;exit;
+									}
+								}
+							}
+						}
+					}
+				}
+
+				// tambahan khusus
+				$userbantu= new SatuanKerja();
+				$userbantu->selectByParams(array(),-1,-1, " AND A.SATUAN_KERJA_ID = '".$reqSatuanKerjaId."'");
+				$userbantu->firstRow();
+				$userbantuuserid= $userbantu->getField("USER_BANTU");
+				unset($userbantu);
+
+				if(!empty($userbantuuserid))
+				{
+					$setdetil = new TrLooParaf();
+					$setdetil->setField("TR_LOO_ID", $reqId);
+					$setdetil->setField("SATUAN_KERJA_ID_TUJUAN", $reqSatuanKerjaId);
+					$setdetil->setField("LAST_CREATE_USER", $sesid);
+					$setdetil->insertbantu();
+					if($cekquery == "105")
+					{
+						// echo $setdetil->query;exit;
+					}
+				}
+
+				if(!empty($reqSatuanKerjaIdParaf))
+				{
+					$userbantu= new TrLooParaf();
+					$userbantu->setField("TR_LOO_ID", $reqId);
+					$userbantu->deleteuserbantu();
+					unset($userbantu);
+
+					// reset ulang nomor
+					$userbantu= new TrLooParaf();
+					$userbantu->selectByParams(array("TR_LOO_ID" => $reqId), -1, -1, " AND COALESCE(NULLIF(KONDISI_PARAF, ''), NULL) IS NULL", "ORDER BY NO_URUT ASC");
+					$nomorurut=1;
+					while($userbantu->nextRow())
+					{
+						$checkparaf= new TrLooParaf();
+						$checkparaf->setField("SURAT_MASUK_PARAF_ID", $userbantu->getField("SURAT_MASUK_PARAF_ID"));
+						$checkparaf->setField("NO_URUT", $nomorurut);
+						$checkparaf->resetnourut();
+						$nomorurut++;
+					}
+
+					// kalau jenis keputusan direksi
+					if($reqJenisNaskah == 8)
+					{
+						$checkparaf= new TrLooParaf();
+						$checkparaf->setField("TR_LOO_ID", $reqId);
+						$checkparaf->resetparalelnourut();
+					}
+				}
+
+				// kondisi tukar data paralel apabila urutan user bantu lebih besar
+				$checkparaf= new TrLooParaf();
+				$checkparaf->selectByParams(array(), -1, -1, " AND A.STATUS_BANTU IS NULL AND KONDISI_PARAF = 'PARALEL' AND A.TR_LOO_ID = ".$reqId);
+				$checkparaf->firstRow();
+				$checkparafuserdireksi= $checkparaf->getField("NO_URUT");
+
+				$checkparaf= new TrLooParaf();
+				$checkparaf->selectByParams(array(), -1, -1, " AND A.STATUS_BANTU = 1 AND KONDISI_PARAF = 'PARALEL' AND A.TR_LOO_ID = ".$reqId);
+				$checkparaf->firstRow();
+				$checkparafuserbantu= $checkparaf->getField("NO_URUT");
+
+				// echo $checkparafuserdireksi."xxx".$checkparafuserbantu;exit;
+
+				if(!empty($checkparafuserdireksi) && !empty($checkparafuserbantu) && $checkparafuserbantu > $checkparafuserdireksi)
+				{
+					$checkparaf= new TrLooParaf();
+					$checkparaf->setField("TR_LOO_ID", $reqId);
+					$checkparaf->setField("NO_URUT_DIREKSI", $checkparafuserbantu);
+					$checkparaf->setField("NO_URUT_BANTU", $checkparafuserdireksi);
+					$checkparaf->tukarurutanparalel();
+				}
+			}
+
 
 			echo $reqId."xxxData berhasil disimpan.";
 		}

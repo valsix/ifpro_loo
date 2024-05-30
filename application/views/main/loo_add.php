@@ -6,8 +6,10 @@ include_once("functions/date.func.php");
 $this->load->model("TrLoo");
 $this->load->model("TrLooDetil");
 $this->load->model("Combo");
+$this->load->model("TrLooParaf");
 
 $reqId= $this->input->get("reqId");
+$cekquery= $this->input->get("c");
 
 $arrdetil= $arrlokasi= [];
 if(empty($reqId))
@@ -33,6 +35,8 @@ else
     $reqHargaOutdoorService= $set->getField("HARGA_OUTDOOR_SERVICE");
     $reqDp= $set->getField("DP");
     $reqPeriodeSewa= $set->getField("PERIODE_SEWA");
+
+    $reqSatuanKerjaPengirimId= $set->getField("SATUAN_KERJA_PENGIRIM_ID");
 
     /*
     $set->setField("TOTAL_DISKON_INDOOR_SEWA", ValToNullDB(dotToNo($req)));
@@ -147,7 +151,15 @@ $(function(){
     <div id="konten">
         <form id="ff" method="post" novalidate enctype="multipart/form-data">
             <div class="btn-atas clearfix">
-                <a class="btn btn-danger btn-sm pull-right" id="buttonpdf" onClick="submitPreview()" style="cursor: pointer;"><i class="fa fa-file-pdf-o"></i> View as PDF</a>
+                <?
+                $aksibutton= "";
+                if(!empty($reqId)) 
+                {
+                ?>
+                    <a class="btn btn-danger btn-sm pull-right" id="buttonpdf" onClick="submitPreview()" style="cursor: pointer;"><i class="fa fa-file-pdf-o"></i> View as PDF</a>
+                <?
+                }
+                ?>
                 <button id="btnDRAFT" class="btn btn-default btn-sm pull-right" type="button" onClick="submitForm('DRAFT')">
                     <span style="display: none;" class="buttonspiner ic2-fa-spin-blue"></span>
                     <i class="fa fa-file-o"></i> Draft
@@ -159,6 +171,7 @@ $(function(){
                 <input type="hidden" name="reqStatusData" id="reqStatusData" value="<?=$reqStatusData?>" />
                 <input type="hidden" name="reqId" value="<?=$reqId?>" />
                 <input type="hidden" name="reqMode" value="<?=$reqMode?>" />
+                <input type="hidden" name="cekquery" value="<?=$cekquery?>" />
 
                 <table class="table">
                     <thead>
@@ -166,7 +179,7 @@ $(function(){
                             <td>Lokasi</td>
                             <td>:</td>
                             <td>
-                                <input type="hidden" id="sebelumLokasiLooId" />
+                                <input type="hidden" id="sebelumLokasiLooId" value="<?=$reqLokasiLooId?>"  />
                                 <input type="text" name="reqLokasiLooId" class="easyui-combotree" id="reqLokasiLooId" 
                                 data-options="
                                 onClick: function(node){
@@ -194,6 +207,78 @@ $(function(){
                                 <input type="text" name="reqProdukId" class="easyui-combobox" id="reqProdukId" data-options="width:'350', valueField:'id', textField:'text', editable:false, url:'combo_json/comboProduk'" required value="<?=$reqProdukId?>" />
                             </td>
                         </tr>
+                        <tr>
+                            <td>Pengirim <span class="text-danger">*</td>
+                            <td>:</td>
+                            <td>
+                                <input type="text" id="reqSatuanKerjaPengirimId" class="easyui-combotree" name="reqSatuanKerjaPengirimId" data-options="
+                                onClick: function(rec){
+                                    $('#reqUserPengirimId').val(rec.NIP);
+                                    var url = 'web/satuan_kerja_json/combo_paraf/?reqId='+rec.SATUAN_KERJA_ID;
+
+                                    // tambahan khusus
+                                    if(rec.NIP == '')
+                                    {
+                                        $.messager.alert('Info', 'Pengirim belum di tentukan di master.', 'info');
+                                        $('#reqSatuanKerjaPengirimId').combotree('setValue', '');
+                                    }
+                                }
+                                , width:'500'
+                                , panelHeight:'120'
+                                , valueField:'id'
+                                , textField:'text'
+                                , url:'web/satuan_kerja_json/combotreesatker/'
+                                , prompt:'Tentukan Pengirim...'," value="<?=$reqSatuanKerjaPengirimId?>"
+                                required="required"
+                                />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Pemeriksa
+                                <?
+                                if(empty($infodisplay))
+                                {
+                                ?>
+                                <a onClick="top.openAdd('app/loadUrl/main/satuan_kerja_tujuan_multi_lookup/?reqJenis=PARAF&reqJenisSurat=INTERNAL&reqIdField=divpemeriksa')"><i class="fa fa-plus-circle fa-lg"></i></a>
+                                <?
+                                }
+                                ?>
+                            </td>
+                            <td>:</td>
+                            <td>
+                                <input type="hidden" id="reqSatuanKerjaIdParaf" />
+                                <div class="inner" id="divpemeriksa">
+                                    <?
+                                    if(!empty($reqId))
+                                    {
+                                        $setinfoparaf= new TrLooParaf();
+                                        $setinfoparaf->selectByParams(array(), -1, -1, " AND A.STATUS_BANTU IS NULL AND A.TR_LOO_ID = ".$reqId, "ORDER BY A.NO_URUT");
+                                        while($setinfoparaf->nextRow())
+                                        {
+                                            $valparafnama= $setinfoparaf->getField("NAMA_SATKER");
+                                            $valparafid= $setinfoparaf->getField("SATUAN_KERJA_ID_TUJUAN");
+                                    ?>
+                                        <div class="item">PARAF: <?=$valparafnama?>
+                                            <?
+                                            if(empty($infodisplay))
+                                            {
+                                            ?>
+                                            <i class="fa fa-times-circle" onclick="$(this).parent().remove();"></i>
+                                            <?
+                                            }
+                                            ?>
+                                            <input type="hidden" name="reqTujuanSuratParafValidasi" value="<?=$valparafid?>">
+                                            <input type="hidden" name="reqSatuanKerjaIdParaf[]" value="<?=$valparafid?>" />
+                                        </div>
+                                    <?
+                                        }
+                                    }
+                                    ?>
+                                </div>
+                            </td>
+                        </tr>
+
                         <!-- <tr>
                             <td>Lokasi Lantai</td>
                             <td>:</td>
@@ -237,7 +322,7 @@ $(function(){
                                                 if($vmode == "luas_sewa_indoor")
                                                 {
                                             ?>
-                                            <tr class="groupclass<?=$vkeyid?>">
+                                            <tr class="grouplokasiclass<?=$reqLokasiLooId?> groupclass<?=$vkeyid?>">
                                                 <td>
                                                     <?=$vlabel?> <i style="cursor:pointer" class="fa fa-times-circle text-danger" aria-hidden="true" onclick="hapusgroupclass('<?=$vkeyid?>');"></i>
                                                 </td>
@@ -278,7 +363,7 @@ $(function(){
                                                 if($vmode == "luas_sewa_outdoor")
                                                 {
                                             ?>
-                                            <tr class="groupclass<?=$vkeyid?>">
+                                            <tr class="grouplokasiclass<?=$reqLokasiLooId?> groupclass<?=$vkeyid?>">
                                                 <td>
                                                     <?=$vlabel?> <i style="cursor:pointer" class="fa fa-times-circle text-danger" aria-hidden="true" onclick="hapusgroupclass('<?=$vkeyid?>');"></i>
                                                 </td>
@@ -351,10 +436,10 @@ $(function(){
                                                 if($vmode == "luas_sewa_indoor")
                                                 {
                                             ?>
-                                            <tr class="groupclass<?=$vkeyid?>">
+                                            <tr class="grouplokasiclass<?=$reqLokasiLooId?> groupclass<?=$vkeyid?>">
                                                 <td colspan="4"><?=$vlabel?></td>
                                             </tr>
-                                            <tr class="groupclass<?=$vkeyid?>">
+                                            <tr class="grouplokasiclass<?=$reqLokasiLooId?> groupclass<?=$vkeyid?>">
                                                 <td>
                                                     <?
                                                     $valnilai= 0;
@@ -453,10 +538,10 @@ $(function(){
                                                 if($vmode == "luas_sewa_outdoor")
                                                 {
                                             ?>
-                                            <tr class="groupclass<?=$vkeyid?>">
+                                            <tr class="grouplokasiclass<?=$reqLokasiLooId?> groupclass<?=$vkeyid?>">
                                                 <td colspan="4"><?=$vlabel?></td>
                                             </tr>
-                                            <tr class="groupclass<?=$vkeyid?>">
+                                            <tr class="grouplokasiclass<?=$reqLokasiLooId?> groupclass<?=$vkeyid?>">
                                                 <td>
                                                     <?
                                                     $valnilai= 0;
@@ -555,10 +640,10 @@ $(function(){
                                                 if($vmode == "luas_sewa_indoor")
                                                 {
                                             ?>
-                                            <tr class="groupclass<?=$vkeyid?>">
+                                            <tr class="grouplokasiclass<?=$reqLokasiLooId?> groupclass<?=$vkeyid?>">
                                                 <td colspan="4"><?=$vlabel?></td>
                                             </tr>
-                                            <tr class="groupclass<?=$vkeyid?>">
+                                            <tr class="grouplokasiclass<?=$reqLokasiLooId?> groupclass<?=$vkeyid?>">
                                                 <td>
                                                     <?
                                                     $valnilai= 0;
@@ -637,10 +722,10 @@ $(function(){
                                                 if($vmode == "luas_sewa_outdoor")
                                                 {
                                             ?>
-                                            <tr class="groupclass<?=$vkeyid?>">
+                                            <tr class="grouplokasiclass<?=$reqLokasiLooId?> groupclass<?=$vkeyid?>">
                                                 <td colspan="4"><?=$vlabel?></td>
                                             </tr>
-                                            <tr class="groupclass<?=$vkeyid?>">
+                                            <tr class="grouplokasiclass<?=$reqLokasiLooId?> groupclass<?=$vkeyid?>">
                                                 <td>
                                                     <?
                                                     $valnilai= 0;
@@ -741,6 +826,39 @@ $(function(){
 
                     <table class="table">
                         <tbody id="hargautilitycharge">
+                            <?
+                            foreach ($arrdetil as $k => $v)
+                            {
+                                $valid= $v["vid"];
+                                $valnilai= $v["vnilai"];
+                                $valketerangan= $v["vketerangan"];
+                                $vmode= $v["vmode"];
+                                $valmode= "harga_utility_charge";
+                                if($vmode == $valmode)
+                                {
+                                    $vnama= "";
+                                    $infocarikey= $valid;
+                                    $arrkondisicheck= in_array_column($infocarikey, "id", $arrutilitycharge);
+                                    if(!empty($arrkondisicheck))
+                                    {
+                                        $vindex= $arrkondisicheck[0];
+                                        $vnama= $arrutilitycharge[$vindex]["nama"];
+                                    }
+                            ?>
+                                    <tr class="grouplokasiclass<?=$reqLokasiLooId?>">
+                                        <td><?=$vnama?></td>
+                                        <td>:</td>
+                                        <td style="width:30%">
+                                            <input type="hidden" name="vmode[]" value="<?=$valmode?>" />
+                                            <input type="hidden" name="vid[]" class="valsetid" value="<?=$valid?>" />
+                                            <input type="hidden" name="vketerangan[]" value="<?=$valketerangan?>" />
+                                            <input type="text" class="vlxuangclass easyui-validatebox textbox form-control" name="vnilai[]" placeholder="Isi (<?=$valketerangan?>)" data-options="required:true" style="width:85%; display: inline; text-align: right;" value="<?=numberToIna($valnilai)?>" /> <label class="labeltotal"><?=$valketerangan?></label>
+                                        </td>
+                                    </tr>
+                            <?
+                                }
+                            }
+                            ?>
                         </tbody>
                     </table>
 
@@ -823,6 +941,77 @@ $(document).ready(function() {
     
 });
 
+function rekursivemultisatuanKerja(index, JENIS, multiinfoid, multiinfonama, IDFIELD) 
+{
+    urllink= "app/loadUrl/template/tujuan_surat";
+    method= "POST";
+    batas= multiinfoid.length;
+    if(index < batas)
+    {
+        SATUAN_KERJA_ID= multiinfoid[index];
+        NAMA= multiinfonama[index];
+
+        var rv = true;
+        if(JENIS == "PARAF")
+        {
+            $('[name^=reqTujuanSuratParafValidasi]').each(function() {
+
+                if ($(this).val() == SATUAN_KERJA_ID) {
+                    rv = false;
+                    return false;
+                }
+
+            });
+        }
+
+        if (rv == true) 
+        {
+            $.ajax({
+                url: urllink,
+                method: method,
+                data: {
+                    reqJenis: JENIS,
+                    reqSatkerId: SATUAN_KERJA_ID,
+                    reqNama: NAMA
+                },
+                // dataType: 'json',
+                success: function (response) {
+                    $("#"+IDFIELD).append(response);
+                    setinfovalidasi();
+
+                    index= parseInt(index) + 1;
+                    rekursivemultisatuanKerja(index, JENIS, multiinfoid, multiinfonama, IDFIELD);
+                },
+                error: function (response) {
+                },
+                complete: function () {
+                }
+            });
+        }
+        else
+        {
+            index= parseInt(index) + 1;
+            rekursivemultisatuanKerja(index, JENIS, multiinfoid, multiinfonama, IDFIELD);
+        }
+    }
+}
+
+function addmultisatuanKerja(JENIS, multiinfoid, multiinfonama, IDFIELD) 
+{
+    batas= multiinfoid.length;
+    // console.log(batas);
+
+    if(batas > 0)
+    {
+        rekursivemultisatuanKerja(0, JENIS, multiinfoid, multiinfonama, IDFIELD);
+    }
+}
+
+function setinfovalidasi()
+{
+
+}
+
 arrutilitycharge= JSON.parse('<?=JSON_encode($arrutilitycharge, JSON_HEX_APOS)?>');
 function sethargautilitycharge(node)
 {
@@ -836,7 +1025,7 @@ function sethargautilitycharge(node)
     if(sebelumLokasiLooId !== "")
     {
         $("#luassewaindoor, #tarifinfosewaindoor, #tarifinfosewascindoor, #luassewaoutdoor, #tarifinfosewaoutdoor, #tarifinfosewascoutdoor").empty();
-        globalhapusgroupclass(sebelumLokasiLooId);
+        globalhapusgroupclass(sebelumLokasiLooId, "lokasi");
     }
 
     $("#hargautilitycharge").empty();
@@ -854,14 +1043,14 @@ function sethargautilitycharge(node)
                 vket= value["ket"];
 
                 vtable+= ''
-                +'<tr class="groupclass'+vid+'">'
+                +'<tr class="grouplokasiclass'+vid+'">'
                 +   '<td>'+vnama+'</td>'
                 +   '<td>:</td>'
                 +   '<td style="width:30%">'
                 +       '<input type="hidden" name="vmode[]" value="harga_utility_charge" />'
                 +       '<input type="hidden" name="vid[]" class="valsetid" value="'+vdetilid+'" />'
                 +       '<input type="hidden" name="vketerangan[]" value="'+vket+'" />'
-                +       '<input type="text" class="vlxuangclass easyui-validatebox textbox form-control totalluasindoor" name="vnilai[]" placeholder="Isi Luas (m2)" data-options="required:true" style="width:85%; display: inline; text-align: right;" value="0" /> <label class="labeltotal">'+vket+'</label>'
+                +       '<input type="text" class="vlxuangclass easyui-validatebox textbox form-control" name="vnilai[]" placeholder="Isi Luas (m2)" data-options="required:true" style="width:85%; display: inline; text-align: right;" value="0" /> <label class="labeltotal">'+vket+'</label>'
                 +   '</td>'
                 +'</tr>';
             }
@@ -947,6 +1136,7 @@ function addmulti(vtipe, vparam)
 
 function appenddata(vtipe, vdetilparam)
 {
+    reqLokasiLooId= $("#reqLokasiLooId").val();
     id= vdetilparam["id"];
     nama= vdetilparam["nama"];
     kode= vdetilparam["kode"];
@@ -962,7 +1152,7 @@ function appenddata(vtipe, vdetilparam)
     if (vtipe=='I') 
     {
         vtable= ''
-        +'<tr class="groupclass'+id+'">'
+        +'<tr class="grouplokasiclass'+reqLokasiLooId+' groupclass'+id+'">'
         +   '<td>'+kode+' - '+lantai+' <i style="cursor:pointer" class="fa fa-times-circle text-danger" aria-hidden="true" onclick="hapusgroupclass('+id+');"></i></td>'
         +   '<td>:</td>'
         +   '<td style="width:30%">'
@@ -976,12 +1166,12 @@ function appenddata(vtipe, vdetilparam)
         hitungluas("totalluasindoor");
 
         vtable= ''
-        +'<tr class="groupclass'+id+'">'
+        +'<tr class="grouplokasiclass'+reqLokasiLooId+' groupclass'+id+'">'
         +   '<td colspan="4">'
         +       kode+' - '+lantai
         +   '</td>'
         +'</tr>'
-        +'<tr class="groupclass'+id+'">'
+        +'<tr class="grouplokasiclass'+reqLokasiLooId+' groupclass'+id+'">'
         +   '<td>'
         +       '<input type="hidden" name="vmode[]" value="tarif_sewa_unit_indoor" />'
         +       '<input type="hidden" name="vid[]" class="valsetid" value="'+id+'" />'
@@ -1013,12 +1203,12 @@ function appenddata(vtipe, vdetilparam)
         hitunghargasewa("totalsewaunitindoordiskon");
 
         vtable= ''
-        +'<tr class="groupclass'+id+'">'
+        +'<tr class="grouplokasiclass'+reqLokasiLooId+' groupclass'+id+'">'
         +   '<td colspan="4">'
         +       kode+' - '+lantai
         +   '</td>'
         +'</tr>'
-        +'<tr class="groupclass'+id+'">'
+        +'<tr class="grouplokasiclass'+reqLokasiLooId+' groupclass'+id+'">'
         +   '<td>'
         +       '<input type="hidden" name="vmode[]" value="tarif_sewa_sc_indoor" />'
         +       '<input type="hidden" name="vid[]" class="valsetid" value="'+id+'" />'
@@ -1045,7 +1235,7 @@ function appenddata(vtipe, vdetilparam)
     else
     {
         vtable= ''
-        +'<tr class="groupclass'+id+'">'
+        +'<tr class="grouplokasiclass'+reqLokasiLooId+' groupclass'+id+'">'
         +   '<td>'+kode+' - '+lantai+'</td>'
         +   '<td>:</td>'
         +   '<td>'
@@ -1059,12 +1249,12 @@ function appenddata(vtipe, vdetilparam)
         hitungluas("totalluasoutdoor");
 
         vtable= ''
-        +'<tr class="groupclass'+id+'">'
+        +'<tr class="grouplokasiclass'+reqLokasiLooId+' groupclass'+id+'">'
         +   '<td colspan="4">'
         +       kode+' - '+lantai
         +   '</td>'
         +'</tr>'
-        +'<tr class="groupclass'+id+'">'
+        +'<tr class="grouplokasiclass'+reqLokasiLooId+' groupclass'+id+'">'
         +   '<td>'
         +       '<input type="hidden" name="vmode[]" value="tarif_sewa_unit_outdoor" />'
         +       '<input type="hidden" name="vid[]" class="valsetid" value="'+id+'" />'
@@ -1096,12 +1286,12 @@ function appenddata(vtipe, vdetilparam)
         hitunghargasewa("totalsewaunitoutdoordiskon");
 
         vtable= ''
-        +'<tr class="groupclass'+id+'">'
+        +'<tr class="grouplokasiclass'+reqLokasiLooId+' groupclass'+id+'">'
         +   '<td colspan="4">'
         +       kode+' - '+lantai
         +   '</td>'
         +'</tr>'
-        +'<tr class="groupclass'+id+'">'
+        +'<tr class="grouplokasiclass'+reqLokasiLooId+' groupclass'+id+'">'
         +   '<td>'
         +       '<input type="hidden" name="vmode[]" value="tarif_sewa_sc_outdoor" />'
         +       '<input type="hidden" name="vid[]" class="valsetid" value="'+id+'" />'
@@ -1194,14 +1384,22 @@ function hapusgroupclass(vid)
 {
     $.messager.confirm('Konfirmasi','Yakin menghapus data terpilih ?',function(r){
         if (r){
-            globalhapusgroupclass(vid);
+            globalhapusgroupclass(vid, "");
         }
     });
 }
 
-function globalhapusgroupclass(vid)
+function globalhapusgroupclass(vid, vmode)
 {
-    $(".groupclass"+vid).remove();
+    if(vmode == "lokasi")
+    {
+        $(".grouplokasiclass"+vid).remove();
+    }
+    else
+    {
+        $(".groupclass"+vid).remove();
+    }
+
     hitungluas("totalluasoutdoor");
     hitungluas("totalluasindoor");
 
@@ -1369,7 +1567,7 @@ function hitungluas(vmode)
         infoval= $(this).val();
         infoval = infoval ? infoval : 0;
         infoval= FormatAngkaNumber(infoval);
-        // console.log("xx"+infoval);
+        // console.log(vmode+"xx"+infoval);
         vtotal= parseFloat(vtotal) + parseFloat(infoval);
 
         if(vmode == "totalluasindoor" || vmode == "totalluasoutdoor")
@@ -1425,7 +1623,7 @@ function notnullval(v)
 
 function submitPreview() 
 {
-    parent.openAdd('app/loadUrl/report/template/?reqId=<?= $reqId ?>');
+    parent.openAdd('app/loadUrl/report/loo_cetak/?reqId=<?=$reqId?>&templateSurat=loo');
 }
 
 function submitForm(reqStatusData){
@@ -1441,7 +1639,14 @@ function submitForm(reqStatusData){
             return $(this).form('enableValidation').form('validate');
         },
         success:function(data){
-            // console.log(data);return false;
+            <?
+            if(!empty($cekquery))
+            {
+            ?>
+            console.log(data);return false;
+            <?
+            }
+            ?>
             data= data.split("xxx");
             rowid= data[0];
             infodata= data[1];
