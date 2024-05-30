@@ -5,6 +5,7 @@ include_once("functions/date.func.php");
 
 $this->load->model("TrLoo");
 $this->load->model("TrLooDetil");
+$this->load->model("Combo");
 
 $reqId= $this->input->get("reqId");
 
@@ -77,6 +78,19 @@ else
 }
 // print_r($arrlokasi);exit;
 // print_r($arrdetil);exit;
+
+$arrutilitycharge= [];
+$set= new Combo();
+$set->comboUtilityCharge(array(), -1,-1, "", "ORDER BY UTILITY_CHARGE_ID");
+while($set->nextRow())
+{
+    $arrdata= [];
+    $arrdata["id"]= $set->getField("UTILITY_CHARGE_ID");
+    $arrdata["nama"]= $set->getField("NAMA");
+    $arrdata["ket"]= $set->getField("KETERANGAN");
+    array_push($arrutilitycharge, $arrdata);
+}
+// print_r($arrutilitycharge);exit;
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -152,7 +166,18 @@ $(function(){
                             <td>Lokasi</td>
                             <td>:</td>
                             <td>
-                                <input type="text" name="reqLokasiLooId" class="easyui-combotree" id="reqLokasiLooId" data-options="width:'350', valueField:'id', textField:'text', editable:false, url:'combo_json/comboLokasiLoo'" required value="<?=$reqLokasiLooId?>" />
+                                <input type="hidden" id="sebelumLokasiLooId" />
+                                <input type="text" name="reqLokasiLooId" class="easyui-combotree" id="reqLokasiLooId" 
+                                data-options="
+                                onClick: function(node){
+                                    sethargautilitycharge(node);
+                                }
+                                , width:'350'
+                                , valueField:'id'
+                                , textField:'text'
+                                , editable:false
+                                , url:'combo_json/comboLokasiLoo'
+                                " required value="<?=$reqLokasiLooId?>" />
                             </td>
                         </tr>
                         <tr>
@@ -709,35 +734,17 @@ $(function(){
                     </table>
                 </fieldset>
 
-                <!-- <table class="table">
-                    <thead>
-                        <tr>
-                            <td colspan="3">Harga Utility Charge</td>
-                        </tr>
-                        <tr>
-                            <td>Listrik</td>
-                            <td>:</td>
-                            <td>
-                                <input type="text" id="reqNama" class="easyui-validatebox textbox form-control" required name="reqNama" value="<?=$reqNama ?>" data-options="required:true" style="width:90%; display: inline; text-align: right;" />
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Gas</td>
-                            <td>:</td>
-                            <td>
-                                <input type="text" id="reqNama" class="easyui-validatebox textbox form-control" required name="reqNama" value="<?=$reqNama ?>" data-options="required:true" style="width:90%; display: inline; text-align: right;" />
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Air</td>
-                            <td>:</td>
-                            <td>
-                                <input type="text" id="reqNama" class="easyui-validatebox textbox form-control" required name="reqNama" value="<?=$reqNama ?>" data-options="required:true" style="width:90%; display: inline; text-align: right;" />
-                            </td>
-                        </tr>
-                        
-                    </thead>
-                </table> -->
+                <fieldset>
+                    <legend style="font-size: large;">
+                        Harga Utility Charge
+                    </legend>
+
+                    <table class="table">
+                        <tbody id="hargautilitycharge">
+                        </tbody>
+                    </table>
+
+                </fieldset>
 
                 <table class="table">
                     <thead>
@@ -815,6 +822,54 @@ $(function(){
 $(document).ready(function() {
     
 });
+
+arrutilitycharge= JSON.parse('<?=JSON_encode($arrutilitycharge, JSON_HEX_APOS)?>');
+function sethargautilitycharge(node)
+{
+    // console.log(node)
+    vid= node.id;
+    vuc= node.uc;
+    vuc= vuc.split(',');
+    // console.log(vuc);
+    sebelumLokasiLooId= $("#sebelumLokasiLooId").val();
+
+    if(sebelumLokasiLooId !== "")
+    {
+        $("#luassewaindoor, #tarifinfosewaindoor, #tarifinfosewascindoor, #luassewaoutdoor, #tarifinfosewaoutdoor, #tarifinfosewascoutdoor").empty();
+        globalhapusgroupclass(sebelumLokasiLooId);
+    }
+
+    $("#hargautilitycharge").empty();
+    // console.log(arrutilitycharge)
+    if(Array.isArray(arrutilitycharge) && arrutilitycharge.length)
+    {
+        vtable= '';
+        $.each(arrutilitycharge, function( index, value ) {
+            // console.log( index + ": " + value["id"] );
+            vdetilid= value["id"];
+
+            if($.inArray(vdetilid, vuc) != -1)
+            {
+                vnama= value["nama"];
+                vket= value["ket"];
+
+                vtable+= ''
+                +'<tr class="groupclass'+vid+'">'
+                +   '<td>'+vnama+'</td>'
+                +   '<td>:</td>'
+                +   '<td style="width:30%">'
+                +       '<input type="hidden" name="vmode[]" value="harga_utility_charge" />'
+                +       '<input type="hidden" name="vid[]" class="valsetid" value="'+vdetilid+'" />'
+                +       '<input type="hidden" name="vketerangan[]" value="'+vket+'" />'
+                +       '<input type="text" class="vlxuangclass easyui-validatebox textbox form-control totalluasindoor" name="vnilai[]" placeholder="Isi Luas (m2)" data-options="required:true" style="width:85%; display: inline; text-align: right;" value="0" /> <label class="labeltotal">'+vket+'</label>'
+                +   '</td>'
+                +'</tr>';
+            }
+        });
+    }
+    $("#sebelumLokasiLooId").val(vid);
+    $("#hargautilitycharge").append(vtable);
+}
 
 function openLookup(tipe) 
 {
@@ -1139,16 +1194,21 @@ function hapusgroupclass(vid)
 {
     $.messager.confirm('Konfirmasi','Yakin menghapus data terpilih ?',function(r){
         if (r){
-            $(".groupclass"+vid).remove();
-            hitungluas("totalluasoutdoor");
-            hitungluas("totalluasindoor");
-
-            hitungtotalharga("totalsewaunitindoordiskon");
-            hitungtotalharga("totalsewaunitoutdoordiskon");
-            hitungtotalharga("totalsewascindoordiskon");
-            hitungtotalharga("totalsewascoutdoordiskon");
+            globalhapusgroupclass(vid);
         }
     });
+}
+
+function globalhapusgroupclass(vid)
+{
+    $(".groupclass"+vid).remove();
+    hitungluas("totalluasoutdoor");
+    hitungluas("totalluasindoor");
+
+    hitungtotalharga("totalsewaunitindoordiskon");
+    hitungtotalharga("totalsewaunitoutdoordiskon");
+    hitungtotalharga("totalsewascindoordiskon");
+    hitungtotalharga("totalsewascoutdoordiskon");
 }
 
 function hitunghargasewa(vmode)

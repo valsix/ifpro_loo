@@ -210,9 +210,11 @@ class utility_charge_json extends CI_Controller
 		$reqId= $this->input->post("reqId");
 		$reqMode= $this->input->post("reqMode");
 		$reqNama= $this->input->post("reqNama");
+		$reqKeterangan= $this->input->post("reqKeterangan");
 
 		$set->setField("Utility_Charge_id", $reqId);
-		$set->setField("NAMA", $reqNama);
+		$set->setField("NAMA", setQuote($reqNama));
+		$set->setField("KETERANGAN", setQuote($reqKeterangan));
 
 		if ($reqMode=='insert') {
 			$set->insert();

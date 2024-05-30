@@ -40,9 +40,10 @@ create table utility_charge
 (
 	utility_charge_id numeric not null
 	, nama character varying
+	, keterangan character varying
 	, constraint pk_utility_charge primary key (utility_charge_id)
 );
 
-insert into utility_charge(utility_charge_id, nama) values (1, 'Listrik');
-insert into utility_charge(utility_charge_id, nama) values (2, 'Gas');
-insert into utility_charge(utility_charge_id, nama) values (3, 'Air');
+insert into utility_charge(utility_charge_id, nama, keterangan) values (1, 'Listrik', 'kwh');
+insert into utility_charge(utility_charge_id, nama, keterangan) values (2, 'Gas', 'kg');
+insert into utility_charge(utility_charge_id, nama, keterangan) values (3, 'Air', 'm3');

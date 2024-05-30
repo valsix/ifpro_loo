@@ -438,11 +438,14 @@ class combo_json extends CI_Controller {
 		$this->load->model("Combo");
 		$combo = new Combo();
 		$combo->selectByParamsLokasiLoo(array());
+		// echo $combo->query;exit;
 		$i = 0;
 
 		while($combo->nextRow()){
-			$arr_json[$i]['id']		= $combo->getField("LOKASI_LOO_ID");
-			$arr_json[$i]['text']	= $combo->getField("NAMA");
+			$arr_json[$i]['id']= $combo->getField("LOKASI_LOO_ID");
+			$arr_json[$i]['text']= $combo->getField("NAMA");
+			$arr_json[$i]['uc']= $combo->getField("UTILITY_CHARGE");
+
 			$i++;
 		}
 

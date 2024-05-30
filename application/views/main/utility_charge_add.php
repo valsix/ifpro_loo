@@ -17,7 +17,8 @@ else
     $reqMode = "ubah";
     $lokasi_loo->selectByParams(array("A.Utility_Charge_id" => $reqId));
     $lokasi_loo->firstRow();
-    $reqNama= $lokasi_loo->getField("NAMA");    
+    $reqNama= $lokasi_loo->getField("NAMA");
+    $reqKeterangan= $lokasi_loo->getField("KETERANGAN");
 }
 ?>
 
@@ -124,6 +125,13 @@ $(function(){
                             <td>:</td>
                             <td>
                                 <input type="text" id="reqNama" class="easyui-validatebox textbox form-control" required name="reqNama"  value="<?=$reqNama ?>" data-options="required:true" style="width:90%" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Keterangan</td>
+                            <td>:</td>
+                            <td>
+                                <input type="text" id="reqKeterangan" class="easyui-validatebox textbox form-control" required name="reqKeterangan"  value="<?=$reqKeterangan?>" data-options="required:true" style="width:90%" />
                             </td>
                         </tr>
                     </thead>

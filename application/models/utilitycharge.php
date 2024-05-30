@@ -31,11 +31,12 @@ DESCRIPTION			:
 		$this->setField("Utility_Charge_id", $this->getNextId("Utility_Charge_id","Utility_Charge")); 
 		$str = "
 				INSERT INTO Utility_Charge (
-				   Utility_Charge_id, NAMA
+				   Utility_Charge_id, NAMA, KETERANGAN
 				   ) 
 				VALUES (
 					'".$this->getField("Utility_Charge_id")."', 
-					'".$this->getField("NAMA")."'
+					'".$this->getField("NAMA")."', 
+					'".$this->getField("KETERANGAN")."'
 				)"; 
 		$this->id = $this->getField("Utility_Charge_id");
 		$this->query = $str;
@@ -50,7 +51,8 @@ DESCRIPTION			:
 		$str = "
 			   UPDATE Utility_Charge
 				SET   
-					   NAMA      	= '".$this->getField("NAMA")."'
+					   NAMA= '".$this->getField("NAMA")."'
+					   , KETERANGAN= '".$this->getField("KETERANGAN")."'
 				WHERE  Utility_Charge_id    	= '".$this->getField("Utility_Charge_id")."'
 				"; 
 		// echo $str;exit;
