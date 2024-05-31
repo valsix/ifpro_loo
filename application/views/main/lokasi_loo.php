@@ -224,7 +224,7 @@ $tinggi = 360;
 					<a id="btnAdd" title="Tambah"><img src="<?= base_url() ?>images/icon-tambah.png" /> Tambah</a>
 					<a id="btnEdit" title="Ubah"><img src="<?= base_url() ?>images/icon-edit.png" /> Ubah</a>
 					<a id="btnDelete" title="Hapus"><img src="<?= base_url() ?>images/icon-hapus.png" /> Hapus</a>
-					<a id="btnTransaksi" title="Transaksi"><img src="<?= base_url() ?>images/icon-course.png" /> Tranksi</a>
+					<a id="btnTransaksi" title="Transaksi"><img src="<?= base_url() ?>images/icon-course.png" /> Formula Luasan</a>
 				</li>
 			</ul>
 		</div>

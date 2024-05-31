@@ -27,6 +27,9 @@ create table tr_loo
 	, periode_sewa numeric
 	, approval_qr_date timestamp without time zone
 	, ttd_kode character varying
+	, persetujuan_info character varying
+	, jumlah_step numeric
+	, last_user character varying
 	, paksa_db character varying
 	, constraint pk_tr_loo primary key (tr_loo_id)
 );
@@ -40,11 +43,37 @@ pejabatnip character varying;
 pejabatnama character varying;
 pejabatjabatan character varying;
 statuspejabatganti character varying;
+ispemaraf integer := 0;
+persetujuaninfo character varying;
+jumlahstep numeric := 0;
 vquery text;
 
 begin
 
 	if lower(new.paksa_db) = lower('paksa') then
+		new.paksa_db:= null;
+		return new;
+	end if;
+
+	if lower(new.paksa_db) = lower('updateparaf') then
+
+		select
+		info_loo_paraf(new.tr_loo_id) persetujuan_info, coalesce(a1.jumlah_step,0) jumlah_step
+		into persetujuaninfo, jumlahstep
+		from tr_loo a
+		left join
+		(
+			select
+			tr_loo_id, count(1) jumlah_step
+			from tr_loo_paraf
+			where status_paraf is null
+			group by tr_loo_id
+		) a1 on a.tr_loo_id = a1.tr_loo_id
+		where a.tr_loo_id = new.tr_loo_id;
+
+		new.persetujuan_info:= persetujuaninfo;
+		new.jumlah_step:= jumlahstep;
+
 		new.paksa_db:= null;
 		return new;
 	end if;
@@ -57,6 +86,26 @@ begin
 	new.user_pengirim_id:= pejabatnip;
 	new.user_pengirim_nama:= pejabatnama;
 	new.user_pengirim_jabatan:= pejabatjabatan;
+
+	if new.status_data = upper('draft') then
+		return new;
+	elsif new.status_data = upper('revisi') then
+		return new;
+	else
+		--kalau simpan data, tidak sesuai pejabat pengirim
+		if new.last_user = pejabatnip then
+			--raise notice '%', ispemaraf;
+		else
+			select count(1) into ispemaraf 
+			from tr_loo_paraf a
+			where 1=1 and tr_loo_id = new.tr_loo_id 
+			and coalesce(nullif(status_paraf, 'x'), 'x') = 'x';
+
+			if adaparaf > 0 then
+				new.status_data := upper('paraf');
+			end if;
+		end if;
+	end if;
 
 	return new;
 
@@ -72,6 +121,128 @@ on tr_loo
 for each row
 execute procedure p_tr_loo();
 
+create or replace function info_loo_paraf(vid numeric)
+  returns character varying as
+$body$
+declare
+inforeturn character varying;
+infodata character varying;
+
+rec_data record;
+x numeric := 1;
+totalparafstatus integer;
+totalparaf integer;
+
+begin
+    select count(1) into totalparafstatus from tr_loo_paraf where tr_loo_id = vid and status_paraf = '1';
+    select count(1) into totalparaf from tr_loo_paraf where tr_loo_id = vid;
+    
+    inforeturn:='';
+    for rec_data in (
+		select
+		urutdata, tr_loo_id, status_data, nama_satker, no_urut, next_urut, status_paraf, terbaca
+		from
+		(
+			select
+			1 urutdata, tr_loo_id, status_data, nama_satker, no_urut, coalesce(next_urut,1) next_urut, status_paraf, terbaca
+			from tr_loo_paraf a
+			inner join (select tr_loo_id sm_id, status_data from tr_loo) b on tr_loo_id = sm_id
+			where tr_loo_id = vid
+			union all
+			select
+			2 urutdata, a.tr_loo_id, a.status_data
+			--, case when a.status_pejabat_ganti = '1' then sf.jabatan else b.jabatan end nama_satker
+			, b.jabatan nama_satker
+			, coalesce(sp.no_urut,0) + 1 no_urut
+			, coalesce(sp.next_urut,1) next_urut
+			, case when a.status_data = upper('posting') then '1' else null end status_paraf
+			--, case when a.terbaca_validasi = 0 then null else a.terbaca_validasi end 
+			, 0 terbaca
+			from tr_loo a
+			inner join pegawai b on a.user_pengirim_id = b.pegawai_id
+			inner join satuan_kerja_fix sf on a.satuan_kerja_pengirim_id = sf.satuan_kerja_id
+			left join
+			(
+				select tr_loo_id, max(no_urut) no_urut, coalesce(next_urut,1) next_urut
+				from tr_loo_paraf
+				where no_urut <= coalesce(next_urut,1)
+				and coalesce(nullif(kondisi_paraf, ''), null) is null
+				group by tr_loo_id, coalesce(next_urut,1)
+			) sp on a.tr_loo_id = sp.tr_loo_id
+			where a.tr_loo_id = vid
+			/*union all
+			select
+			3 urutdata, a.tr_loo_id, a.status_data
+			--, case when a.status_pejabat_ganti = '1' then sf.jabatan else b.jabatan end nama_satker
+			, b.jabatan nama_satker
+			, coalesce(sp.no_urut,0) + 1, coalesce(sp.next_urut,1) next_urut
+			, case when a.status_data = upper('posting') then '1' else null end status_paraf
+			, null terbaca
+			from tr_loo a
+			inner join pegawai b on a.user_id = b.pegawai_id
+			inner join satuan_kerja_fix sf on a.satuan_kerja_id_asal = sf.satuan_kerja_id
+			left join
+			(
+				select tr_loo_id, max(no_urut) no_urut, coalesce(next_urut,1) next_urut
+				from tr_loo_paraf
+				where no_urut <= coalesce(next_urut,1)
+				and coalesce(nullif(kondisi_paraf, ''), null) is null
+				group by tr_loo_id, coalesce(next_urut,1)
+			) sp on a.tr_loo_id = sp.tr_loo_id
+			where a.jenis_naskah_id in (8,17,18,19,20) and a.tr_loo_id = vid*/
+		) a
+		order by a.tr_loo_id, a.urutdata, a.no_urut, a.next_urut
+    )
+    loop
+
+	infodata:= '';
+
+	if rec_data.urutdata = 3 then
+		infodata:= rec_data.nama_satker;
+	else
+		if rec_data.terbaca is not null then infodata:= rec_data.nama_satker || ' <i class="fa fa-md fa-eye"></i>';
+		else infodata:= rec_data.nama_satker || ' <i class="fa fa-md fa-eye-slash"></i>';
+		end if;
+	end if;
+	
+	--select info_loo_paraf(183)
+	--raise notice '-,%', rec_data.nama_satker;
+	--raise notice '-,%', rec_data.no_urut || '-' || rec_data.next_urut || '-' || totalparafstatus || '-' || totalparaf;
+			
+	if (rec_data.no_urut = rec_data.next_urut) or (rec_data.urutdata = 2 and rec_data.status_data = upper('validasi'))
+	then 
+		if rec_data.urutdata = 3 then
+			if rec_data.status_data = upper('pembuat') then
+				infodata:= '<b>' || infodata || '</b> <i class="fa fa-md fa-pencil-square-o"></i>';
+			else
+				infodata:= infodata;
+			end if;
+		--elsif rec_data.urutdata = 2 and rec_data.status_data = upper('pembuat') then
+		--	infodata:= infodata;
+		else
+			if rec_data.status_paraf is not null then infodata:= '<b>' || infodata || '</b> <i class="fa fa-md fa-check-square-o"></i>';--fa-check fa-md
+			else infodata:= '<b>' || infodata || '</b> <i class="fa fa-md fa-pencil-square-o"></i>';--fa-close fa-md
+			--if rec_data.status_paraf is not null then infodata:= '#bawal#' || infodata || '#bakhir# <i class="fa fa-md fa-check-square-o"></i>';--fa-check fa-md
+			--else infodata:= '#bawal#' || infodata || '#bakhir# <i class="fa fa-md fa-pencil-square-o"></i>';--fa-close fa-md
+			end if;
+		end if;
+	else
+		infodata:= infodata;
+	end if;
+	
+	if x = 1 then
+		inforeturn := infodata;
+	else
+		inforeturn := inforeturn || '<br/>' || infodata;
+	end if;
+	x := x + 1;
+    end loop;
+   return inforeturn;
+end;
+$body$
+language plpgsql volatile cost 100;
+alter function info_loo_paraf(numeric) owner to postgres;
+
 drop table if exists tr_loo_detil;
 create table tr_loo_detil
 (
@@ -82,6 +253,22 @@ create table tr_loo_detil
 	, nilai numeric
 	, keterangan character varying
 	, constraint pk_tr_loo_detil primary key (tr_loo_detil_id)
+);
+
+drop table if exists tr_loo_log;
+create table tr_loo_log
+(
+	tr_loo_log_id numeric not null
+	, tr_loo_id numeric
+	, tanggal timestamp without time zone
+	, status_surat character varying
+	, informasi character varying
+	, catatan text
+	, last_create_user character varying
+	, last_create_date date
+	, last_update_user character varying
+	, last_update_date date
+	, constraint pk_tr_loo_log primary key (tr_loo_log_id)
 );
 
 drop table if exists tr_loo_paraf;
@@ -102,6 +289,10 @@ create table tr_loo_paraf
 	, status_pejabat_ganti character varying
 	, nip_mutasi character varying
 	, kondisi_paraf character varying
+	, last_create_user character varying
+	, last_create_date date
+	, last_update_user character varying
+	, last_update_date date
 	, constraint pk_tr_loo_paraf primary key (tr_loo_paraf_id)
 	, constraint u_loo_paraf unique (tr_loo_id, user_id)
 );

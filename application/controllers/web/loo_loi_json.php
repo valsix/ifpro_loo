@@ -41,7 +41,7 @@ class loo_loi_json extends CI_Controller
 		$reqKategori = $this->input->get("reqKategori");
 		// echo $reqKategori;exit;
 
-		$aColumns		= array("PRODUK_ID", "KODE", "NAMA", "DESKRIPSI", "NAMA_BRAND_CUSTOMER", "NAMA_BRAND_CUSTOMER", "NAMA_BRAND_CUSTOMER");
+		$aColumns= array("PRODUK_ID", "KODE", "NAMA", "DESKRIPSI", "NAMA_BRAND_CUSTOMER", "NAMA_BRAND_CUSTOMER", "NAMA_BRAND_CUSTOMER");
 		$aColumnsAlias	= $aColumns;
 
 
@@ -79,7 +79,7 @@ class loo_loi_json extends CI_Controller
 				* which means that the same row can be displayed in two pages - while
 				* another row will not be displayed at all.
 				*/
-				$sOrder = " ORDER BY A.NAMA asc";
+				$sOrder = " ORDER BY A.TR_LOO_ID ASC";
 			}
 		}
 

@@ -18,19 +18,33 @@ class trloo_json extends CI_Controller
 		}
 
 		$this->db->query("SET DATESTYLE TO PostgreSQL,European;");
-		$this->ID				= $this->kauth->getInstance()->getIdentity()->ID;
-		$this->NAMA				= $this->kauth->getInstance()->getIdentity()->NAMA;
-		$this->JABATAN			= $this->kauth->getInstance()->getIdentity()->JABATAN;
-		$this->HAK_AKSES		= $this->kauth->getInstance()->getIdentity()->HAK_AKSES;
-		$this->LAST_LOGIN		= $this->kauth->getInstance()->getIdentity()->LAST_LOGIN;
-		$this->USERNAME			= $this->kauth->getInstance()->getIdentity()->USERNAME;
-		$this->USER_LOGIN_ID	= $this->kauth->getInstance()->getIdentity()->USER_LOGIN_ID;
-		$this->USER_GROUP		= $this->kauth->getInstance()->getIdentity()->USER_GROUP;
-		$this->CABANG_ID		= $this->kauth->getInstance()->getIdentity()->CABANG_ID;
-		$this->CABANG		= $this->kauth->getInstance()->getIdentity()->CABANG;
-		$this->HIRARKI		= $this->kauth->getInstance()->getIdentity()->HIRARKI;
-		$this->KD_LEVEL		= $this->kauth->getInstance()->getIdentity()->KD_LEVEL;
-		$this->KELOMPOK_JABATAN		= $this->kauth->getInstance()->getIdentity()->KELOMPOK_JABATAN;
+		$this->ID= $this->kauth->getInstance()->getIdentity()->ID;
+		$this->NAMA= $this->kauth->getInstance()->getIdentity()->NAMA;
+		$this->JABATAN= $this->kauth->getInstance()->getIdentity()->JABATAN;
+		$this->HAK_AKSES= $this->kauth->getInstance()->getIdentity()->HAK_AKSES;
+		$this->LAST_LOGIN= $this->kauth->getInstance()->getIdentity()->LAST_LOGIN;
+		$this->USERNAME= $this->kauth->getInstance()->getIdentity()->USERNAME;
+		$this->USER_LOGIN_ID= $this->kauth->getInstance()->getIdentity()->USER_LOGIN_ID;
+		$this->USER_GROUP= $this->kauth->getInstance()->getIdentity()->USER_GROUP;
+		$this->MULTIROLE= $this->kauth->getInstance()->getIdentity()->MULTIROLE;
+		$this->CABANG_ID= $this->kauth->getInstance()->getIdentity()->CABANG_ID;
+		$this->CABANG= $this->kauth->getInstance()->getIdentity()->CABANG;
+		$this->SATUAN_KERJA_ID_ASAL= $this->kauth->getInstance()->getIdentity()->SATUAN_KERJA_ID_ASAL;
+		$this->SATUAN_KERJA_ASAL= $this->kauth->getInstance()->getIdentity()->SATUAN_KERJA_ASAL;
+		$this->SATUAN_KERJA_HIRARKI= $this->kauth->getInstance()->getIdentity()->SATUAN_KERJA_HIRARKI;
+		$this->SATUAN_KERJA_JABATAN= $this->kauth->getInstance()->getIdentity()->SATUAN_KERJA_JABATAN;
+		$this->KD_LEVEL= $this->kauth->getInstance()->getIdentity()->KD_LEVEL;
+		$this->KD_LEVEL_PEJABAT= $this->kauth->getInstance()->getIdentity()->KD_LEVEL_PEJABAT;
+		$this->JENIS_KELAMIN= $this->kauth->getInstance()->getIdentity()->JENIS_KELAMIN;
+		$this->KELOMPOK_JABATAN= $this->kauth->getInstance()->getIdentity()->KELOMPOK_JABATAN;
+		$this->KODE_PARENT= $this->kauth->getInstance()->getIdentity()->KODE_PARENT;
+		$this->ID_ATASAN= $this->kauth->getInstance()->getIdentity()->ID_ATASAN;
+		$this->DEPARTEMEN_PARENT_ID= $this->kauth->getInstance()->getIdentity()->DEPARTEMEN_PARENT_ID;
+
+		$this->NIP_BY_DIVISI= $this->kauth->getInstance()->getIdentity()->NIP_BY_DIVISI;
+		$this->KELOMPOK_JABATAN_BY_DIVISI= $this->kauth->getInstance()->getIdentity()->KELOMPOK_JABATAN_BY_DIVISI;
+
+		$this->SATUAN_KERJA_ID_ASAL_ASLI= $this->kauth->getInstance()->getIdentity()->SATUAN_KERJA_ID_ASAL_ASLI;
 	}
 
 	function json()
@@ -320,7 +334,7 @@ class trloo_json extends CI_Controller
 
 			// untuk data pemaraf
 			$reqSatuanKerjaIdParaf= $this->input->post("reqSatuanKerjaIdParaf");
-			if ( ($reqStatusData == "DRAFT" && empty($reqKondisiStatusSurat)) || ($reqStatusData == "PARAF" && $reqKondisiStatusSurat == "UBAHDATADRAFTPARAF") || ($reqStatusData == "DRAFT" && $reqKondisiStatusSurat == "UBAHDATAREVISI") )
+			if ( ($reqStatusData == "DRAFT" && empty($reqKondisiStatusData)) || ($reqStatusData == "PARAF" && $reqKondisiStatusData == "UBAHDATADRAFTPARAF") || ($reqStatusData == "DRAFT" && $reqKondisiStatusData == "UBAHDATAREVISI") )
 			{
 				$setdetil= new TrLooParaf();
 				$setdetil->setField("TR_LOO_ID", $reqId);
@@ -447,13 +461,110 @@ class trloo_json extends CI_Controller
 			}
 
 
-			echo $reqId."xxxData berhasil disimpan.";
+			$inforeturninfo= "";
+			if ($reqStatusData == "DRAFT") {
+				if($reqKondisiStatusData == "UBAHDATAPARAF" || $reqKondisiStatusData == "UBAHDATAREVISI")
+				{
+					$inforeturninfo= "Naskah berhasil disimpan.";
+				}
+				else
+				{
+					$inforeturninfo= "Naskah berhasil disimpan sebagai DRAFT.";
+				}
+			}
+
+			if(!empty($inforeturninfo))
+			{
+				echo $reqId."xxx".$inforeturninfo;
+			}
+			else
+			{
+				$reqInfoLog= $this->input->post("reqInfoLog");
+				
+				$arrparam= array("reqId"=>$reqId, "reqInfoLog"=>$reqInfoLog);
+				$this->paraf_proses($arrparam);
+				
+				// $arrparam= array("reqId"=>$reqId);
+				// $this->posting_proses($arrparam);
+			}
 		}
 		else
 		{
 			echo "xxxData gagal disimpan.";
 		}
 		
+	}
+
+	function tesparaf()
+	{
+		$reqId= $this->input->get("reqId");
+		$reqInfoLog= "Coba";
+
+		$arrparam= array("reqId"=>$reqId, "reqInfoLog"=>$reqInfoLog);
+		$this->paraf_proses($arrparam);
+	}
+
+	function paraf_proses($arrparam)
+	{
+		$reqId= $arrparam["reqId"];
+		$reqInfoLog= $arrparam["reqInfoLog"];
+
+		$this->load->model("TrLoo");
+		$set= new TrLoo();
+
+		$sesid= $this->ID;
+		$sesnama= $this->NAMA;
+		$sesjabatan= $this->JABATAN;
+		$sesusername= $this->USERNAME;
+		$satuankerjaganti= $this->SATUAN_KERJA_ID_ASAL;
+		$kodeParaf = "PARAF".$sesid.generateZero($reqId, 6).date("dmYHis");
+
+		$set->setField("TR_LOO_ID", $reqId);
+		$set->setField("SATUAN_KERJA_ID_TUJUAN", $satuankerjaganti);
+		$set->setField("KODE_PARAF", $kodeParaf);
+		$set->setField("USER_ID", $sesid);
+		$set->setField("LAST_UPDATE_USER", $sesusername);
+
+		if ($set->paraf()) {
+
+			// simpan log data, kalau ada data varible reqInfoLog
+			if(!empty($reqInfoLog))
+			{
+				$slog= new TrLoo();
+				$slog->setField("TR_LOO_ID", $reqId);
+				$slog->setField("STATUS_SURAT", "PARAF");
+				$slog->setField("INFORMASI", $sesjabatan." (".$sesnama.")");
+				$slog->setField("CATATAN", $reqInfoLog);
+				$slog->setField("LAST_CREATE_USER", $sesid);
+				$slog->insertlog();
+				unset($slog);
+			}
+
+			include_once("libraries/phpqrcode/qrlib.php");
+
+			/*$FILE_DIR = "uploads/".$reqId."/";
+			makedirs($FILE_DIR);
+			$filename = $FILE_DIR.$kodeParaf.'.png';
+			$errorCorrectionLevel = 'L';
+			$matrixPointSize = 2;
+			QRcode::png($kodeParaf, $filename, $errorCorrectionLevel, $matrixPointSize, 2);*/
+			// END OF GENERATE QRCODE 
+
+			// SETIAP POSTING HIT POSTING SUPAYA APABILA PARAF SUDAH KOMPLIT LANGSUNG TERPOSTING 
+			$arrparam= array("reqId"=>$reqId);
+			$this->posting_proses($arrparam);
+		}
+
+	}
+
+	function posting_proses($arrparam)
+	{
+		$this->load->model("TrLoo");
+		$reqId= $arrparam["reqId"];
+
+		$set= new TrLoo();
+		$statusSurat= $set->getStatusSurat(array("A.TR_LOO_ID" => $reqId));
+		// echo $statusSurat;exit;
 	}
 
 	function delete()

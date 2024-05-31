@@ -1040,6 +1040,7 @@ include_once("functions/date.func.php");
                                 <div class="collapsed">
                                     <span><i class="fa fa-users fa-lg" style="color: #fa9f15"></i> LOO - LOI</span>
                                     <a class="menu-utama" href="main/index/loo_add">LOO</a>
+                                    <a class="menu-utama" href="main/index/loo_draft">Draft LOO</a>
                                     <a class="menu-utama" href="main/index/loo_loi">Monitoring</a>
                                 </div>
                             <?

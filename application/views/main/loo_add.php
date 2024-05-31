@@ -37,6 +37,7 @@ else
     $reqPeriodeSewa= $set->getField("PERIODE_SEWA");
 
     $reqSatuanKerjaPengirimId= $set->getField("SATUAN_KERJA_PENGIRIM_ID");
+    $reqStatusData= $set->getField("STATUS_DATA");
 
     /*
     $set->setField("TOTAL_DISKON_INDOOR_SEWA", ValToNullDB(dotToNo($req)));
@@ -48,11 +49,12 @@ else
     $statement= " AND A.TR_LOO_ID = ".$reqId." AND VMODE ILIKE '%luas_sewa%'";
     $set= new TrLooDetil();
     $set->selectlokasi(array(), -1,-1, $statement);
+    // echo $set->query;exit;
     while($set->nextRow())
     {
         $arrdata= [];
-        $arrdata["rowdetilid"]= $set->getField("TR_LOO_DETIL_ID");
-        $arrdata["rowid"]= $set->getField("TR_LOO_ID");
+        $arrdata["trloodetilid"]= $set->getField("TR_LOO_DETIL_ID");
+        $arrdata["trlooid"]= $set->getField("TR_LOO_ID");
         $arrdata["vmode"]= $set->getField("VMODE");
         $arrdata["vid"]= $set->getField("VID");
         $arrdata["vnilai"]= $set->getField("NILAI");
@@ -71,8 +73,8 @@ else
         $valmode= $set->getField("VMODE");
         $arrdata= [];
         $arrdata["keyrowdetil"]= $valid."-".$valmode;
-        $arrdata["rowdetilid"]= $set->getField("TR_LOO_DETIL_ID");;
-        $arrdata["rowid"]= $set->getField("TR_LOO_ID");
+        $arrdata["trloodetilid"]= $set->getField("TR_LOO_DETIL_ID");;
+        $arrdata["trlooid"]= $set->getField("TR_LOO_ID");
         $arrdata["vmode"]= $valmode;
         $arrdata["vid"]= $valid;
         $arrdata["vnilai"]= $set->getField("NILAI");
@@ -160,15 +162,38 @@ $(function(){
                 <?
                 }
                 ?>
-                <button id="btnDRAFT" class="btn btn-default btn-sm pull-right" type="button" onClick="submitForm('DRAFT')">
-                    <span style="display: none;" class="buttonspiner ic2-fa-spin-blue"></span>
-                    <i class="fa fa-file-o"></i> Draft
-                </button>
+
+                <?
+                if(empty($reqId) || ($reqStatusData == "DRAFT" && !empty($reqId)) ) 
+                {
+                    $aksibutton= "1";
+                ?>
+                    <button id="btnPARAF" class="btn btn-primary btn-sm pull-right" type="button" onClick="submitForm('UBAHDATADRAFTPARAF')">
+                        <span style="display: none;" class="buttonspiner ic2-fa-spin-blue"></span>
+                        <i class="fa fa-paper-plane"></i> Kirim
+                    </button>
+
+                    <button id="btnDRAFT" class="btn btn-default btn-sm pull-right" type="button" onClick="submitForm('DRAFT')">
+                        <span style="display: none;" class="buttonspiner ic2-fa-spin-blue"></span>
+                        <i class="fa fa-file-o"></i> Draft
+                    </button>
+                <?
+                }
+
+                if ($reqStatusData == "DRAFT" && !empty($reqId))
+                {
+                ?>
+                    <button class="btn btn-danger btn-sm pull-right" type="button" onClick="deleteForm()"><i class="fa fa-trash-o"></i> Hapus</button>
+                <?
+                }
+                ?>
+                
             </div>
 
             <div id="popup-tabel2">
 
                 <input type="hidden" name="reqStatusData" id="reqStatusData" value="<?=$reqStatusData?>" />
+                <input type="hidden" name="reqInfoLog" id="reqInfoLog" />
                 <input type="hidden" name="reqId" value="<?=$reqId?>" />
                 <input type="hidden" name="reqMode" value="<?=$reqMode?>" />
                 <input type="hidden" name="cekquery" value="<?=$cekquery?>" />
@@ -314,7 +339,9 @@ $(function(){
                                             <?
                                             foreach ($arrlokasi as $k => $v)
                                             {
-                                                $vkeyid= $v["rowdetilid"];
+                                                // $vkeyid= $v["trloodetilid"];
+                                                // $vkeyid= $v["trlooid"];
+                                                $vkeyid= $v["vid"];
                                                 // $vlabel= $v["kode"]." - ".$v["nama"];
                                                 $vlabel= $v["kode"]." - ".$v["lantai"];
                                                 $vnilai= $v["vnilai"];
@@ -355,7 +382,9 @@ $(function(){
                                             <?
                                             foreach ($arrlokasi as $k => $v)
                                             {
-                                                $vkeyid= $v["rowdetilid"];
+                                                // $vkeyid= $v["trloodetilid"];
+                                                // $vkeyid= $v["trlooid"];
+                                                $vkeyid= $v["vid"];
                                                 // $vlabel= $v["kode"]." - ".$v["nama"];
                                                 $vlabel= $v["kode"]." - ".$v["lantai"];
                                                 $vnilai= $v["vnilai"];
@@ -421,14 +450,16 @@ $(function(){
                                         <tbody id="tarifinfosewaindoor">
                                             <tr>
                                                 <td class="tdcolor" style="width: 27%">Unit</td>
-                                                <td class="tdcolor" style="width: 10%">Discount</td>
+                                                <td class="tdcolor" style="width: 15%">Discount</td>
                                                 <td class="tdcolor" style="width: 29%">Tarif (after discount)</td>
-                                                <td class="tdcolor" style="width: 29%">Harga Sewa</td>
+                                                <td class="tdcolor" style="width: 24%">Harga Sewa</td>
                                             </tr>
                                             <?
                                             foreach ($arrlokasi as $k => $v)
                                             {
-                                                $vkeyid= $v["rowdetilid"];
+                                                // $vkeyid= $v["trloodetilid"];
+                                                // $vkeyid= $v["trlooid"];
+                                                $vkeyid= $v["vid"];
                                                 // $vlabel= $v["kode"]." - ".$v["nama"];
                                                 $vlabel= $v["kode"]." - ".$v["lantai"];
                                                 $vluas= $v["vnilai"];
@@ -523,14 +554,16 @@ $(function(){
                                         <tbody id="tarifinfosewaoutdoor">
                                             <tr>
                                                 <td class="tdcolor" style="width: 27%">Unit</td>
-                                                <td class="tdcolor" style="width: 10%">Discount</td>
+                                                <td class="tdcolor" style="width: 15%">Discount</td>
                                                 <td class="tdcolor" style="width: 29%">Tarif (after discount)</td>
-                                                <td class="tdcolor" style="width: 29%">Harga Sewa</td>
+                                                <td class="tdcolor" style="width: 24%">Harga Sewa</td>
                                             </tr>
                                             <?
                                             foreach ($arrlokasi as $k => $v)
                                             {
-                                                $vkeyid= $v["rowdetilid"];
+                                                // $vkeyid= $v["trloodetilid"];
+                                                // $vkeyid= $v["trlooid"];
+                                                $vkeyid= $v["vid"];
                                                 // $vlabel= $v["kode"]." - ".$v["nama"];
                                                 $vlabel= $v["kode"]." - ".$v["lantai"];
                                                 $vluas= $v["vnilai"];
@@ -632,7 +665,8 @@ $(function(){
                                             <?
                                             foreach ($arrlokasi as $k => $v)
                                             {
-                                                $vkeyid= $v["rowdetilid"];
+                                                // $vkeyid= $v["trloodetilid"];
+                                                $vkeyid= $v["vid"];
                                                 // $vlabel= $v["kode"]." - ".$v["nama"];
                                                 $vlabel= $v["kode"]." - ".$v["lantai"];
                                                 $vluas= $v["vnilai"];
@@ -714,7 +748,8 @@ $(function(){
                                             <?
                                             foreach ($arrlokasi as $k => $v)
                                             {
-                                                $vkeyid= $v["rowdetilid"];
+                                                // $vkeyid= $v["trloodetilid"];
+                                                $vkeyid= $v["vid"];
                                                 // $vlabel= $v["kode"]." - ".$v["nama"];
                                                 $vlabel= $v["kode"]." - ".$v["lantai"];
                                                 $vluas= $v["vnilai"];
@@ -1630,15 +1665,132 @@ function submitForm(reqStatusData){
     
     $("#reqStatusData").val(reqStatusData);
 
-    $("#btn"+reqStatusData).addClass('ic2-outlined-btn ic2-outlined-spin-blue-btn');
-    $(".buttonspiner").show();
+    var pesan = "Simpan surat sebagai draft?";
+    if (reqStatusData == "POSTING")
+    {
+        // tambahan khusus
+        <?
+        if ($reqStatusData == "VALIDASI" && $reqUserId != $this->ID) 
+        {
+            if($reqUserAtasanId == $this->ID && $reqKelompokJabatan == "DIREKSI")
+            {
+        ?>
+        <?
+            }
+            else
+            {
+        ?>
+            var pesan = "Kirim naskah?";
+        <?
+            }
+        }
+        else
+        {
+        ?>
+            var pesan = "Kirim surat ke tujuan?";
+        <?
+        }
+        ?>
+    }
 
+    infopesandetil= "";
+    if (reqStatusData == "REVISI")
+    {
+        infopesandetil= " kembalikan surat ke staff anda?";
+    }
+
+    if(reqStatusData == "PARAF" || reqStatusData == "UBAHDATADRAFTPARAF")
+    {
+        infopesandetil= " paraf naskah?";
+    }
+
+    if (reqStatusData == "POSTING" || reqStatusData == "PARAF" || reqStatusData == "REVISI" || reqStatusData == "UBAHDATAPOSTING" || reqStatusData == "UBAHDATADRAFTPARAF")
+    {
+        infocontent= '<form action="" class="formName">' +
+        '<div class="form-group">' +
+        '<label>Isi komentar jika ingin mengirim dokumen ini!</label>' +
+        '<input type="hidden" id="infoStatusApprove" value="" />' +
+        '<input type="text" placeholder="Tuliskan komentar anda..." class="name form-control" required />' +
+        '</div>' +
+        '</form>';
+
+        $.confirm({
+            title: 'Komentar'+infopesandetil,
+            content: '' + infocontent
+            ,
+            buttons: {
+                formSubmit: {
+                    text: 'OK',
+                    btnClass: 'btn-blue',
+                    action: function () {
+                        var name = this.$content.find('.name').val();
+                        if (!name) {
+                            $.alert('<span style= color:red>Komentar wajib diisi !</span>');
+                            return false;
+                        }
+                        $("#reqInfoLog").val(name);
+
+                        setloading(reqStatusData);
+
+                        <?
+                        if(empty($reqId) || ($reqStatusData == "DRAFT" && !empty($reqId)) )
+                        {
+                        ?>
+                            // infoStatusApprove= $("#infoStatusApprove").val();
+                            // $("#reqStatusApprove").val(infoStatusApprove);
+                        <?
+                        }
+                        ?>
+                        // return false;
+
+                        setsimpan(reqStatusData);
+                    }
+                },
+                cancel: function () {
+                    //close
+                },
+            },
+            onContentReady: function () {
+                // you can bind to the form
+                var jc = this;
+                this.$content.find('form').on('submit', function (e) { // if the user submits the form by pressing enter in the field.
+                    e.preventDefault();
+                    jc.$$formSubmit.trigger('click'); // reference the button and click it
+                });
+            }
+        });
+    }
+    else if (reqStatusData == "UBAHDATAPARAF" || reqStatusData == "UBAHDATAREVISI" || reqStatusData == "UBAHDATAVALIDASI")
+    {
+        setsimpan(reqStatusData);
+    }
+    else
+    {
+        $.messager.confirm('Konfirmasi', pesan, function(r) {
+            if (r) {
+                setsimpan(reqStatusData);
+            }
+        });
+    }
+}
+
+function setsimpan(reqStatusData)
+{
     $('#ff').form('submit',{
         url:'web/trloo_json/add',
         onSubmit:function(){
+
+            if($(this).form('enableValidation').form('validate'))
+            {
+                var win = $.messager.progress({title:'Proses simpan data', msg:'Proses simpan data...'});
+            }
             return $(this).form('enableValidation').form('validate');
         },
         success:function(data){
+            $.messager.progress('close');
+            $("#btn"+reqStatusData).removeClass('ic2-outlined-btn ic2-outlined-spin-blue-btn');
+            $(".buttonspiner").hide();
+
             <?
             if(!empty($cekquery))
             {
@@ -1650,9 +1802,6 @@ function submitForm(reqStatusData){
             data= data.split("xxx");
             rowid= data[0];
             infodata= data[1];
-
-            $("#btn"+reqStatusData).removeClass('ic2-outlined-btn ic2-outlined-spin-blue-btn');
-            $(".buttonspiner").hide();
 
             if(rowid == "")
             {
@@ -1666,11 +1815,20 @@ function submitForm(reqStatusData){
     });
 }
 
+function setloading(reqStatusData)
+{
+    $("#btn"+reqStatusData).addClass('ic2-outlined-btn ic2-outlined-spin-blue-btn');
+    $(".buttonspiner").show();
+}
+
 function clearForm(){
     $('#ff').form('clear');
 }
             
 </script>
+
+<link rel="stylesheet" type="text/css" href="lib/jquery-confirm-master/css/jquery-confirm.css"/>
+<script type="text/javascript" src="lib/jquery-confirm-master/js/jquery-confirm.js"></script>
 
 <style type="text/css">
     fieldset {

@@ -1,9 +1,5 @@
 <?php
-
-
 $reqFilename = $this->uri->segment(3, "");
-
-
 
 include_once("functions/string.func.php");
 include_once("functions/date.func.php");
