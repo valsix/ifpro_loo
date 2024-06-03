@@ -41,7 +41,7 @@ class lokasi_loo_detil_json extends CI_Controller
 		$reqKategori = $this->input->get("reqKategori");
 		// echo $reqKategori;exit;
 
-		$aColumns		= array("LOKASI_LOO_DETIL_ID", "NAMA_LOKASI_LOO", "KODE", "NAMA", "NAMA_LANTAI", "AREA_INFO", "JENIS_INFO", "PRIME_INFO", "LUAS", "KD_TARIF", "DESKRIPSI");
+		$aColumns		= array("LOKASI_LOO_DETIL_ID", "NAMA_LOKASI_LOO", "KODE", "NAMA", "NAMA_LANTAI", "AREA_INFO", "JENIS", "PRIME_INFO", "LUAS", "KD_TARIF", "DESKRIPSI");
 		$aColumnsAlias	= $aColumns;
 
 
