@@ -353,7 +353,7 @@ class lokasi_loo_detil_json extends CI_Controller
 
 		if ($reqId) 
 		{
-			$statement_privacy = " AND A.LOKASI_LOO_ID = '".$reqId."' AND A.TIPE = '".$reqTipe."' ";
+			$statement_privacy = " AND A.LOKASI_LOO_ID = '".$reqId."' AND A.AREA = '".$reqTipe."' ";
 		}
 
 		$rowCount = $set->getCountByParams(array(), $statement.$statement_privacy);
@@ -375,8 +375,8 @@ class lokasi_loo_detil_json extends CI_Controller
 			$row['NAMA']= $set->getField("NAMA");
 			$row['KODE']= $set->getField("KODE");
 			$row['DESKRIPSI']= $set->getField("DESKRIPSI");
-			$row['LANTAI']= $set->getField("LANTAI");
-			$row['TIPE_INFO']= $set->getField("TIPE_INFO");
+			$row['LANTAI']= $set->getField("NAMA_LANTAI");
+			$row['TIPE_INFO']= $set->getField("JENIS_INFO");
 			$row['LUAS']= $set->getField("LUAS");
 			$row['TARIF_SC']= $set->getField("SERVICE_CHARGE");
 			$row['KD_TARIF']= $set->getField("KD_TARIF");

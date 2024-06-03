@@ -10,6 +10,8 @@ create table tr_loo
 	, user_pengirim_nama character varying
 	, user_pengirim_jabatan character varying
 	, satuan_kerja_pengirim_id character varying
+	, user_posisi_paraf_id character varying
+	, user_lihat_status character varying
 	, produk_id integer
 	, customer_id integer
 	, lokasi_loo_id integer
@@ -49,6 +51,7 @@ ispemaraf integer := 0;
 persetujuaninfo character varying;
 jumlahstep numeric := 0;
 infonomorsurat character varying;
+userlihatstatus character varying;
 vquery text;
 
 begin
@@ -86,6 +89,33 @@ begin
 		new.persetujuan_info:= persetujuaninfo;
 		new.jumlah_step:= jumlahstep;
 
+		new.paksa_db:= null;
+		return new;
+	end if;
+
+	if lower(new.paksa_db) = lower('updateuserlihatstatus') then
+		select string_agg(a.user_id, ',') into userlihatstatus
+		from
+		(
+			select distinct a.user_id
+			from
+			(
+				select a.user_id
+				from tr_loo_paraf a
+				inner join tr_loo a1 on a.tr_loo_id = a1.tr_loo_id
+				where 1=1 and a.tr_loo_id = new.tr_loo_id
+				union all
+				select a.user_pembuat_id  user_id
+				from tr_loo a
+				where 1=1 and a.tr_loo_id = new.tr_loo_id
+				union all
+				select a.user_pengirim_id user_id
+				from tr_loo a
+				where 1=1 and a.tr_loo_id = new.tr_loo_id
+			) a
+		) a;
+
+		new.user_lihat_status:= userlihatstatus;
 		new.paksa_db:= null;
 		return new;
 	end if;
@@ -132,6 +162,32 @@ before insert or update
 on tr_loo
 for each row
 execute procedure p_tr_loo();
+
+create or replace function tr_loo_p_hapus()
+  returns trigger as
+$body$
+declare
+    var_id integer;
+    varcheck integer;
+begin
+	if tg_op = upper('delete') then
+		delete from tr_loo_detil where tr_loo_id = old.tr_loo_id;
+		delete from tr_loo_paraf where tr_loo_id = old.tr_loo_id;
+		delete from tr_loo_log where tr_loo_id = old.tr_loo_id;
+		return old;
+	end if;
+   
+end;
+$body$
+language plpgsql volatile cost 100;
+alter function tr_loo_p_hapus() owner to postgres;
+
+drop trigger if exists tr_loo_t_hapus on tr_loo;
+create trigger tr_loo_t_hapus
+before delete
+on tr_loo
+for each row
+execute procedure tr_loo_p_hapus();
 
 create or replace function info_loo_paraf(vid numeric)
   returns character varying as
@@ -370,6 +426,12 @@ cekdatanexturut integer;
 				end if;
 			end if;
 		end if;
+	end if;
+
+	if lower(tg_op) = lower('insert') then
+		select coalesce(max(no_urut),0) + 1 into ceknexturut
+		from tr_loo_paraf where tr_loo_id = new.tr_loo_id;
+		new.no_urut= ceknexturut;
 	end if;
 	
 	new.user_id := psatkernip;

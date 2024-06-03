@@ -1028,14 +1028,22 @@ function rekursivemultisatuanKerja(index, JENIS, multiinfoid, multiinfonama, IDF
         var rv = true;
         if(JENIS == "PARAF")
         {
-            $('[name^=reqTujuanSuratParafValidasi]').each(function() {
+            reqSatuanKerjaPengirimId= $("#reqSatuanKerjaPengirimId").combotree("getValue");
+            if(reqSatuanKerjaPengirimId == SATUAN_KERJA_ID)
+            {
+                rv = false;
+            }
+            else
+            {
+                $('[name^=reqTujuanSuratParafValidasi]').each(function() {
 
-                if ($(this).val() == SATUAN_KERJA_ID) {
-                    rv = false;
-                    return false;
-                }
+                    if ($(this).val() == SATUAN_KERJA_ID) {
+                        rv = false;
+                        return false;
+                    }
 
-            });
+                });
+            }
         }
 
         if (rv == true) 
@@ -1281,7 +1289,12 @@ function appenddata(vtipe, vdetilparam)
         reqPph= notnullval(reqPph);
         vsebelumpph= FormatAngkaNumber(vtarifsc);
         vsebelumpph= notnullval(vsebelumpph);
-        vafterpph= parseFloat(vsebelumpph) / parseFloat(reqPph);
+
+        vafterpph= vsebelumpph;
+        if(reqPph > 0)
+        {
+            vafterpph= parseFloat(vsebelumpph) / parseFloat(reqPph);
+        }
 
         vtable= ''
         +'<tr class="grouplokasiclass'+reqLokasiLooId+' groupclass'+id+'">'
@@ -1378,7 +1391,12 @@ function appenddata(vtipe, vdetilparam)
         reqPph= notnullval(reqPph);
         vsebelumpph= FormatAngkaNumber(vtarifsc);
         vsebelumpph= notnullval(vsebelumpph);
-        vafterpph= parseFloat(vsebelumpph) / parseFloat(reqPph);
+
+        vafterpph= vsebelumpph;
+        if(reqPph > 0)
+        {
+            vafterpph= parseFloat(vsebelumpph) / parseFloat(reqPph);
+        }
 
         vtable= ''
         +'<tr class="grouplokasiclass'+reqLokasiLooId+' groupclass'+id+'">'
@@ -1524,8 +1542,12 @@ function hitungafterpph()
         vsebelumpph= FormatAngkaNumber(vsebelumpph);
         vsebelumpph= notnullval(vsebelumpph);
 
+        vafterpph= vsebelumpph;
+        if(reqPph > 0)
+        {
+            vafterpph= parseFloat(vsebelumpph) / parseFloat(reqPph);
+        }
         // console.log(parseFloat(vsebelumpph)+" / "+parseFloat(reqPph));
-        vafterpph= parseFloat(vsebelumpph) / parseFloat(reqPph);
         // console.log(vafterpph);
         $(this).val(setformat(vafterpph));
         hitunghargasewa("totalsewascindoordiskon");
@@ -1536,8 +1558,11 @@ function hitungafterpph()
         vsebelumpph= FormatAngkaNumber(vsebelumpph);
         vsebelumpph= notnullval(vsebelumpph);
 
-        // console.log(parseFloat(vsebelumpph)+" / "+parseFloat(reqPph));
-        vafterpph= parseFloat(vsebelumpph) / parseFloat(reqPph);
+        vafterpph= vsebelumpph;
+        if(reqPph > 0)
+        {
+            vafterpph= parseFloat(vsebelumpph) / parseFloat(reqPph);
+        }
         // console.log(vafterpph);
         $(this).val(setformat(vafterpph));
         hitunghargasewa("totalsewascoutdoordiskon");

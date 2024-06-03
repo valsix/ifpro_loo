@@ -98,6 +98,19 @@ DESCRIPTION			:
 		return $this->execQuery($str);
     }
 
+    function updatetriger()
+	{
+		$str = "
+		UPDATE tr_loo
+		SET
+		PAKSA_DB= '".$this->getField("PAKSA_DB")."'
+		WHERE TR_LOO_ID= ".$this->getField("TR_LOO_ID")."
+		"; 
+		// echo $str;exit;
+		$this->query = $str;
+		return $this->execQuery($str);
+    }
+
 	function delete()
 	{
         $str = "

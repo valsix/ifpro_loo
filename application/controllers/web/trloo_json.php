@@ -465,6 +465,10 @@ class trloo_json extends CI_Controller
 
 			$inforeturninfo= "";
 			if ($reqStatusData == "DRAFT") {
+
+				$arrtriger= array("reqId"=>$reqId, "mode"=>"tnomor");
+				$this->trigerpaksa($arrtriger);
+
 				if($reqKondisiStatusData == "UBAHDATAPARAF" || $reqKondisiStatusData == "UBAHDATAREVISI")
 				{
 					$inforeturninfo= "Naskah berhasil disimpan.";
@@ -495,6 +499,18 @@ class trloo_json extends CI_Controller
 			echo "xxxData gagal disimpan.";
 		}
 		
+	}
+
+	function trigerpaksa($arrparam)
+	{
+		$this->load->model("TrLoo");
+		$reqId= $arrparam["reqId"];
+		$mode= $arrparam["mode"];
+
+		$tgr= new TrLoo();
+		$tgr->setField("TR_LOO_ID", $reqId);
+		$tgr->setField("PAKSA_DB", $mode);
+		$tgr->updatetriger();
 	}
 
 	function tesparaf()

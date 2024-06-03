@@ -7,7 +7,8 @@ $this->load->model("SuratMasuk");
 $reqFilename = $this->uri->segment(3, "");
 
 $arrtabledata= array(
-    array("label"=>"Customer", "field"=> "NAMA_PEMILIK", "display"=>"",  "width"=>"20", "colspan"=>"", "rowspan"=>"")
+    array("label"=>"Nomor", "field"=> "INFO_NOMOR_SURAT", "display"=>"",  "width"=>"20", "colspan"=>"", "rowspan"=>"")
+    , array("label"=>"Customer", "field"=> "NAMA_PEMILIK", "display"=>"",  "width"=>"20", "colspan"=>"", "rowspan"=>"")
     , array("label"=>"Brand", "field"=> "NAMA_BRAND", "display"=>"",  "width"=>"", "colspan"=>"", "rowspan"=>"")
     , array("label"=>"Lokasi", "field"=> "LOKASI_NAMA", "display"=>"",  "width"=>"25", "colspan"=>"", "rowspan"=>"")
     , array("label"=>"TANGGAL", "field"=> "TANGGAL_DISPOSISI", "display"=>"",  "width"=>"25", "colspan"=>"", "rowspan"=>"")
