@@ -70,6 +70,25 @@ begin
 		return new;
 	end if;
 
+	--untuk update posisi surat
+	if lower(new.paksa_db) = lower('updateparaf') then
+		select string_agg(a.user_id, ',') into userlihatstatus
+		from
+		(
+			select
+			row_number () over ( partition by a.tr_loo_id order by a.no_urut) urut
+			, a.tr_loo_id, a.user_id
+			from tr_loo_paraf a
+			where coalesce(nullif(a.kondisi_paraf, ''), null) is null
+			and coalesce(nullif(a.status_paraf, ''), null) is null
+		) a
+		where urut = 1
+		and a.tr_loo_id = new.tr_loo_id
+		group by a.tr_loo_id;
+
+		new.user_posisi_paraf_id:= userlihatstatus;
+	end if;
+
 	if lower(new.paksa_db) = lower('updateparaf') then
 
 		select
@@ -138,12 +157,12 @@ begin
 		if new.last_user = pejabatnip then
 			--raise notice '%', ispemaraf;
 		else
-			select count(1) into ispemaraf 
+			select count(1) into ispemaraf
 			from tr_loo_paraf a
 			where 1=1 and tr_loo_id = new.tr_loo_id 
 			and coalesce(nullif(status_paraf, 'x'), 'x') = 'x';
 
-			if adaparaf > 0 then
+			if ispemaraf > 0 then
 				new.status_data := upper('paraf');
 			end if;
 		end if;

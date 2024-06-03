@@ -816,7 +816,7 @@ if($this->USER_GROUP == "LOOLOI" || in_array("LOOLOI", explode(",", $this->USER_
                                     $pg == "permohonan_stpd_status" ||
                                     $pg == "permohonan_stpd_persetujuan"
 
-                                    || ( ($pg == "loo_add" || $pg == "loo_draft") && !empty($menulooloi))
+                                    || ( ($pg == "loo_add" || $pg == "loo_draft" || $pg == "loo_perlu_persetujuan") && !empty($menulooloi))
                                 
                                 )
                             ){
@@ -914,6 +914,7 @@ if($this->USER_GROUP == "LOOLOI" || in_array("LOOLOI", explode(",", $this->USER_
                               if(!empty($menulooloi))
                               {
                               ?>
+                              <a class="menu-utama" href="main/index/loo_perlu_persetujuan"><i class="fa fa-pencil"></i>Perlu Persetujuan LOO</a> 
                               <a class="menu-utama" href="main/index/loo_draft"><i class="fa fa-pencil"></i>Draft LOO</a>
                               <?
                               }

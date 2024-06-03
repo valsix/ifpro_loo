@@ -248,10 +248,12 @@ class trloo_json extends CI_Controller
 			$reqStatusData= "DRAFT";
 		}
 
+		$infostatuslog= "";
 		if($reqStatusData == "UBAHDATADRAFTPARAF")
 		{
 			$reqKondisiStatusData= $reqStatusData;
 			$reqStatusData= "PARAF";
+			$infostatuslog= "Kirim Paraf";
 		}
 
 		if($reqStatusData == "UBAHDATAPOSTING")
@@ -565,8 +567,11 @@ class trloo_json extends CI_Controller
 			$inforeturninfo= "";
 			if ($reqStatusData == "DRAFT") {
 
-				$arrtriger= array("reqId"=>$reqId, "mode"=>"tnomor");
-				$this->trigerpaksa($arrtriger);
+				if($reqStatusData == "DRAFT")
+				{
+					$arrtriger= array("reqId"=>$reqId, "mode"=>"tnomor");
+					$this->trigerpaksa($arrtriger);
+				}
 
 				if($reqKondisiStatusData == "UBAHDATAPARAF" || $reqKondisiStatusData == "UBAHDATAREVISI")
 				{
@@ -584,9 +589,15 @@ class trloo_json extends CI_Controller
 			}
 			else
 			{
+				if($reqKondisiStatusData == "UBAHDATADRAFTPARAF")
+				{
+					$arrtriger= array("reqId"=>$reqId, "mode"=>"updateuserlihatstatus");
+					$this->trigerpaksa($arrtriger);
+				}
+
 				$reqInfoLog= $this->input->post("reqInfoLog");
 				
-				$arrparam= array("reqId"=>$reqId, "reqInfoLog"=>$reqInfoLog);
+				$arrparam= array("reqId"=>$reqId, "reqInfoLog"=>$reqInfoLog, "reqInfoStatus"=>$infostatuslog);
 				$this->paraf_proses($arrparam);
 				
 				// $arrparam= array("reqId"=>$reqId);
@@ -625,6 +636,7 @@ class trloo_json extends CI_Controller
 	{
 		$reqId= $arrparam["reqId"];
 		$reqInfoLog= $arrparam["reqInfoLog"];
+		$reqInfoStatus= $arrparam["reqInfoStatus"];
 
 		$this->load->model("TrLoo");
 		$set= new TrLoo();
@@ -649,7 +661,8 @@ class trloo_json extends CI_Controller
 			{
 				$slog= new TrLoo();
 				$slog->setField("TR_LOO_ID", $reqId);
-				$slog->setField("STATUS_SURAT", "PARAF");
+				// $slog->setField("STATUS_SURAT", "PARAF");
+				$slog->setField("STATUS_SURAT", $reqInfoStatus);
 				$slog->setField("INFORMASI", $sesjabatan." (".$sesnama.")");
 				$slog->setField("CATATAN", $reqInfoLog);
 				$slog->setField("LAST_CREATE_USER", $sesid);
@@ -677,11 +690,62 @@ class trloo_json extends CI_Controller
 	function posting_proses($arrparam)
 	{
 		$this->load->model("TrLoo");
+		$sesid= $this->ID;
+		$sesusername= $this->USERNAME;
+
 		$reqId= $arrparam["reqId"];
 
 		$set= new TrLoo();
 		$statusSurat= $set->getStatusSurat(array("A.TR_LOO_ID" => $reqId));
 		// echo $statusSurat;exit;
+
+		$setdetil= new TrLoo();
+		$setdetil->setField("TR_LOO_ID", $reqId);
+		$setdetil->setField("NOMOR", $valicheck);
+		// $setdetil->setField("SATUAN_KERJA_ID_ASAL", $this->SATUAN_KERJA_ID_ASAL);
+		$setdetil->setField("PEMARAF_ID", $sesid);
+		$setdetil->setField("FIELD", "STATUS_DATA");
+		$setdetil->setField("FIELD_VALUE", "POSTING"); // apabila yang bikin staff nya sama trigger sudah otomatis diganti VALIDASI
+		$setdetil->setField("LAST_UPDATE_USER", $sesusername);
+		$setdetil->setField("USER_ID", $sesid);
+
+		if(empty($valicheck))
+		{
+			if ($setdetil->updateByFieldValidasi()) 
+			{
+				$simpaninfo= "1";
+			}
+		}
+		else
+		{
+			if ($setdetil->updateByFieldValidasiNomor()) 
+			{
+				$simpaninfo= "1";
+			}
+		}
+
+		if($simpaninfo == "1")
+		{
+			if($statusSurat == "VALIDASI")
+			{
+
+			}
+			elseif($statusSurat == "PARAF")
+			{
+				$arrtriger= array("reqId"=>$reqId, "mode"=>"updateparaf");
+				$this->trigerpaksa($arrtriger);
+				
+				if ($reqSource == "PARAF") {
+					$inforeturninfo= "Naskah berhasil diparaf";
+				}
+				else
+				{
+					$inforeturninfo= "Naskah berhasil diposting ke pemaraf sebelum diposting ke tujuan";
+				}
+			}
+
+			echo $reqId."xxx".$inforeturninfo;
+		}
 	}
 
 	function delete()

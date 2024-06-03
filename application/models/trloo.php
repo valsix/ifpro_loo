@@ -253,6 +253,47 @@ DESCRIPTION			:
 		$this->query = $str;
 		$this->execQuery($str);
 	}
+
+	function updateByFieldValidasiNomor()
+	{
+		$str = "
+		UPDATE tr_loo A SET
+		NOMOR= '".$this->getField("NOMOR")."',
+		".$this->getField("FIELD")."= '".$this->getField("FIELD_VALUE")."'
+		--, LAST_UPDATE_USER= '".$this->getField("LAST_UPDATE_USER")."'
+		--, LAST_UPDATE_DATE= NOW()
+		WHERE TR_LOO_ID= ".$this->getField("TR_LOO_ID")." AND
+		(
+			--SATUAN_KERJA_ID_ASAL = '".$this->getField("SATUAN_KERJA_ID_ASAL")."' OR
+			USER_PEMBUAT_ID = '".$this->getField("USER_ID")."' 
+			OR USER_LIHAT_STATUS LIKE '%".$this->getField("USER_ID")."%'
+			--OR EXISTS(SELECT 1 FROM SURAT_MASUK_AKSES X WHERE X.TR_LOO_ID = A.TR_LOO_ID AND X.USER_ID = '".$this->getField("PEMARAF_ID")."')
+		)
+		";
+		$this->query = $str;
+		// echo $str;exit;
+		return $this->execQuery($str);
+	}
+
+	function updateByFieldValidasi()
+	{
+		$str = "
+		UPDATE tr_loo A SET
+		".$this->getField("FIELD")."= '".$this->getField("FIELD_VALUE")."'
+		--, LAST_UPDATE_USER= '".$this->getField("LAST_UPDATE_USER")."'
+		--, LAST_UPDATE_DATE= NOW()
+		WHERE TR_LOO_ID = ".$this->getField("TR_LOO_ID")." AND
+		(
+			--SATUAN_KERJA_ID_ASAL = '".$this->getField("SATUAN_KERJA_ID_ASAL")."' OR
+			USER_PEMBUAT_ID = '".$this->getField("USER_ID")."'
+			OR USER_LIHAT_STATUS LIKE '%".$this->getField("USER_ID")."%'
+			--OR EXISTS(SELECT 1 FROM SURAT_MASUK_AKSES X WHERE X.TR_LOO_ID = A.TR_LOO_ID AND X.USER_ID = '".$this->getField("PEMARAF_ID")."')
+		)
+		";
+		$this->query = $str;
+		// echo $str;exit;
+		return $this->execQuery($str);
+	}
 	
     /** 
     * Cari record berdasarkan array parameter dan limit tampilan 
@@ -274,7 +315,7 @@ DESCRIPTION			:
 			$str .= " AND $key = '$val' ";
 		}
 
-		$str .= " " . $stat . " " . $sOrder;
+		$str .= " ".$stat." ".$sOrder;
 		$this->query = $str;
 		// echo $str;exit;
 		return $this->selectLimit($str, $limit, $from);
