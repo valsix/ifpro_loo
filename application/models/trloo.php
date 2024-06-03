@@ -174,7 +174,7 @@ DESCRIPTION			:
 			)
 			AND A.STATUS_PARAF= '1'
 		)
-		WHERE A.TR_LOO_ID = '" . $this->getField("TR_LOO_ID") . "'
+		WHERE A.TR_LOO_ID = '".$this->getField("TR_LOO_ID")."'
 		";
 			/*AND EXISTS
 			(
@@ -213,6 +213,46 @@ DESCRIPTION			:
 		$this->id = $this->getField("TR_LOO_LOG_ID");
 		return $this->execQuery($str);
 	}
+
+	function insertAttachment()
+	{
+		/*Auto-generate primary key(s) by next max value (integer) */
+		$this->setField("TR_LOO_ATTACHMENT_ID", $this->getNextId("TR_LOO_ATTACHMENT_ID", "tr_loo_attachment"));
+
+		$str = "
+		INSERT INTO tr_loo_attachment
+		(
+			TR_LOO_ATTACHMENT_ID, TR_LOO_ID, ATTACHMENT, UKURAN, TIPE, NAMA, LAST_CREATE_USER, LAST_CREATE_DATE
+		)
+		VALUES 
+		(
+			'".$this->getField("TR_LOO_ATTACHMENT_ID")."'
+			, '".$this->getField("TR_LOO_ID")."'
+			, '".$this->getField("ATTACHMENT")."'
+			, ".(int)$this->getField("UKURAN")."
+			, '".$this->getField("TIPE")."'
+			, '".$this->getField("NAMA")."'
+			, '".$this->getField("LAST_CREATE_USER")."'
+			, NOW()
+		)";
+
+		$this->query = $str;
+		// echo $str;
+		// exit;
+		$this->id = $this->getField("TR_LOO_ID");
+		return $this->execQuery($str);
+	}
+
+	function deleteAttachment()
+	{
+		$str= "
+		DELETE FROM tr_loo_attachment
+		WHERE
+		TR_LOO_ID = '".$this->getField("TR_LOO_ID")."'";
+
+		$this->query = $str;
+		$this->execQuery($str);
+	}
 	
     /** 
     * Cari record berdasarkan array parameter dan limit tampilan 
@@ -221,6 +261,25 @@ DESCRIPTION			:
     * @param int from Awal record yang diambil 
     * @return boolean True jika sukses, false jika tidak 
     **/ 
+    function selectByParamsAttachment($paramsArray = array(), $limit = -1, $from = -1, $stat = '', $sOrder = " ORDER BY A.TR_LOO_ATTACHMENT_ID ASC ")
+	{
+		$str = "
+		SELECT 
+			A.*
+		FROM tr_loo_attachment A
+		WHERE 1 = 1
+		";
+
+		while (list($key, $val) = each($paramsArray)) {
+			$str .= " AND $key = '$val' ";
+		}
+
+		$str .= " " . $stat . " " . $sOrder;
+		$this->query = $str;
+		// echo $str;exit;
+		return $this->selectLimit($str, $limit, $from);
+	}
+
     function selectByParams($paramsArray=array(),$limit=-1,$from=-1,$statement="", $order=" ORDER BY A.TR_LOO_ID ASC")
 	{
 		$str = "

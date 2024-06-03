@@ -174,6 +174,7 @@ begin
 		delete from tr_loo_detil where tr_loo_id = old.tr_loo_id;
 		delete from tr_loo_paraf where tr_loo_id = old.tr_loo_id;
 		delete from tr_loo_log where tr_loo_id = old.tr_loo_id;
+		delete from tr_loo_attachment where tr_loo_id = old.tr_loo_id;
 		return old;
 	end if;
    
@@ -337,6 +338,24 @@ create table tr_loo_log
 	, last_update_user character varying
 	, last_update_date date
 	, constraint pk_tr_loo_log primary key (tr_loo_log_id)
+);
+
+drop table if exists tr_loo_attachment;
+create table tr_loo_attachment
+(
+	tr_loo_attachment_id numeric not null
+	, tr_loo_id numeric
+	, attachment text
+	, catatan character varying
+	, ukuran numeric
+	, tipe character varying(50)
+	, nama character varying
+	, no_urut numeric
+	, last_create_user character varying
+	, last_create_date timestamp without time zone
+	, last_update_user character varying
+	, last_update_date timestamp without time zone
+	, constraint pk_tr_loo_attachment primary key (tr_loo_attachment_id)
 );
 
 drop table if exists tr_loo_paraf;
