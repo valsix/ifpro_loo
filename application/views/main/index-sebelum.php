@@ -11,10 +11,6 @@ include_once("functions/date.func.php");
 //
 //$live_chat_history->selectByParamsBy(array("A.PEGAWAI_ID_BY" => '072124180'));
 
-$menulooloi= "";
-if($this->USER_GROUP == "LOOLOI" || in_array("LOOLOI", explode(",", $this->USER_GROUP)))
-    $menulooloi= "1";
-
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -815,8 +811,7 @@ if($this->USER_GROUP == "LOOLOI" || in_array("LOOLOI", explode(",", $this->USER_
                                     $pg == "permohonan_stpd_draft_realisasi_di_setujui" ||
                                     $pg == "permohonan_stpd_status" ||
                                     $pg == "permohonan_stpd_persetujuan"
-
-                                    || ( ($pg == "loo_add" || $pg == "loo_draft") && !empty($menulooloi))
+                                     
                                 
                                 )
                             ){
@@ -837,16 +832,6 @@ if($this->USER_GROUP == "LOOLOI" || in_array("LOOLOI", explode(",", $this->USER_
                               <a class="menu-utama" href="main/index/instruksi_direksi_add"><i class="fa fa-pencil"></i>Instruksi Direksi</a>
                               <a class="menu-utama" href="main/index/petikan_skd_add"><i class="fa fa-pencil"></i>Petikan Surat Keputusan Direksi</a>
                               <a class="menu-utama" href="main/index/surat_masuk_manual_add"><i class="fa fa-pencil"></i>Surat Masuk Manual</a>
-
-                              <?
-                              if(!empty($menulooloi))
-                              {
-                              ?>
-                              <a class="menu-utama" href="main/index/loo_add"><i class="fa fa-pencil"></i>LOO</a>
-                              <?
-                              }
-                              ?>
-
 <!--                               <a class="menu-utama" href="main/index/surat_pengantar_pengiriman"><i class="fa fa-pencil"></i>Surat Pengantar Pengiriman</a>
                               <a class="menu-utama" href="main/index/bon_permintaan_barang"><i class="fa fa-pencil"></i>Bon Permintaan Barang Umum</a>
                               <a class="menu-utama" href="main/index/laporan_kerusakan_inventaris"><i class="fa fa-pencil"></i>Laporan Kerusakan Inventaris</a>
@@ -909,15 +894,6 @@ if($this->USER_GROUP == "LOOLOI" || in_array("LOOLOI", explode(",", $this->USER_
                               <!-- <a class="menu-utama" href="#"><i class="fa fa-pencil"></i>Pemesan</a> -->
                               <a class="menu-utama" href="main/index/newdraft"><i class="fa fa-pencil"></i> Draft <span class="badge" id="spanJumlahDraft"></span></a>
                               <a class="menu-utama" href="main/index/newdraftmanual"><i class="fa fa-pencil"></i> Draft Manual <span class="badge" id="spanJumlahDraftManual"></span></a>
-
-                              <?
-                              if(!empty($menulooloi))
-                              {
-                              ?>
-                              <a class="menu-utama" href="main/index/loo_draft"><i class="fa fa-pencil"></i>Draft LOO</a>
-                              <?
-                              }
-                              ?>
                            </div>
                            <?
                            }
@@ -1041,8 +1017,9 @@ if($this->USER_GROUP == "LOOLOI" || in_array("LOOLOI", explode(",", $this->USER_
                                 <a class="menu-utama" href="main/index/pegawai">Pegawai</a>
                                 <!-- <a class="menu-utama" href="main/index/non_pegawai">Non Pegawai</a> -->
                                 <a class="menu-utama" href="main/index/user_pengelola">User Pengelola</a>
+                                <!-- <a class="menu-utama" href="main/index/user_group">User Group</a> -->
                             </div>
-                                
+                            
                             <div class="collapsed">
                                 <span><i class="fa fa-users fa-lg" style="color: #fa9f15"></i> Master LOO - LOI</span>
                                 <a class="menu-utama" href="main/index/jenis_perusahaan">Jenis Perusahaan</a>
@@ -1052,8 +1029,25 @@ if($this->USER_GROUP == "LOOLOI" || in_array("LOOLOI", explode(",", $this->USER_
                                 <a class="menu-utama" href="main/index/lantai_loo">Lantai</a>
                                 <a class="menu-utama" href="main/index/lokasi_loo">Lokasi</a>
                                 <a class="menu-utama" href="main/index/lokasi_loo_detil">Lokasi Detil</a>
+                                <!-- <a class="menu-utama" href="main/index/user_pengelola">User Pengelola</a> -->
+                                <!-- <a class="menu-utama" href="main/index/non_pegawai">Non Pegawai</a> -->
                             </div>
 
+                            <?
+                            if($this->USER_GROUP == "LOOLOI" || in_array("LOOLOI", explode(",", $this->USER_GROUP)))
+                            {
+                            ?>
+                                <div class="collapsed">
+                                    <span><i class="fa fa-users fa-lg" style="color: #fa9f15"></i> LOO - LOI</span>
+                                    <a class="menu-utama" href="main/index/loo_add">LOO</a>
+                                    <a class="menu-utama" href="main/index/loo_draft">Draft LOO</a>
+                                    <a class="menu-utama" href="main/index/loo_loi">Monitoring</a>
+                                </div>
+                            <?
+                            }
+                            ?>
+
+                            
                             <?
                                 }
                             ?>

@@ -378,6 +378,7 @@ class lokasi_loo_detil_json extends CI_Controller
 			$row['LANTAI']= $set->getField("LANTAI");
 			$row['TIPE_INFO']= $set->getField("TIPE_INFO");
 			$row['LUAS']= $set->getField("LUAS");
+			$row['TARIF_SC']= $set->getField("SERVICE_CHARGE");
 			$row['KD_TARIF']= $set->getField("KD_TARIF");
 			$row['state']= 'close';
 			$i++;

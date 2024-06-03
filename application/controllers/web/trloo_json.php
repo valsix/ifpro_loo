@@ -227,6 +227,7 @@ class trloo_json extends CI_Controller
 		$reqProdukId= $this->input->post("reqProdukId");
 		$reqCustomerId= $this->input->post("reqCustomerId");
 		$reqLokasiLooId= $this->input->post("reqLokasiLooId");
+		$reqPph= $this->input->post("reqPph");
 		$reqTotalLuasIndoor= $this->input->post("reqTotalLuasIndoor");
 		$reqTotalLuasOutdoor= $this->input->post("reqTotalLuasOutdoor");
 		$reqTotalLuas= $this->input->post("reqTotalLuas");
@@ -271,6 +272,7 @@ class trloo_json extends CI_Controller
 		$set->setField("PRODUK_ID", ValToNullDB($reqProdukId));
 		$set->setField("CUSTOMER_ID", ValToNullDB($reqCustomerId));
 		$set->setField("LOKASI_LOO_ID", ValToNullDB($reqLokasiLooId));
+		$set->setField("PPH", ValToNullDB(dotToNo($reqPph)));
 		$set->setField("TOTAL_LUAS_INDOOR", ValToNullDB(dotToNo($reqTotalLuasIndoor)));
 		$set->setField("TOTAL_LUAS_OUTDOOR", ValToNullDB(dotToNo($reqTotalLuasOutdoor)));
 		$set->setField("TOTAL_LUAS", ValToNullDB(dotToNo($reqTotalLuas)));

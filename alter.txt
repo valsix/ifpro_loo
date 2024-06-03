@@ -4,6 +4,7 @@ create table tr_loo
 	tr_loo_id numeric not null
 	, status_data character varying
 	, nomor_surat character varying
+	, info_nomor_surat character varying
 	, user_pembuat_id character varying
 	, user_pengirim_id character varying
 	, user_pengirim_nama character varying
@@ -12,6 +13,7 @@ create table tr_loo
 	, produk_id integer
 	, customer_id integer
 	, lokasi_loo_id integer
+	, pph numeric
 	, total_luas_indoor numeric
 	, total_luas_outdoor numeric
 	, total_luas numeric
@@ -46,12 +48,22 @@ statuspejabatganti character varying;
 ispemaraf integer := 0;
 persetujuaninfo character varying;
 jumlahstep numeric := 0;
+infonomorsurat character varying;
 vquery text;
 
 begin
 
 	if lower(new.paksa_db) = lower('paksa') then
 		new.paksa_db:= null;
+		return new;
+	end if;
+
+	if lower(new.paksa_db) = lower('tnomor') then
+		new.paksa_db:= null;
+		infonomorsurat:= '/' || upper('ifpro') || '-' || upper('comm') || '/' || upper('loo') || '/' || (select upper(kode) from lokasi_loo where lokasi_loo_id = new.lokasi_loo_id) || '/' || (select ambil_bulan_romawi(to_char(now(), 'mm'))) || '/' || (select to_char(now(), 'yyyy'));
+		--raise notice '%', infonomorsurat;
+
+		new.info_nomor_surat:= infonomorsurat;
 		return new;
 	end if;
 

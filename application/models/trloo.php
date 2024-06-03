@@ -32,7 +32,7 @@ DESCRIPTION			:
 		INSERT INTO tr_loo 
 		(
 			TR_LOO_ID, STATUS_DATA, USER_PEMBUAT_ID, SATUAN_KERJA_PENGIRIM_ID, PRODUK_ID, CUSTOMER_ID, LOKASI_LOO_ID
-			, TOTAL_LUAS_INDOOR, TOTAL_LUAS_OUTDOOR
+			, PPH, TOTAL_LUAS_INDOOR, TOTAL_LUAS_OUTDOOR
 			, TOTAL_LUAS, TOTAL_DISKON_INDOOR_SEWA, TOTAL_DISKON_OUTDOOR_SEWA, TOTAL_DISKON_INDOOR_SERVICE
 			, TOTAL_DISKON_OUTDOOR_SERVICE, HARGA_INDOOR_SEWA, HARGA_OUTDOOR_SEWA, HARGA_INDOOR_SERVICE
 			, HARGA_OUTDOOR_SERVICE, DP, PERIODE_SEWA
@@ -46,6 +46,7 @@ DESCRIPTION			:
 			, ".$this->getField("PRODUK_ID")."
 			, ".$this->getField("CUSTOMER_ID")."
 			, ".$this->getField("LOKASI_LOO_ID")."
+			, ".$this->getField("PPH")."
 			, ".$this->getField("TOTAL_LUAS_INDOOR")."
 			, ".$this->getField("TOTAL_LUAS_OUTDOOR")."
 			, ".$this->getField("TOTAL_LUAS")."
@@ -76,6 +77,7 @@ DESCRIPTION			:
 		, PRODUK_ID= ".$this->getField("PRODUK_ID")."
 		, CUSTOMER_ID= ".$this->getField("CUSTOMER_ID")."
 		, LOKASI_LOO_ID= ".$this->getField("LOKASI_LOO_ID")."
+		, PPH= ".$this->getField("PPH")."
 		, TOTAL_LUAS_INDOOR= ".$this->getField("TOTAL_LUAS_INDOOR")."
 		, TOTAL_LUAS_OUTDOOR= ".$this->getField("TOTAL_LUAS_OUTDOOR")."
 		, TOTAL_LUAS= ".$this->getField("TOTAL_LUAS")."

@@ -83,6 +83,7 @@ class combo_json extends CI_Controller {
 		$i++;
 		$arr_json[$i]['id']		= "DIVISI";
 		$arr_json[$i]['text']	= "Admin Divisi";
+		$i++;
 
 		$arr_json[$i]['id']		= "LOOLOI";
 		$arr_json[$i]['text']	= "Loo-Loi";
