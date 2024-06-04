@@ -13,3 +13,8 @@ ALTER TABLE lantai_loo DROP COLUMN tipe;
 ALTER TABLE lantai_loo_detil ADD COLUMN area CHARACTER VARYING;
 
 ALTER TABLE lokasi_loo ADD COLUMN service_charge CHARACTER VARYING;
+
+
+ALTER TABLE lokasi_loo_detil DROP COLUMN lantai;
+ALTER TABLE lokasi_loo_detil DROP COLUMN tipe;
+ALTER TABLE lokasi_loo_detil DROP COLUMN customer_id;
