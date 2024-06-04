@@ -61,6 +61,18 @@ begin
 		return new;
 	end if;
 
+	if lower(new.paksa_db) = lower('revisi') then
+		update tr_loo_paraf set
+			status_paraf = null
+			, kode_paraf = null
+			, terbaca = null
+			, next_urut= 1
+		where tr_loo_id= new.tr_loo_id;
+		
+		new.paksa_db:= null;
+		return new;
+	end if;
+
 	if lower(new.paksa_db) = lower('tnomor') then
 		new.paksa_db:= null;
 		infonomorsurat:= '/' || upper('ifpro') || '-' || upper('comm') || '/' || upper('loo') || '/' || (select upper(kode) from lokasi_loo where lokasi_loo_id = new.lokasi_loo_id) || '/' || (select ambil_bulan_romawi(to_char(now(), 'mm'))) || '/' || (select to_char(now(), 'yyyy'));

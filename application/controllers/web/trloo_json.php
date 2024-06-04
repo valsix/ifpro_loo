@@ -253,7 +253,6 @@ class trloo_json extends CI_Controller
 		{
 			$reqKondisiStatusData= $reqStatusData;
 			$reqStatusData= "PARAF";
-			$infostatuslog= "Kirim Paraf";
 		}
 
 		if($reqStatusData == "UBAHDATAPOSTING")
@@ -266,6 +265,11 @@ class trloo_json extends CI_Controller
 		{
 			$reqKondisiStatusData= $reqStatusData;
 			$reqStatusData= "VALIDASI";
+		}
+
+		if($reqStatusData == "REVISI")
+		{
+			$infostatuslog= "Revisi";	
 		}
 
 		$sesid= $this->ID;
@@ -563,7 +567,6 @@ class trloo_json extends CI_Controller
 				}
 			}
 
-
 			$inforeturninfo= "";
 			if ($reqStatusData == "DRAFT") {
 
@@ -582,6 +585,15 @@ class trloo_json extends CI_Controller
 					$inforeturninfo= "Naskah berhasil disimpan sebagai DRAFT.";
 				}
 			}
+			elseif ($reqStatusData == "REVISI") {
+				$arrparam= array("reqId"=>$reqId, "reqInfoLog"=>$reqInfoLog, "reqInfoStatus"=>$infostatuslog);
+				$this->setlog($arrparam);
+
+				$arrtriger= array("reqId"=>$reqId, "mode"=>"revisi");
+				$this->trigerpaksa($arrtriger);
+
+				$inforeturninfo= "Naskah telah dikembalikan ke pembuat surat.";
+			}
 
 			if(!empty($inforeturninfo))
 			{
@@ -597,7 +609,7 @@ class trloo_json extends CI_Controller
 
 				$reqInfoLog= $this->input->post("reqInfoLog");
 				
-				$arrparam= array("reqId"=>$reqId, "reqInfoLog"=>$reqInfoLog, "reqInfoStatus"=>$infostatuslog);
+				$arrparam= array("reqId"=>$reqId, "reqInfoLog"=>$reqInfoLog);
 				$this->paraf_proses($arrparam);
 				
 				// $arrparam= array("reqId"=>$reqId);
@@ -632,6 +644,92 @@ class trloo_json extends CI_Controller
 		$this->paraf_proses($arrparam);
 	}
 
+	function setlog($arrparam)
+	{
+		$this->load->model("TrLoo");
+
+		$reqId= $arrparam["reqId"];
+		$reqInfoLog= $arrparam["reqInfoLog"];
+		$reqInfoStatus= $arrparam["reqInfoStatus"];
+		
+		$sesid= $this->ID;
+		$sesnama= $this->NAMA;
+		$sesjabatan= $this->JABATAN;
+		$sesusername= $this->USERNAME;
+		$satuankerjaganti= $this->SATUAN_KERJA_ID_ASAL;
+
+		// simpan log data, kalau ada data varible reqInfoLog
+		if(!empty($reqInfoLog))
+		{
+			$slog= new TrLoo();
+			$slog->setField("TR_LOO_ID", $reqId);
+			$slog->setField("STATUS_SURAT", $reqInfoStatus);
+			$slog->setField("INFORMASI", $sesjabatan." (".$sesnama.")");
+			$slog->setField("CATATAN", $reqInfoLog);
+			$slog->setField("LAST_CREATE_USER", $sesid);
+			$slog->insertlog();
+			unset($slog);
+		}
+	}
+
+	function revisi()
+	{
+		$reqId= $this->input->post('reqId');
+		$reqRevisi= $this->input->post('reqRevisi');
+		$reqMode= $this->input->post('reqMode');
+		$reqSatuanKerjaIdAsal= $this->input->post('reqSatuanKerjaIdAsal');
+		$reqInfoLog= $this->input->post('reqInfoLog');
+
+		$this->load->model("TrLoo");
+
+		$sesid= $this->ID;
+		$sesnama= $this->NAMA;
+		$sesjabatan= $this->JABATAN;
+		$sesusername= $this->USERNAME;
+		$satuankerjaganti= $this->SATUAN_KERJA_ID_ASAL;
+
+		$set= new TrLoo();
+		if ($this->USER_GROUP == "TATAUSAHA") 
+		{
+			$reqSatuanKerjaIdAsal = $reqSatuanKerjaIdAsal;
+		} 
+		else 
+		{
+			if($reqMode == "manual"){}
+			else
+			$reqSatuanKerjaIdAsal = $this->SATUAN_KERJA_ID_ASAL;
+		}
+
+		$set->setField("TR_LOO_ID", $reqId);
+		$set->setField("REVISI", $reqRevisi);
+		$set->setField("SATUAN_KERJA_ID_ASAL", $reqSatuanKerjaIdAsal);
+		$set->setField("REVISI_BY", $sesusername);
+		if ($set->revisi()) 
+		{
+			// simpan log data, kalau ada data varible reqInfoLog
+			if(!empty($reqInfoLog))
+			{
+				$arrparam= array("reqId"=>$reqId, "reqInfoLog"=>$reqInfoLog, "reqInfoStatus"=>"Revisi");
+				$this->setlog($arrparam);
+			}
+
+			$arrtriger= array("reqId"=>$reqId, "mode"=>"revisi");
+			$this->trigerpaksa($arrtriger);
+
+			echo "Naskah berhasil dikembalikan";
+			return;
+		}
+	}
+
+	function logparaf()
+	{
+		$reqId= $this->input->post('reqId');
+		$reqInfoLog= $this->input->post('reqInfoLog');
+
+		$arrparam= array("reqId"=>$reqId, "reqInfoLog"=>$reqInfoLog);
+		$this->paraf_proses($arrparam);
+	}
+
 	function paraf_proses($arrparam)
 	{
 		$reqId= $arrparam["reqId"];
@@ -659,15 +757,19 @@ class trloo_json extends CI_Controller
 			// simpan log data, kalau ada data varible reqInfoLog
 			if(!empty($reqInfoLog))
 			{
-				$slog= new TrLoo();
-				$slog->setField("TR_LOO_ID", $reqId);
-				// $slog->setField("STATUS_SURAT", "PARAF");
-				$slog->setField("STATUS_SURAT", $reqInfoStatus);
-				$slog->setField("INFORMASI", $sesjabatan." (".$sesnama.")");
-				$slog->setField("CATATAN", $reqInfoLog);
-				$slog->setField("LAST_CREATE_USER", $sesid);
-				$slog->insertlog();
-				unset($slog);
+				$set= new TrLoo();
+				$statusSurat= $set->getStatusSurat(array("A.TR_LOO_ID" => $reqId));
+				if($statusSurat == "VALIDASI")
+				{
+
+				}
+				elseif($statusSurat == "PARAF")
+				{
+					$reqInfoStatus= "Kirim Paraf";
+				}
+
+				$arrparam= array("reqId"=>$reqId, "reqInfoLog"=>$reqInfoLog, "reqInfoStatus"=>$reqInfoStatus);
+				$this->setlog($arrparam);
 			}
 
 			include_once("libraries/phpqrcode/qrlib.php");

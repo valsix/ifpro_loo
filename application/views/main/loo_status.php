@@ -16,18 +16,18 @@ $arrtabledata= array(
 );
 
 if(empty($reqStatusSurat))
-	$reqStatusSurat= "PERLU_PERSETUJUAN";
+	$reqStatusSurat= "PARAF";
 
 $sessid= $this->ID;
-$statementglobal= " AND A.STATUS_DATA IN ('PARAF', 'VALIDASI')";
+$statementglobal= " AND A.USER_LIHAT_STATUS LIKE '%".$sessid."%'";
 
-$statement= " AND A.USER_POSISI_PARAF_ID = '".$sessid."'".$statementglobal;
+$statement= " AND A.USER_POSISI_PARAF_ID != '".$sessid."' AND A.STATUS_DATA IN ('PARAF', 'VALIDASI')";
 $set= new TrLoo();
-$jumlahperlupersetujuan= $set->getCountByParams(array(), $statement);
+$jumlahparaf= $set->getCountByParams(array(), $statement);
 
-$statement= " AND A.USER_LIHAT_STATUS LIKE '%".$sessid."%'".$statementglobal;
+$statement= " AND A.STATUS_DATA IN ('REVISI')";
 $set= new TrLoo();
-$jumlahakandisetujui= $set->getCountByParams(array(), $statement);
+$jumlahrevisi= $set->getCountByParams(array(), $statement);
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
@@ -80,8 +80,8 @@ $jumlahakandisetujui= $set->getCountByParams(array(), $statement);
                 </li>
                 <li class="pull-right">
                 	<select id="reqStatusSurat">
-                        <option value="PERLU_PERSETUJUAN" <? if($reqStatusSurat == "PERLU_PERSETUJUAN") echo "selected";?>>Perlu Persetujuan (<?=$jumlahperlupersetujuan?>)</option>
-                        <option value="AKAN_DISETUJUI" <? if($reqStatusSurat == "AKAN_DISETUJUI") echo "selected";?>>Akan Disetujui (<?=$jumlahakandisetujui?>)</option>
+                		<option value="PARAF" <? if($reqStatusSurat == "PARAF") echo "selected";?>>In Progress (<?=$jumlahparaf?>)</option>
+                        <option value="REVISI" <? if($reqStatusSurat == "REVISI") echo "selected";?>>Dikembalikan (<?=$jumlahrevisi?>)</option>
                     </select>
                 </li>
 			</ul>
@@ -161,7 +161,7 @@ $jumlahakandisetujui= $set->getCountByParams(array(), $statement);
 		reqStatusSurat= $("#reqStatusSurat").val();
 		document.location.href = 'main/index/<?=$reqFilename?>?reqStatusSurat='+reqStatusSurat;
 
-        /*jsonurl= "json/tr_loo_json/jsonperlupersetujuan?reqPencarian="+reqPencarian;
+        /*jsonurl= "json/tr_loo_json/jsonstatus?reqPencarian="+reqPencarian;
         datanewtable.DataTable().ajax.url(jsonurl).load();*/
 	});
 
@@ -178,7 +178,7 @@ $jumlahakandisetujui= $set->getCountByParams(array(), $statement);
     });
 
 	jQuery(document).ready(function() {
-		var jsonurl= "json/tr_loo_json/jsonperlupersetujuan?reqStatusSurat=<?=$reqStatusSurat?>";
+		var jsonurl= "json/tr_loo_json/jsonstatus?reqStatusSurat=<?=$reqStatusSurat?>";
 	    ajaxserverselectsingle.init(infotableid, jsonurl, arrdata);
 	});
 
@@ -225,7 +225,7 @@ $jumlahakandisetujui= $set->getCountByParams(array(), $statement);
 			            reqPilihan= "";
 			        }
 
-					window.location = "main/index/loo_perlu_persetujuan_detil/?reqMode=<?=$reqFilename?>&reqId="+valinfoid;
+					window.location = "main/index/loo_status_detil/?reqMode=<?=$reqFilename?>&reqId="+valinfoid;
                 }
             }
         } );

@@ -11,6 +11,7 @@ include_once("functions/date.func.php");
 //
 //$live_chat_history->selectByParamsBy(array("A.PEGAWAI_ID_BY" => '072124180'));
 
+$reqMode= $this->input->get("reqMode");
 $menulooloi= "";
 if($this->USER_GROUP == "LOOLOI" || in_array("LOOLOI", explode(",", $this->USER_GROUP)))
     $menulooloi= "1";
@@ -816,7 +817,7 @@ if($this->USER_GROUP == "LOOLOI" || in_array("LOOLOI", explode(",", $this->USER_
                                     $pg == "permohonan_stpd_status" ||
                                     $pg == "permohonan_stpd_persetujuan"
 
-                                    || ( ($pg == "loo_add" || $pg == "loo_draft" || $pg == "loo_perlu_persetujuan") && !empty($menulooloi))
+                                    || ( ($pg == "loo_add" || $pg == "loo_draft" || $pg == "loo_perlu_persetujuan" || $pg == "loo_perlu_persetujuan_detil" || $pg == "loo_status") && !empty($menulooloi))
                                 
                                 )
                             ){
@@ -838,15 +839,6 @@ if($this->USER_GROUP == "LOOLOI" || in_array("LOOLOI", explode(",", $this->USER_
                               <a class="menu-utama" href="main/index/petikan_skd_add"><i class="fa fa-pencil"></i>Petikan Surat Keputusan Direksi</a>
                               <a class="menu-utama" href="main/index/surat_masuk_manual_add"><i class="fa fa-pencil"></i>Surat Masuk Manual</a>
 
-                              <?
-                              if(!empty($menulooloi))
-                              {
-                              ?>
-                              <a class="menu-utama" href="main/index/loo_add"><i class="fa fa-pencil"></i>LOO</a>
-                              <?
-                              }
-                              ?>
-
 <!--                               <a class="menu-utama" href="main/index/surat_pengantar_pengiriman"><i class="fa fa-pencil"></i>Surat Pengantar Pengiriman</a>
                               <a class="menu-utama" href="main/index/bon_permintaan_barang"><i class="fa fa-pencil"></i>Bon Permintaan Barang Umum</a>
                               <a class="menu-utama" href="main/index/laporan_kerusakan_inventaris"><i class="fa fa-pencil"></i>Laporan Kerusakan Inventaris</a>
@@ -866,6 +858,32 @@ if($this->USER_GROUP == "LOOLOI" || in_array("LOOLOI", explode(",", $this->USER_
                               <a class="menu-utama" href="main/index/permohonan_stpd_keluar"><i class="fa fa-pencil"></i>Kotak Keluar</a> -->
                               <a class="menu-utama" href="main/index/permohonan_stpd_persetujuan"><i class="fa fa-pencil"></i>Perlu Persetujuan</a>
                             </div>
+
+                            <?
+                            if(!empty($menulooloi))
+                            {
+                                $vcurrent= [];
+                                if($pg == "loo_perlu_persetujuan_detil")
+                                {
+                                    $vcurrent["loo_perlu_persetujuan"]= "current";
+                                }
+                                else if($reqMode == "loo_draft")
+                                {
+                                    $vcurrent["loo_draft"]= "current";
+                                }
+
+                            ?>
+                            <div>
+                                <span><i class="fa fa-pencil-square-o fa-lg" style="color: #29b7ea"></i> LOO</span>
+                                <a class="menu-utama" href="main/index/loo_add"><i class="fa fa-pencil"></i>Permohonan</a>
+                                <!-- $pg == "loo_perlu_persetujuan_detil" -->
+                                <a class="menu-utama <?=$vcurrent["loo_perlu_persetujuan"]?>" href="main/index/loo_perlu_persetujuan"><i class="fa fa-pencil"></i>Perlu Persetujuan</a>
+                                <a class="menu-utama" href="main/index/loo_status"><i class="fa fa-pencil"></i>Status</a>
+                                <a class="menu-utama <?=$vcurrent["loo_draft"]?>" href="main/index/loo_draft"><i class="fa fa-pencil"></i>Draft</a>
+                            </div>
+                            <?
+                            }
+                            ?>
                             <div>
                               <span><i class="fa fa-inbox fa-lg" style="color: #29b7ea"></i> Kotak Masuk</span>
                               <a class="menu-utama" href="main/index/kotak_masuk">Semua <span class="badge" id="spanJumlahkotakmasuksemua"></span></a>
@@ -909,16 +927,6 @@ if($this->USER_GROUP == "LOOLOI" || in_array("LOOLOI", explode(",", $this->USER_
                               <!-- <a class="menu-utama" href="#"><i class="fa fa-pencil"></i>Pemesan</a> -->
                               <a class="menu-utama" href="main/index/newdraft"><i class="fa fa-pencil"></i> Draft <span class="badge" id="spanJumlahDraft"></span></a>
                               <a class="menu-utama" href="main/index/newdraftmanual"><i class="fa fa-pencil"></i> Draft Manual <span class="badge" id="spanJumlahDraftManual"></span></a>
-
-                              <?
-                              if(!empty($menulooloi))
-                              {
-                              ?>
-                              <a class="menu-utama" href="main/index/loo_perlu_persetujuan"><i class="fa fa-pencil"></i>Perlu Persetujuan LOO</a> 
-                              <a class="menu-utama" href="main/index/loo_draft"><i class="fa fa-pencil"></i>Draft LOO</a>
-                              <?
-                              }
-                              ?>
                            </div>
                            <?
                            }

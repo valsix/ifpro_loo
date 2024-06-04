@@ -130,7 +130,6 @@ $set= new TrLoo();
 $set->selectByParams(array("A.TR_LOO_ID"=>$reqId));
 $set->firstRow();
 // echo $set->query;exit;
-$userposisiparaf= $set->getField("USER_POSISI_PARAF_ID");
 $infojenissurat= $set->getField("JENIS_SURAT");
 $lampirandrive= $set->getField("LAMPIRAN_DRIVE");
 $infoperihal= $set->getField("PERIHAL");
@@ -157,18 +156,15 @@ if (!empty($reqId))
     if(isset($checknextpemaraf))
         $chekvalidasi= "validasi";
     // echo $chekvalidasi."-".$checknextpemaraf."--".$infonextpemaraf;exit;
-	*/
-	if($userposisiparaf !== $sessid)
-	{
-	    if(!empty($reqMode))
-	    {
-	        redirect("main/index/".$reqMode);
-	    }
-	    else
-	    {
-	        redirect("main/index/loo_perlu_persetujuan");
-	    }
-	}
+
+    if (empty($checkparafid) && empty($reqId) && !empty($reqMode))
+    {
+        redirect("main/index/".$reqMode);
+    }
+    else
+    {
+        redirect("main/index/loo_perlu_persetujuan");
+    }*/
 }
 $arrparam= ["reqId"=>$reqId, "reqStatusSurat"=>$reqStatusSurat];
 $rloo->setterbaca($arrparam);
@@ -244,240 +240,6 @@ $jumlahattachment= $index_data;
 			document.location.href = 'main/index/<?=$reqMode?>';
 		}
 
-		function setdetil()
-		{
-			document.location.href = 'main/index/<?=$infolinkdetil?>';
-		}
-
-		function setubah()
-		{
-			document.location.href = 'main/index/<?=$infolinkedit?>?reqMode=loo_perlu_persetujuan_detil&reqId=<?=$reqId?>';
-		}
-
-		var urllink= reqMode= method= "";
-		function submitForm(reqStatusSurat) 
-		{
-			infopesandetil= "Komentar";
-	        if (reqStatusSurat == "REVISI")
-	        {
-	        	urllink= "web/trloo_json/revisi";
-	        	reqMode= "manual";
-	            infopesandetil += " Kembalikan surat ke staff anda?";
-	            method= "POST";
-	        }
-
-	        if (reqStatusSurat == "PARAF")
-	        {
-	        	urllink= "web/trloo_json/logparaf";
-	        	reqMode= "";
-	            infopesandetil += " Paraf naskah?";
-	            // method= "GET";
-	            method= "POST";
-	        }
-
-	        if (reqStatusSurat == "POSTING")
-	        {
-	        	urllink= "web/trloo_json/logposting";
-	        	reqMode= "";
-	            infopesandetil += " Kirim naskah?";
-	        	<?
-	        	if($checkstatussurat == "PEMBUAT")
-	        	{
-	        	?>
-	        	infopesandetil = " Entry tanggal approval?";
-	        	<?
-	        	}
-	        	?>
-	            // method= "GET";
-	            method= "POST";
-	        }
-
-	        if (reqStatusSurat == "PARAF" || reqStatusSurat == "REVISI" || reqStatusSurat == "POSTING")
-	        {
-	        	<?
-	        	if($checkstatussurat == "PEMBUAT")
-	        	{
-	        	?>
-	        		infocontent= '<form action="" class="formName">' +
-	        		'<div id="myDialog" title="Text Dialog">' +
-	        			'<label>Isi tanggal terlebih dahulu!</label>' +
-	        			'<input type="text" id="tanggalapproval" class="name form-control" required value="<?=$tanggalapproval?>" />' +
-	        		'</div>' +
-	        		'<div class="form-group">' +
-	        		'<label>Isi nomor surat!</label><br/>' +
-	        		'<span id="infonomorawal"><?=$arrinfonomorsurat[0]?></span><input type="text" id="InfoNomor" placeholder="Isi nomor surat anda..." /><span id="infonomorakhir"><?=$arrinfonomorsurat[1]?></span>' +
-	        		'<br/>nomor surat terakhir : <label id="detilnomorakhir"><?=$checkinfolastnomorsurat?></label> '+
-	        		'</div>' +
-	                '</form>';
-	        	<?
-	        	}
-	        	else
-	        	{
-	        	?>
-		        	infocontent= '<form action="" class="formName">' +
-	                '<div class="form-group">' +
-	                '<label>Isi komentar jika ingin mengirim dokumen ini!</label>' +
-	                '<input type="text" placeholder="Tuliskan komentar anda..." class="name form-control" required />' +
-	                '</div>' +
-	                '</form>';
-	            <?
-	        	}
-	            ?>
-
-	            $.confirm({
-	                title: infopesandetil,
-	                <?
-		        	if($checkstatussurat == "PEMBUAT")
-		        	{
-		        	?>
-	                onOpen: function(){
-	                	$("#tanggalapproval").datepicker({ dateFormat: "dd-mm-yy" }).val();
-
-	                	// untuk ambil data nomor berdasarkan tanggal entri
-						$("#tanggalapproval").change(function(){
-							setinfonomorsesuaitanggalentri();
-						});
-	                },
-	                onClose: function(){
-	                	$('#tanggalapproval').datepicker('destroy');
-	                },
-	                <?
-	            	}
-	                ?>
-	                content: '' + infocontent
-	                ,
-	                buttons: {
-	                    formSubmit: {
-	                        text: 'OK',
-	                        btnClass: 'btn-blue',
-	                        action: function () {
-	                            var name = this.$content.find('.name').val();
-
-	                            infovalidasi= "Komentar wajib diisi !";
-	                            <?
-					        	if($checkstatussurat == "PEMBUAT")
-					        	{
-					        	?>
-					        		InfoNomor= this.$content.find('#InfoNomor').val();
-					        		$("#reqInfoNomor").val(InfoNomor);
-
-					        		reqInfoNomor= $("#reqInfoNomor").val();
-					        		if (reqInfoNomor == "")
-					        		{
-					        			$.alert('<span style= color:red>Nomor surat anda wajib diisi</span>');
-					        			return false;
-					        		}
-
-					        		infovalidasi= "tanggal wajib diisi !";
-					        	<?
-					        	}
-					        	?>
-	                            if (!name) {
-	                                $.alert('<span style= color:red>'+infovalidasi+'</span>');
-	                                return false;
-	                            }
-
-	                            $("#reqInfoLog").val(name);
-	                            // reqInfoNomor
-	                            setsimpan();
-	                        }
-	                    },
-	                    cancel: function () {
-	                        //close
-	                    },
-	                },
-	                onContentReady: function () {
-	                	$('#InfoNomor').bind('keyup paste', function(){
-							this.value = this.value.replace(/[^0-9]/g, '');
-							// this.value = this.value.replace(/[^0-9\.]/g, '');
-						});
-
-	                    // you can bind to the form
-	                    var jc = this;
-	                    this.$content.find('form').on('submit', function (e) { // if the user submits the form by pressing enter in the field.
-	                        e.preventDefault();
-	                        jc.$$formSubmit.trigger('click'); // reference the button and click it
-	                    });
-	                }
-	            });
-	        }
-		}
-
-		// untuk ambil data nomor berdasarkan tanggal entri
-		function setinfonomorsesuaitanggalentri()
-		{
-			tanggalapproval= $('#tanggalapproval').val();
-			// console.log(tanggalapproval);
-			infotanggalajax= "web/trloo_json/setinfonomorsesuaitanggalentri?v=<?=$reqId?>&t="+tanggalapproval;
-			$.ajax({
-				url: infotanggalajax,
-				type: "GET",
-				dataType: "json",
-				success: function(responsedata){
-					// console.log(responsedata);
-					// console.log(responsedata["infonomorakhir"]);
-					$("#detilnomorakhir").text(responsedata["detilnomorakhir"]);
-					$("#infonomorawal").text(responsedata["infonomorawal"]);
-					$("#infonomorakhir").text(responsedata["infonomorakhir"]);
-              	}
-            });
-		}
-
-		function setsimpan()
-		{
-			var reqId= reqSatuanKerjaIdAsal= reqInfoLog= reqInfoNomor= "";
-			reqId= "<?=$reqId?>";
-			reqSatuanKerjaIdAsal= "<?=$reqSatuanKerjaId?>";
-			reqInfoLog= $("#reqInfoLog").val();
-			reqInfoNomor= $("#reqInfoNomor").val();
-			// alert(reqInfoLog);return false;
-			
-			var win = $.messager.progress({title:'Proses simpan data', msg:'Proses simpan data...'});
-                
-			$.ajax({
-		        url: urllink,
-		        method: method,
-		        data: {
-		            reqId: reqId, 
-		            reqSatuanKerjaIdAsal: reqSatuanKerjaIdAsal, 
-		            reqInfoLog: reqInfoLog,
-		            reqInfoNomor: reqInfoNomor,
-		            reqMode: reqMode
-		        },
-		        // dataType: 'json',
-		        success: function (response) {
-		        	$.messager.progress('close');
-		        	// console.log(response);return false;
-		        	if(response == "0")
-		        	{
-		        		$.alert({
-			                title: 'Info',
-			                content: '<span style= color:red>gagal posting, karena nomor surat sudah ada</span>'
-			                , buttons: {
-			                    formSubmit: {
-			                        text: 'OK',
-			                        btnClass: 'btn-blue',
-			                        action: function () {
-			                        	location.reload();
-			                        }
-			                    },
-			                }
-			            });
-		        		return false;
-		        	}
-		        	else
-		        	{
-			        	// console.log(response);return false;
-			        	setdetil();
-		        	}
-		        },
-		        error: function (response) {
-		        	// console.log(response);return false;
-		        },
-		        complete: function () {
-		        }
-		    });
-		} 
 	</script>
     
 </head>
@@ -499,41 +261,6 @@ $jumlahattachment= $index_data;
                 </ul>
             </div> -->
             <div class="area-button-judul pull-right">
-            	<?
-            	if($checkstatussurat == "PEMBUAT")
-            	{
-            		if($checkuserid == $this->ID)
-            		{
-            	?>
-            	<button onClick="submitForm('POSTING')" class="btn btn-success btn-sm">Entry Date</button>
-            	<?
-            		}
-            	}
-            	else
-            	{
-            	?>
-            		<button onclick="setubah()" class="btn btn-default btn-sm">Edit Surat</button>
-	            	<?
-	            	if($reqStatusSurat == "VALIDASI")
-	            	{
-	            	?>
-	            	<button onClick="submitForm('POSTING')" class="btn btn-success btn-sm">Setuju</button>
-	            	<?
-	            	}
-	            	else
-	            	{
-	            		$infobutton= "Setuju";
-	            		if($checkstatusbantu == "1")
-	            			$infobutton= "Forward";
-	            	?>
-	                <button onClick="submitForm('PARAF')" class="btn btn-success btn-sm"><?=$infobutton?></button>
-	            	<?
-	            	}
-	            	?>
-	                <button onClick="submitForm('REVISI')" class="btn btn-warning btn-sm">Kembalikan</button>
-	            <?
-	        	}
-	            ?>
 				<input type="hidden" name="reqInfoLog" id="reqInfoLog" />
 				<input type="hidden" name="reqInfoNomor" id="reqInfoNomor" />
             </div>

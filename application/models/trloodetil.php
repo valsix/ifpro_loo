@@ -109,7 +109,12 @@ DESCRIPTION			:
 		A1.KODE, A1.NAMA, A1.LANTAI
 		, A.*
 		FROM tr_loo_detil A
-		INNER JOIN lokasi_loo_detil A1 ON A.VID = A1.LOKASI_LOO_DETIL_ID
+		INNER JOIN
+		(
+			SELECT A.*, A1.NAMA LANTAI
+			FROM lokasi_loo_detil A
+			INNER JOIN lantai_loo A1 ON A.LANTAI_LOO_ID = A1.LANTAI_LOO_ID
+		) A1 ON A.VID = A1.LOKASI_LOO_DETIL_ID
 		WHERE 1=1
 		"; 
 		

@@ -187,6 +187,23 @@ DESCRIPTION			:
 		return $this->execQuery($str1);
 	}
 
+	function revisi()
+	{
+
+		$str = "
+		UPDATE tr_loo SET
+			   STATUS_DATA= 'REVISI'
+			   --, REVISI= '".$this->getField("REVISI")."'
+			   --, REVISI_BY= '".$this->getField("REVISI_BY")."'
+			   --, REVISI_DATE= CURRENT_TIMESTAMP
+		   WHERE TR_LOO_ID= '".$this->getField("TR_LOO_ID")."' 
+		   --AND SATUAN_KERJA_ID_ASAL= '".$this->getField("SATUAN_KERJA_ID_ASAL")."'
+		";
+		$this->query = $str;
+		// echo $str;exit;
+		return $this->execQuery($str);
+	}
+
     function insertlog()
 	{
 		$this->setField("TR_LOO_LOG_ID", $this->getNextId("TR_LOO_LOG_ID", "tr_loo_log"));

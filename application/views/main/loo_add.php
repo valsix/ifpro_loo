@@ -7,10 +7,12 @@ $this->load->model("TrLoo");
 $this->load->model("TrLooDetil");
 $this->load->model("Combo");
 $this->load->model("TrLooParaf");
+$this->load->model("SatuanKerja");
 
 $reqId= $this->input->get("reqId");
 $cekquery= $this->input->get("c");
 
+$reqIdDraft= $reqId;
 $arrdetil= $arrlokasi= [];
 if(empty($reqId))
 {
@@ -39,6 +41,17 @@ else
 
     $reqSatuanKerjaPengirimId= $set->getField("SATUAN_KERJA_PENGIRIM_ID");
     $reqStatusData= $set->getField("STATUS_DATA");
+    $reqUserId= $set->getField("USER_PEMBUAT_ID");
+    // $reqxxx= $set->getField("USER_POSISI_PARAF_ID");
+
+    $satuan_kerja= new SatuanKerja();
+    $satuan_kerja->selectByParams(array(), -1, -1, " AND SATUAN_KERJA_ID = '".$reqSatuanKerjaPengirimId."'", " ORDER BY KODE_SO ASC ");
+    $satuan_kerja->firstRow();
+    // echo $satuan_kerja->query;exit;
+    $infopenandatangankode= $satuan_kerja->getField("KODE_SURAT");
+    $infopenandatangannamapejabat= $satuan_kerja->getField("NAMA_PEGAWAI");
+    $infopenandatangannip= $satuan_kerja->getField("NIP");
+    $infosatuankerjainfo= $satuan_kerja->getField("JABATAN")." ".$infopenandatangannamapejabat." (".$infopenandatangannip.")";
 
     /*
     $set->setField("TOTAL_DISKON_INDOOR_SEWA", ValToNullDB(dotToNo($req)));
@@ -98,6 +111,59 @@ while($set->nextRow())
     array_push($arrutilitycharge, $arrdata);
 }
 // print_r($arrutilitycharge);exit;
+
+$sessid= $this->ID;
+$checkparafid= "";
+if (!empty($reqId))
+{
+    if($reqStatusData == "DRAFT" || $reqStatusData == "REVISI"){}
+    elseif($reqStatusData == "PARAF" || $reqStatusData == "VALIDASI")
+    {
+        $statement.= " AND A.USER_POSISI_PARAF_ID = '".$sessid."' AND A.TR_LOO_ID = ".$reqIdDraft;
+        $set= new TrLoo();
+        $set->selectdraft(array(), -1, -1, $statement);
+        // echo $set->query;exit;
+        $set->firstRow();
+        $checkparafid= $set->getField("TR_LOO_ID");
+        $checknextpemaraf= $set->getField("NEXT_URUT");
+        $checkstatusbantu= $set->getField("STATUS_BANTU");
+        $chekvalidasi= "";
+        if(isset($checknextpemaraf))
+            $chekvalidasi= "validasi";
+        // echo $chekvalidasi."-".$checknextpemaraf."--".$infonextpemaraf;exit;
+
+        if (empty($checkparafid) && empty($reqId))
+        {
+            redirect("main/index/loo_perlu_persetujuan");
+        }
+        else
+        {
+            /*if((!empty($reqLinkMode) && $infonextpemaraf !== $checknextpemaraf) || empty($checknextpemaraf))
+            {
+                if($chekvalidasi == "validasi"){}
+                else
+                {
+                    // echo $chekvalidasi."-".$checknextpemaraf."--".$infonextpemaraf;exit;
+                    $set= new SuratMasuk();
+                    $set->selectByParams(array("A.SURAT_MASUK_ID"=>$reqIdDraft));
+                    $set->firstRow();
+                    // echo $set->query;exit;
+                    $infoperihal= $set->getField("PERIHAL");
+                    $infojenisnaskahid= $set->getField("JENIS_NASKAH_ID");
+                    unset($set);
+
+                    $arrlink= $suratmasukinfo->infolinkdetil($infojenisnaskahid);
+                    $infolinkdetil= $arrlink["linkstatusdetil"];
+                    // echo "main/index/".$infolinkdetil."/?reqId=".$reqIdDraft;exit;
+
+                    redirect("main/index/".$infolinkdetil."/?reqId=".$reqIdDraft);
+                }
+            }*/
+        }
+    }
+    else
+    redirect("main/index/loo_draft");
+}
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -165,6 +231,31 @@ $(function(){
                 ?>
 
                 <?
+                // tambahan khusus, kalau paraf sesuai urutan
+                if ($reqStatusData == "PARAF" && !empty($checkparafid) && $reqUserId != $sessid) 
+                {
+                    $aksibutton= "1";
+
+                    $infobutton= "Setujui";
+                    if($checkstatusbantu == "1")
+                        $infobutton= "Forward";
+                ?>
+                    <button class="btn btn-primary btn-sm pull-right" type="button" onClick="submitForm('UBAHDATAPARAF')"><i class="fa fa-save"></i> Simpan</button>
+                    <button class="btn btn-primary btn-sm pull-right" type="button" onClick="submitForm('REVISI')"><i class="fa fa-level-down"></i> Kembalikan</button>
+                    <button class="btn btn-primary btn-sm pull-right" type="button" onClick="submitForm('PARAF')"><i class="fa fa-check-square-o"></i> <?=$infobutton?></button>
+                <?
+                }
+
+                if ($reqStatusData == "REVISI" && $reqUserId == $sessid)
+                {
+                    $aksibutton= "1";
+                ?>
+                    <button class="btn btn-primary btn-sm pull-right" type="button" onClick="submitForm('UBAHDATAREVISI')"><i class="fa fa-save"></i> Simpan</button>
+                    <button class="btn btn-primary btn-sm pull-right" type="button" onClick="submitForm('UBAHDATAPOSTING')"><i class="fa fa-paper-plane"></i> Kirim</button>
+                    <!-- <button class="btn btn-warning btn-sm pull-right" type="button" onClick="setagenda()"><i class="fa fa-list"></i> Agenda Surat</button> -->
+                <?
+                }
+
                 if(empty($reqId) || ($reqStatusData == "DRAFT" && !empty($reqId)) ) 
                 {
                     $aksibutton= "1";
@@ -185,6 +276,17 @@ $(function(){
                 {
                 ?>
                     <button class="btn btn-danger btn-sm pull-right" type="button" onClick="deleteForm()"><i class="fa fa-trash-o"></i> Hapus</button>
+                <?
+                }
+
+                if (!empty($reqId) && $reqStatusData == "VALIDASI" && $reqUserAtasanId == $sessid)
+                {
+                    $aksibutton= "1";
+                ?>
+                    <button class="btn btn-primary btn-sm pull-right" type="button" onClick="submitForm('UBAHDATAVALIDASI')"><i class="fa fa-save"></i> Simpan</button>
+                    <button class="btn btn-primary btn-sm pull-right" type="button" onClick="submitForm('REVISI')"><i class="fa fa-level-down"></i> Kembalikan</button>
+                    <button class="btn btn-primary btn-sm pull-right" type="button" onClick="submitForm('POSTING')"><i class="fa fa-check-square-o"></i> Setujui</button>
+
                 <?
                 }
                 ?>
@@ -236,9 +338,25 @@ $(function(){
                             </td>
                         </tr>
                         <tr>
-                            <td>Pengirim <span class="text-danger">*</td>
+                            <td>Penanda tangan <span class="text-danger">*</td>
                             <td>:</td>
                             <td>
+                                <?
+                                $infodisplay= "";
+                                // if(!empty($checkparafid) || $reqStatusSurat == "REVISI")
+                                if(empty($aksibutton) || !empty($checkparafid) || $reqStatusSurat == "XXXREVISI")
+                                {
+                                    $infodisplay= "none";
+                                ?>
+                                <span style="display: none;">
+                                    <input type="text" id="reqSatuanKerjaPengirimId" class="easyui-combotree" name="reqSatuanKerjaPengirimId" value="<?=$reqSatuanKerjaPengirimId?>" />
+                                </span>
+                                <?=$infosatuankerjainfo?>
+                                <?
+                                }
+                                else
+                                {
+                                ?>
                                 <input type="text" id="reqSatuanKerjaPengirimId" class="easyui-combotree" name="reqSatuanKerjaPengirimId" data-options="
                                 onClick: function(rec){
                                     $('#reqUserPengirimId').val(rec.NIP);
@@ -259,6 +377,9 @@ $(function(){
                                 , prompt:'Tentukan Pengirim...'," value="<?=$reqSatuanKerjaPengirimId?>"
                                 required="required"
                                 />
+                                <?
+                                }
+                                ?>
                             </td>
                         </tr>
                         <tr>
@@ -392,11 +513,25 @@ $(function(){
                             <tr>
                                 <td class="tdcolor">
                                     Indoor
+                                    <?
+                                    if(empty($infodisplay))
+                                    {
+                                    ?>
                                     <a onClick="openLookup('I')"><i class="fa fa-plus-square fa-lg" aria-hidden="true"></i></a>
+                                    <?
+                                    }
+                                    ?>
                                 </td>
                                 <td class="tdcolor">
                                     Outdoor
+                                    <?
+                                    if(empty($infodisplay))
+                                    {
+                                    ?>
                                     <a onClick="openLookup('O')"><i class="fa fa-plus-square fa-lg" aria-hidden="true"></i></a>
+                                    <?
+                                    }
+                                    ?>
                                 </td>
                             </tr>
                             <tr>
@@ -418,7 +553,15 @@ $(function(){
                                             ?>
                                             <tr class="grouplokasiclass<?=$reqLokasiLooId?> groupclass<?=$vkeyid?>">
                                                 <td>
-                                                    <?=$vlabel?> <i style="cursor:pointer" class="fa fa-times-circle text-danger" aria-hidden="true" onclick="hapusgroupclass('<?=$vkeyid?>');"></i>
+                                                    <?=$vlabel?>
+                                                    <?
+                                                    if(empty($infodisplay))
+                                                    {
+                                                    ?>
+                                                    <i style="cursor:pointer" class="fa fa-times-circle text-danger" aria-hidden="true" onclick="hapusgroupclass('<?=$vkeyid?>');"></i>
+                                                    <?
+                                                    }
+                                                    ?>
                                                 </td>
                                                 <td>:</td>
                                                 <td style="width:30%">
@@ -461,7 +604,15 @@ $(function(){
                                             ?>
                                             <tr class="grouplokasiclass<?=$reqLokasiLooId?> groupclass<?=$vkeyid?>">
                                                 <td>
-                                                    <?=$vlabel?> <i style="cursor:pointer" class="fa fa-times-circle text-danger" aria-hidden="true" onclick="hapusgroupclass('<?=$vkeyid?>');"></i>
+                                                    <?=$vlabel?>
+                                                    <?
+                                                    if(empty($infodisplay))
+                                                    {
+                                                    ?>
+                                                    <i style="cursor:pointer" class="fa fa-times-circle text-danger" aria-hidden="true" onclick="hapusgroupclass('<?=$vkeyid?>');"></i>
+                                                    <?
+                                                    }
+                                                    ?>
                                                 </td>
                                                 <td>:</td>
                                                 <td style="width:30%">
@@ -1377,7 +1528,7 @@ function appenddata(vtipe, vdetilparam)
         +       '<input type="hidden" name="vmode[]" value="tarif_sewa_sc_indoor_after_pph" />'
         +       '<input type="hidden" name="vid[]" class="valsetid" value="'+id+'" />'
         +       '<input type="hidden" name="vketerangan[]" />'
-        +       '<input type="text" class="vlxuangclass easyui-validatebox textbox form-control totalsewascindoorafterpph" name="vnilai[]" placeholder="Isi %" data-options="required:true" style="width:65%; display: inline; text-align: right;" value="'+setformat(vafterpph)+'" /> <label class="labeltotal">Rp/m2</label>'
+        +       '<input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control totalsewascindoorafterpph" name="vnilai[]" placeholder="Isi %" data-options="required:true" style="width:65%; display: inline; text-align: right;" value="'+setformat(vafterpph)+'" /> <label class="labeltotal">Rp/m2</label>'
         +   '</td>'
                                                     
         +   '<td>'
@@ -1479,7 +1630,7 @@ function appenddata(vtipe, vdetilparam)
         +       '<input type="hidden" name="vmode[]" value="tarif_sewa_sc_outdoor_after_pph" />'
         +       '<input type="hidden" name="vid[]" class="valsetid" value="'+id+'" />'
         +       '<input type="hidden" name="vketerangan[]" />'
-        +       '<input type="text" class="vlxuangclass easyui-validatebox textbox form-control totalsewascoutdoorafterpph" name="vnilai[]" placeholder="Isi %" data-options="required:true" style="width:65%; display: inline; text-align: right;" value="'+setformat(vafterpph)+'" /> <label class="labeltotal">Rp/m2</label>'
+        +       '<input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control totalsewascoutdoorafterpph" name="vnilai[]" placeholder="Isi %" data-options="required:true" style="width:65%; display: inline; text-align: right;" value="'+setformat(vafterpph)+'" /> <label class="labeltotal">Rp/m2</label>'
         +   '<td>'
         +       '<input type="hidden" name="vmode[]" value="tarif_sewa_sc_outdoor_diskon" />'
         +       '<input type="hidden" name="vid[]" class="valsetid" value="'+id+'" />'
@@ -1861,9 +2012,9 @@ function submitForm(reqStatusData){
     {
         // tambahan khusus
         <?
-        if ($reqStatusData == "VALIDASI" && $reqUserId != $this->ID) 
+        if ($reqStatusData == "VALIDASI" && $reqUserId != $sessid) 
         {
-            if($reqUserAtasanId == $this->ID && $reqKelompokJabatan == "DIREKSI")
+            if($reqUserAtasanId == $sessid && $reqKelompokJabatan == "DIREKSI")
             {
         ?>
         <?
@@ -1921,7 +2072,7 @@ function submitForm(reqStatusData){
                         }
                         $("#reqInfoLog").val(name);
 
-                        setloading(reqStatusData);
+                        // setloading(reqStatusData);
 
                         <?
                         if(empty($reqId) || ($reqStatusData == "DRAFT" && !empty($reqId)) )
@@ -1973,6 +2124,7 @@ function setsimpan(reqStatusData)
 
             if($(this).form('enableValidation').form('validate'))
             {
+                setloading(reqStatusData);
                 var win = $.messager.progress({title:'Proses simpan data', msg:'Proses simpan data...'});
             }
             return $(this).form('enableValidation').form('validate');

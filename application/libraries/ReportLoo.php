@@ -91,5 +91,57 @@ class ReportLoo
 		return $saveAs;
 		exit;
 	}
+
+	function setterbaca($arrparam)
+	{
+		$CI = &get_instance();
+		$CI->load->model("TrLooParaf");
+		$arrgetsessionuser= $this->getsessionuser();
+		// print_r($arrgetsessionuser);exit;
+		$sessionloginid= $arrgetsessionuser["sessionloginid"];
+
+		$reqId= $arrparam["reqId"];
+		$reqStatusSurat= $arrparam["reqStatusSurat"];
+		// print_r($arrparam);exit;
+
+		if($reqStatusSurat == "PARAF")
+		{
+			$setdetil= new TrLooParaf();
+			$setdetil->setField("LAST_UPDATE_USER", $sessionloginid);
+			$setdetil->setField("USER_ID", $sessionloginid);
+			$setdetil->setField("TR_LOO_ID", $reqId);
+			if($setdetil->paraf())
+			{
+				$arrtriger= array("reqId"=>$reqId, "mode"=>"updateparaf");
+				$this->trigerpaksa($arrtriger);
+			}
+		}
+	}
+
+	function getsessionuser()
+	{
+		$CI = &get_instance();
+
+		$sessionloginid= $CI->kauth->getInstance()->getIdentity()->ID;
+
+		$arrreturn= [];
+		$arrreturn["sessionloginid"]= $sessionloginid;
+		// print_r($arrreturn);exit;
+
+		return $arrreturn;
+	}
+
+	function trigerpaksa($arrparam)
+	{
+		$CI = &get_instance();
+		$CI->load->model("TrLoo");
+		$reqId= $arrparam["reqId"];
+		$mode= $arrparam["mode"];
+
+		$tgr= new TrLoo();
+		$tgr->setField("TR_LOO_ID", $reqId);
+		$tgr->setField("PAKSA_DB", $mode);
+		$tgr->updatetriger();
+	}
 	
 }

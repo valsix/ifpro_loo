@@ -37,15 +37,15 @@ $set= new TrLooDetil();
 $set->selectlokasi(array(), -1,-1, $statement);
 while($set->nextRow())
 {
-    $valid= $set->getField("TR_LOO_DETIL_ID");
+    $valid= $set->getField("VID");
     $valmode= $set->getField("VMODE");
 
     $arrdata= [];
     $arrdata["key"]= $valid."-".$valmode;
-    $arrdata["rowdetilid"]= $valid;
+    $arrdata["rowdetilid"]= $set->getField("TR_LOO_DETIL_ID");;
     $arrdata["rowid"]= $set->getField("TR_LOO_ID");
     $arrdata["vmode"]= $valmode;
-    $arrdata["vid"]= $set->getField("VID");
+    $arrdata["vid"]= $valid;
     $arrdata["vnilai"]= $set->getField("NILAI");
     $arrdata["kode"]= $set->getField("KODE");
     $arrdata["nama"]= $set->getField("NAMA");
