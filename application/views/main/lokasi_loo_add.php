@@ -225,8 +225,17 @@ $(function(){
                                             $setid= $lokasi_loo->getField("UTILITY_CHARGE_ID");
                                             $setnama= $lokasi_loo->getField("NAMA_UTILITY_CHARGE");
                                             $setharga= $lokasi_loo->getField("HARGA");
+                                            $setket= $lokasi_loo->getField("KETERANGAN");
                                             ?>
-                                                <li><?=$setnama?><input type='text' id='reqSCHarga<?=$setnama?>' class='vlxuangclass easyui-validatebox textbox form-control totalluasoutdoor' required name='reqSCHarga[]' value='<?=$setharga?>' data-options='required:true' style='width:10%; display: inline; text-align: right;' /><input type='hidden' id='reqSCId<?=$setid?>' name='reqSCId[]' value='<?=$setid?>' />
+                                                <li>
+                                                    <table>
+                                                        <tr>
+                                                            <td style="width: 50px;"><?=$setnama?></td>
+                                                            <td style="width: 150px;"><input type='text' id='reqSCHarga<?=$setnama?>' class='vlxuangclass easyui-validatebox textbox form-control totalluasoutdoor' required name='reqSCHarga[]' value='<?=$setharga?>' data-options='required:true' style='width:80%; display: inline; text-align: right;' /><input type='hidden' id='reqSCId<?=$setid?>' name='reqSCId[]' value='<?=$setid?>' />
+                                                                <!-- <label><?=$setket?></label> -->
+                                                            </td>
+                                                        </tr> 
+                                                    </table> 
                                                 </li>
                                             <?
                                             $is++;
@@ -331,7 +340,8 @@ $(function(){
                     {
                         vals= '';
                     }
-                    infodetiltujuan+= "<li>"+infotextdata[i]+"<input type='text' id='reqSCHarga"+infotextdata[i]+"' class='vlxuangclass easyui-validatebox textbox form-control totalluasoutdoor' required name='reqSCHarga[]' value='"+vals+"' data-options='required:true' style='width:10%; display: inline; text-align: right;' /><input type='hidden' id='reqSCId"+infoiddata[i]+"' name='reqSCId[]' value='"+infoiddata[i]+"' /></li>";
+
+                    infodetiltujuan+= "<li><table><tr><td style='width: 50px;'>"+infotextdata[i]+"</td><td style='width: 150px;'><input type='text' id='reqSCHarga"+infotextdata[i]+"' class='vlxuangclass easyui-validatebox textbox form-control totalluasoutdoor' required name='reqSCHarga[]' value='"+vals+"' data-options='required:true' style='width:80%; display: inline; text-align: right;' /><input type='hidden' id='reqSCId"+infoiddata[i]+"' name='reqSCId[]' value='"+infoiddata[i]+"' /></td></tr></table></li>";
                 }
             }
             infodetiltujuan+= "</ol>";
