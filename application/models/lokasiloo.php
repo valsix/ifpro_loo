@@ -31,14 +31,14 @@ DESCRIPTION			:
 		// $this->setField("LOKASI_LOO_ID", $this->getNextId("LOKASI_LOO_ID","LOKASI_LOO")); 
 		$str = "
 				INSERT INTO LOKASI_LOO (
-				   KODE, NAMA, SERVICE_CHARGE, DESKRIPSI,Utilitu_Charge
+				   KODE, NAMA, SERVICE_CHARGE, DESKRIPSI,Utility_Charge
 				   ) 
 				VALUES (
 					'".$this->getField("KODE")."', 
 					'".$this->getField("NAMA")."', 
 					'".$this->getField("SERVICE_CHARGE")."', 
 					'".$this->getField("DESKRIPSI")."',
-					'".$this->getField("Utilitu_Charge")."'
+					'".$this->getField("Utility_Charge")."'
 				)"; 
 		$this->id = $this->getField("LOKASI_LOO_ID");
 		$this->query = $str;
@@ -52,10 +52,11 @@ DESCRIPTION			:
 		$this->setField("LOO_UTILITY_CHARGE_ID", $this->getNextId("LOO_UTILITY_CHARGE_ID","LOO_UTILITY_CHARGE")); 
 		$str = "
 				INSERT INTO LOO_UTILITY_CHARGE (
-				   LOO_UTILITY_CHARGE_ID, Utility_Charge_id, LOKASI_LOO_ID
+				   LOO_UTILITY_CHARGE_ID, HARGA, Utility_Charge_id, LOKASI_LOO_ID
 				   ) 
 				VALUES (
 					'".$this->getField("LOO_UTILITY_CHARGE_ID")."', 
+					'".$this->getField("HARGA")."', 
 					'".$this->getField("Utility_Charge_id")."', 
 					'".$this->getField("LOKASI_LOO_ID")."'
 				)"; 
@@ -150,6 +151,26 @@ DESCRIPTION			:
 				SELECT 
 					A.*
 				FROM LOKASI_LOO A
+				WHERE 1 = 1
+			"; 
+		
+		while(list($key,$val) = each($paramsArray))
+		{
+			$str .= " AND $key = '$val' ";
+		}
+		
+		$str .= $statement." ".$order;
+		$this->query = $str;
+		return $this->selectLimit($str,$limit,$from); 
+    }
+
+  function selectByParamsLooUtilityCharge($paramsArray=array(),$limit=-1,$from=-1,$statement="", $order=" ORDER BY A.LOO_UTILITY_CHARGE_ID ASC")
+	{
+		$str = "
+				SELECT 
+					A.*, B.NAMA NAMA_UTILITY_CHARGE
+				FROM LOO_UTILITY_CHARGE A
+				LEFT JOIN UTILITY_CHARGE B ON B.UTILITY_CHARGE_ID = A.UTILITY_CHARGE_ID
 				WHERE 1 = 1
 			"; 
 		

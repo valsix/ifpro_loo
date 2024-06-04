@@ -5,6 +5,7 @@ include_once("functions/date.func.php");
 
 
 $this->load->model("LokasiLoo");
+$this->load->model("UtilityCharge");
 $lokasi_loo = new LokasiLoo();
 
 $reqId = $this->input->get("reqId");
@@ -24,8 +25,29 @@ else
     $reqServiceCharge= currencyToPage($lokasi_loo->getField("SERVICE_CHARGE"), false);
     $reqDeskripsi= $lokasi_loo->getField("DESKRIPSI");
     $reqUtilityCharge= $lokasi_loo->getField("Utility_Charge");
-    $reqUtilityChargeId= $lokasi_loo->getField("Utility_Charge");
-    
+    $reqIdUtility= $lokasi_loo->getField("Utility_Charge");
+
+    $reqIdUtilityarr= array();
+    $reqValName='';
+    if ($reqIdUtility) 
+    {
+        $reqIdUtilityarr= explode(",", $reqIdUtility);
+
+        $lokasi_loo->selectByParamsLooUtilityCharge(array("A.LOKASI_LOO_ID" => $reqId),-1,-1," AND A.UTILITY_CHARGE_ID IN (".$reqIdUtility.")");
+
+        $reqValName= $reqDataName= "";
+        while($lokasi_loo->nextRow())
+        {
+            $reqDataName= $lokasi_loo->getField("NAMA_UTILITY_CHARGE");
+
+            if(empty($reqValName))
+                $reqValName= $reqDataName;
+            else
+            {
+                $reqValName= $reqValName.",".$reqDataName;
+            }
+        }
+    }
 }
 ?>
 
@@ -160,6 +182,69 @@ $(function(){
                             <td>Utility Charge</td>
                             <td>:</td>
                             <td>
+                                <div class="form-group">
+                                    <ul class="list-unstyled">
+                                        <?
+                                        $set= new UtilityCharge();
+                                        $set->selectByParams(array(), -1, -1);
+                                        $i = 0;
+                                        while($set->nextRow())
+                                        {
+                                            $setid= $set->getField("UTILITY_CHARGE_ID");
+                                            $setnama= $set->getField("NAMA");
+
+                                            $checked= '';
+                                            if(in_array($setid, $reqIdUtilityarr))
+                                            {
+                                                $checked= 'checked';
+                                            }
+                                        ?>
+                                            <li class="custom-control custom-checkbox">
+                                                <input class="custom-control-input ng-untouched ng-pristine ng-valid" type="checkbox" id="reqRadio<?=$setid?>" <?=$checked?>>
+                                                <label class="custom-control-label" id="reqRadioNama<?=$setid?>" for="reqRadio<?=$setid?>"><?=$setnama?></label>
+                                            </li>
+                                        <?
+                                        }
+                                        ?>
+                                    </ul>
+                                </div>
+
+                                <input class="easyui-validatebox" required type="hidden" id="reqNamaUtility" name="reqNamaUtility" value="<?=$reqValName?>" />
+                                <input class="easyui-validatebox" required type="hidden" id="reqIdUtility" name="reqIdUtility" value="<?=$reqIdUtility?>" />
+                                <div id="infodetilbalas">
+                                    <?
+                                    if ($reqId) {
+                                        $lokasi_loo->selectByParamsLooUtilityCharge(array("A.LOKASI_LOO_ID" => $reqId));
+
+                                        $is = 0;
+                                        ?>
+                                        <ol>
+                                        <?
+                                        while($lokasi_loo->nextRow())
+                                        {
+                                            $setid= $lokasi_loo->getField("UTILITY_CHARGE_ID");
+                                            $setnama= $lokasi_loo->getField("NAMA_UTILITY_CHARGE");
+                                            $setharga= $lokasi_loo->getField("HARGA");
+                                            ?>
+                                                <li><?=$setnama?><input type='text' id='reqSCHarga<?=$setnama?>' class='vlxuangclass easyui-validatebox textbox form-control totalluasoutdoor' required name='reqSCHarga[]' value='<?=$setharga?>' data-options='required:true' style='width:10%; display: inline; text-align: right;' /><input type='hidden' id='reqSCId<?=$setid?>' name='reqSCId[]' value='<?=$setid?>' />
+                                                </li>
+                                            <?
+                                            $is++;
+                                        }
+                                        ?>
+                                        </ol>
+                                        <?
+                                    }
+                                        
+                                    ?>
+                                    
+                                </div>
+                            </td>
+                        </tr> 
+                        <!-- <tr>
+                            <td>Utility Charge</td>
+                            <td>:</td>
+                            <td>
                                 <?
                                 $reqUtilityCharge = str_replace(",", "','", $reqUtilityCharge);
                                 ?>
@@ -178,7 +263,7 @@ $(function(){
                                             }" required />
                                 <input type="hidden" name="reqUtilityChargeId" id="reqUtilityChargeId"   value="<?=$reqUtilityChargeId?>">
                             </td>
-                        </tr> 
+                        </tr>  -->
                     </thead>
                 </table>
 
@@ -197,6 +282,64 @@ $(function(){
 
 
 <script>
+    $(function(){
+        $('input[id^="reqRadio"]').change(function(e) {
+            infoid= $(this).attr('id');
+            infoid= infoid.split('reqRadio');
+            infoid= infoid[1];
+            infonama= $("#reqRadioNama"+infoid).text();
+
+            reqNamaUtility= $("#reqNamaUtility").val();
+            reqIdUtility= $("#reqIdUtility").val();
+
+            if($(this).prop('checked')) {
+                if(reqNamaUtility == "")
+                    reqNamaUtility= infonama;
+                else
+                    reqNamaUtility= reqNamaUtility+","+infonama;
+
+
+                if(reqIdUtility == "")
+                    reqIdUtility= infoid;
+                else
+                    reqIdUtility= reqIdUtility+","+infoid;
+            }
+            else
+            {
+                reqNamaUtility= reqNamaUtility.replace(","+infonama, "");
+                reqNamaUtility= reqNamaUtility.replace(infonama+",", "");
+                reqNamaUtility= reqNamaUtility.replace(infonama, "");
+
+                reqIdUtility= reqIdUtility.replace(","+infoid, "");
+                reqIdUtility= reqIdUtility.replace(infoid+",", "");
+                reqIdUtility= reqIdUtility.replace(infoid, "");
+            }
+            $("#reqNamaUtility").val(reqNamaUtility);
+            $("#reqIdUtility").val(reqIdUtility);
+
+            infoiddata= reqIdUtility.split(",");
+            infotextdata= reqNamaUtility.split(",");
+            infolabel= "infodetilbalas";
+
+            infodetiltujuan= "<ol>";
+            for(i=0; i < infotextdata.length; i++)
+            {
+                if(infotextdata[i] !== "")
+                {
+                    vals= $('#reqSCHarga'+infotextdata[i]).val();
+                    if (vals==undefined||vals=='') 
+                    {
+                        vals= '';
+                    }
+                    infodetiltujuan+= "<li>"+infotextdata[i]+"<input type='text' id='reqSCHarga"+infotextdata[i]+"' class='vlxuangclass easyui-validatebox textbox form-control totalluasoutdoor' required name='reqSCHarga[]' value='"+vals+"' data-options='required:true' style='width:10%; display: inline; text-align: right;' /><input type='hidden' id='reqSCId"+infoiddata[i]+"' name='reqSCId[]' value='"+infoiddata[i]+"' /></li>";
+                }
+            }
+            infodetiltujuan+= "</ol>";
+
+            $("#"+infolabel).empty();
+            $("#"+infolabel).html(infodetiltujuan);
+        });
+    });
 
 $(document).ready(function() {
     

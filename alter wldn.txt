@@ -18,3 +18,6 @@ ALTER TABLE lokasi_loo ADD COLUMN service_charge CHARACTER VARYING;
 ALTER TABLE lokasi_loo_detil DROP COLUMN lantai;
 ALTER TABLE lokasi_loo_detil DROP COLUMN tipe;
 ALTER TABLE lokasi_loo_detil DROP COLUMN customer_id;
+
+
+ALTER TABLE loo_utility_charge ADD COLUMN harga NUMERIC;
