@@ -5,6 +5,9 @@ create table tr_loo
 	, status_data character varying
 	, nomor_surat character varying
 	, info_nomor_surat character varying
+	, no_urut numeric
+	, tahun numeric
+	, bulan numeric
 	, user_pembuat_id character varying
 	, user_pengirim_id character varying
 	, user_pengirim_nama character varying
@@ -55,6 +58,9 @@ persetujuaninfo character varying;
 jumlahstep numeric := 0;
 infonomorsurat character varying;
 userlihatstatus character varying;
+vtahun numeric := 0;
+vbulan numeric := 0;
+vnourut numeric := 0;
 vquery text;
 
 begin
@@ -158,6 +164,11 @@ begin
 		return new;
 	end if;
 
+	select
+	nip, nama_pegawai, jabatan, status_pejabat_ganti
+	into pejabatnip, pejabatnama, pejabatjabatan, statuspejabatganti
+	from satuan_kerja_fix where satuan_kerja_id = new.satuan_kerja_pengirim_id;
+
 	if tg_op = upper('update') then
 		if old.status_data = upper('validasi') and new.status_data = upper('posting') then
 			select count(1) into adaparaf
@@ -166,7 +177,28 @@ begin
 			and coalesce(nullif(status_paraf, 'x'), 'x') = 'x';
 
 			if adaparaf = 0 then
-				if new.terparaf is null then
+				if new.terbaca_validasi = 1 then
+					new.approval_qr_date:= current_timestamp;
+					new.ttd_kode:= upper('ttd') || pejabatnip || lpad(new.tr_loo_id::varchar, 6, '0') || to_char(current_timestamp, 'ddmmyyyyhh24miss');
+					new.terparaf:= 1;
+
+					select to_char(current_timestamp, 'yyyy')::integer, to_char(current_timestamp, 'mm')::integer
+					into vtahun, vbulan;
+
+					new.tahun:= vtahun;
+					new.bulan:= vbulan;
+
+					select coalesce(max(no_urut),0) + 1 into vnourut
+					from tr_loo where tahun = vtahun;
+
+					new.no_urut:= vnourut;
+
+					infonomorsurat:= vnourut || '/' || upper('ifpro') || '-' || upper('comm') || '/' || upper('loo') || '/' || (select upper(kode) from lokasi_loo where lokasi_loo_id = new.lokasi_loo_id) || '/' || (select ambil_bulan_romawi(generatezero(vbulan::text,1))) || '/' || vtahun::text;
+					--raise notice '%', infonomorsurat;
+					new.nomor_surat:= infonomorsurat;
+					new.user_posisi_paraf_id:= null;
+
+				else
 					new.approval_qr_date:= null;
 					new.terparaf:= null;
 					new.terbaca_validasi:= 0;
@@ -179,10 +211,11 @@ begin
 		end if;
 	end if;
 
-	select
-	nip, nama_pegawai, jabatan, status_pejabat_ganti
-	into pejabatnip, pejabatnama, pejabatjabatan, statuspejabatganti
-	from satuan_kerja_fix where satuan_kerja_id = new.satuan_kerja_pengirim_id;
+
+	if coalesce(nullif(new.nomor_surat , 'x'), 'x') != 'x' then
+		new.status_data:= upper('posting');
+		return new;
+	end if;
 
 	new.user_pengirim_id:= pejabatnip;
 	new.user_pengirim_nama:= pejabatnama;
@@ -204,11 +237,11 @@ begin
 
 			if ispemaraf > 0 then
 				new.status_data:= upper('paraf');
+			else
+				new.status_data:= upper('validasi');
 			end if;
-
-			new.status_data:= upper('validasi');
+			
 			new.terparaf:= null;
-
 			if new.terbaca_validasi > 0 then
 				--raise notice '%', ispemaraf;
 			else

@@ -609,7 +609,15 @@ class trloo_json extends CI_Controller
 
 				$reqInfoLog= $this->input->post("reqInfoLog");
 				
-				$arrparam= array("reqId"=>$reqId, "reqInfoLog"=>$reqInfoLog);
+				if($reqStatusData == "POSTING")
+				{
+					$arrparam= array("reqId"=>$reqId, "reqInfoLog"=>$reqInfoLog, "vSource"=>$reqStatusData);
+				}
+				else
+				{
+					$arrparam= array("reqId"=>$reqId, "reqInfoLog"=>$reqInfoLog);
+				}
+
 				$this->paraf_proses($arrparam);
 				
 				// $arrparam= array("reqId"=>$reqId);
@@ -628,11 +636,16 @@ class trloo_json extends CI_Controller
 		$this->load->model("TrLoo");
 		$reqId= $arrparam["reqId"];
 		$mode= $arrparam["mode"];
+		$cekquery= $arrparam["cekquery"];
 
 		$tgr= new TrLoo();
 		$tgr->setField("TR_LOO_ID", $reqId);
 		$tgr->setField("PAKSA_DB", $mode);
 		$tgr->updatetriger();
+		if(!empty($cekquery))
+		{
+			echo $tgr->query;exit;
+		}
 	}
 
 	function tesparaf()
@@ -735,6 +748,7 @@ class trloo_json extends CI_Controller
 		$reqId= $arrparam["reqId"];
 		$reqInfoLog= $arrparam["reqInfoLog"];
 		$reqInfoStatus= $arrparam["reqInfoStatus"];
+		$vSource= $arrparam["vSource"];
 
 		$this->load->model("TrLoo");
 		$set= new TrLoo();
@@ -766,10 +780,10 @@ class trloo_json extends CI_Controller
 				elseif($statusSurat == "PARAF")
 				{
 					$reqInfoStatus= "Kirim Paraf";
+					$arrparam= array("reqId"=>$reqId, "reqInfoLog"=>$reqInfoLog, "reqInfoStatus"=>$reqInfoStatus);
+					$this->setlog($arrparam);
 				}
 
-				$arrparam= array("reqId"=>$reqId, "reqInfoLog"=>$reqInfoLog, "reqInfoStatus"=>$reqInfoStatus);
-				$this->setlog($arrparam);
 			}
 
 			include_once("libraries/phpqrcode/qrlib.php");
@@ -783,10 +797,48 @@ class trloo_json extends CI_Controller
 			// END OF GENERATE QRCODE 
 
 			// SETIAP POSTING HIT POSTING SUPAYA APABILA PARAF SUDAH KOMPLIT LANGSUNG TERPOSTING 
-			$arrparam= array("reqId"=>$reqId);
+			$arrparam= array("reqId"=>$reqId, "reqInfoLog"=>$reqInfoLog, "vSource"=>$vSource);
 			$this->posting_proses($arrparam);
 		}
 
+	}
+
+	function logposting()
+	{
+		$reqId= $this->input->post('reqId');
+		$reqInfoLog= $this->input->post('reqInfoLog');
+		$reqInfoNomor= $this->input->post('reqInfoNomor');
+		
+		if(!empty($reqInfoNomor) && !empty($reqInfoLog))
+		{
+			/*$this->load->model("SuratMasuk");
+
+			$checksurat= new SuratMasuk();
+			$checksurat->selectByParamsCheckNomor("CHECK", $reqId, $reqInfoNomor, dateToDbCheck($reqInfoLog));
+			$checksurat->firstRow();
+			$valicheck= $checksurat->getField("INFO_NOMOR_SURAT");
+			// echo $valicheck;exit;
+			unset($checksurat);
+
+			if($valicheck == "1")
+			{
+				$checksurat= new SuratMasuk();
+				$checksurat->selectByParamsCheckNomor("SAVE", $reqId, $reqInfoNomor, dateToDbCheck($reqInfoLog));
+				$checksurat->firstRow();
+				$valicheck= $checksurat->getField("INFO_NOMOR_SURAT");
+				// echo $valicheck;exit;
+				unset($checksurat);
+			}
+			else
+			{
+				echo "0";
+				exit;
+			}*/
+		}
+		
+		// untuk ambil data nomor berdasarkan tanggal entri
+		$arrparam= array("reqId"=>$reqId, "reqInfoLog"=>$reqInfoLog, "vSource"=>"POSTING");
+		$this->posting_proses($arrparam);
 	}
 
 	function posting_proses($arrparam)
@@ -796,6 +848,8 @@ class trloo_json extends CI_Controller
 		$sesusername= $this->USERNAME;
 
 		$reqId= $arrparam["reqId"];
+		$vSource= $arrparam["vSource"];
+		$reqInfoLog= $arrparam["reqInfoLog"];
 
 		$set= new TrLoo();
 		$statusSurat= $set->getStatusSurat(array("A.TR_LOO_ID" => $reqId));
@@ -825,25 +879,36 @@ class trloo_json extends CI_Controller
 				$simpaninfo= "1";
 			}
 		}
+		// echo $setdetil->query;exit;
 
 		if($simpaninfo == "1")
 		{
-			if($statusSurat == "VALIDASI")
+			$arrtriger= array("reqId"=>$reqId, "mode"=>"updateparaf");
+			$this->trigerpaksa($arrtriger);
+
+			if($statusSurat == "VALIDASI" || $statusSurat == "POSTING")
 			{
-				$arrtriger= array("reqId"=>$reqId, "mode"=>"tnomor");
-				$this->trigerpaksa($arrtriger);
+				if($vSource !== "POSTING")
+				{
+					$arrtriger= array("reqId"=>$reqId, "mode"=>"tnomor", "cekquery"=>"");
+					$this->trigerpaksa($arrtriger);
 
-				$arrtriger= array("reqId"=>$reqId, "mode"=>"updateparaf");
-				$this->trigerpaksa($arrtriger);
+					$reqInfoStatus= "Kirim Paraf";
+					$inforeturninfo= "Naskah berhasil diposting ke atasan untuk validasi";
+				}
+				else
+				{
+					$reqInfoStatus= "Posting";
+					$inforeturninfo= "Naskah berhasil diposting";
+				}
 
-				$inforeturninfo= "Naskah berhasil diposting ke atasan untuk validasi";
+				$arrparam= array("reqId"=>$reqId, "reqInfoLog"=>$reqInfoLog, "reqInfoStatus"=>$reqInfoStatus);
+				$this->setlog($arrparam);
 			}
 			elseif($statusSurat == "PARAF")
 			{
-				$arrtriger= array("reqId"=>$reqId, "mode"=>"updateparaf");
-				$this->trigerpaksa($arrtriger);
-				
-				if ($reqSource == "PARAF") {
+				if ($reqSource == "PARAF")
+				{
 					$inforeturninfo= "Naskah berhasil diparaf";
 				}
 				else
@@ -872,6 +937,4 @@ class trloo_json extends CI_Controller
 		echo json_encode($arrJson);
 	}
 
-
 }
-
