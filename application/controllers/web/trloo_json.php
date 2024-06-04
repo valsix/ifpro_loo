@@ -568,7 +568,7 @@ class trloo_json extends CI_Controller
 			}
 
 			$inforeturninfo= "";
-			if ($reqStatusData == "DRAFT") {
+			if ($reqStatusData == "DRAFT" || $reqKondisiStatusData == "UBAHDATAVALIDASI") {
 
 				if($reqStatusData == "DRAFT")
 				{
@@ -576,7 +576,7 @@ class trloo_json extends CI_Controller
 					$this->trigerpaksa($arrtriger);
 				}
 
-				if($reqKondisiStatusData == "UBAHDATAPARAF" || $reqKondisiStatusData == "UBAHDATAREVISI")
+				if($reqKondisiStatusData == "UBAHDATAPARAF" || $reqKondisiStatusData == "UBAHDATAREVISI" || $reqKondisiStatusData == "UBAHDATAVALIDASI")
 				{
 					$inforeturninfo= "Naskah berhasil disimpan.";
 				}
@@ -830,7 +830,13 @@ class trloo_json extends CI_Controller
 		{
 			if($statusSurat == "VALIDASI")
 			{
+				$arrtriger= array("reqId"=>$reqId, "mode"=>"tnomor");
+				$this->trigerpaksa($arrtriger);
 
+				$arrtriger= array("reqId"=>$reqId, "mode"=>"updateparaf");
+				$this->trigerpaksa($arrtriger);
+
+				$inforeturninfo= "Naskah berhasil diposting ke atasan untuk validasi";
 			}
 			elseif($statusSurat == "PARAF")
 			{

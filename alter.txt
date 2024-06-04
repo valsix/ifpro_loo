@@ -29,6 +29,8 @@ create table tr_loo
 	, harga_outdoor_service numeric
 	, dp numeric
 	, periode_sewa numeric
+	, terparaf numeric
+	, terbaca_validasi integer
 	, approval_qr_date timestamp without time zone
 	, ttd_kode character varying
 	, persetujuan_info character varying
@@ -48,6 +50,7 @@ pejabatnama character varying;
 pejabatjabatan character varying;
 statuspejabatganti character varying;
 ispemaraf integer := 0;
+adaparaf integer := 0;
 persetujuaninfo character varying;
 jumlahstep numeric := 0;
 infonomorsurat character varying;
@@ -68,7 +71,7 @@ begin
 			, terbaca = null
 			, next_urut= 1
 		where tr_loo_id= new.tr_loo_id;
-		
+
 		new.paksa_db:= null;
 		return new;
 	end if;
@@ -93,6 +96,10 @@ begin
 			from tr_loo_paraf a
 			where coalesce(nullif(a.kondisi_paraf, ''), null) is null
 			and coalesce(nullif(a.status_paraf, ''), null) is null
+			union all
+			select 1 urut, a.tr_loo_id, a.user_pengirim_id user_id
+			from tr_loo a
+			where status_data = upper('validasi')
 		) a
 		where urut = 1
 		and a.tr_loo_id = new.tr_loo_id
@@ -104,7 +111,7 @@ begin
 	if lower(new.paksa_db) = lower('updateparaf') then
 
 		select
-		info_loo_paraf(new.tr_loo_id) persetujuan_info, coalesce(a1.jumlah_step,0) jumlah_step
+		info_loo_paraf(a.tr_loo_id) persetujuan_info, coalesce(a1.jumlah_step,0) + 1 jumlah_step
 		into persetujuaninfo, jumlahstep
 		from tr_loo a
 		left join
@@ -151,6 +158,27 @@ begin
 		return new;
 	end if;
 
+	if tg_op = upper('update') then
+		if old.status_data = upper('validasi') and new.status_data = upper('posting') then
+			select count(1) into adaparaf
+			from tr_loo_paraf a
+			where 1=1 and tr_loo_id = new.tr_loo_id 
+			and coalesce(nullif(status_paraf, 'x'), 'x') = 'x';
+
+			if adaparaf = 0 then
+				if new.terparaf is null then
+					new.approval_qr_date:= null;
+					new.terparaf:= null;
+					new.terbaca_validasi:= 0;
+					new.ttd_kode:= null;
+					new.status_data:= upper('validasi');
+				end if;
+
+				return new;
+			end if;
+		end if;
+	end if;
+
 	select
 	nip, nama_pegawai, jabatan, status_pejabat_ganti
 	into pejabatnip, pejabatnama, pejabatjabatan, statuspejabatganti
@@ -175,8 +203,18 @@ begin
 			and coalesce(nullif(status_paraf, 'x'), 'x') = 'x';
 
 			if ispemaraf > 0 then
-				new.status_data := upper('paraf');
+				new.status_data:= upper('paraf');
 			end if;
+
+			new.status_data:= upper('validasi');
+			new.terparaf:= null;
+
+			if new.terbaca_validasi > 0 then
+				--raise notice '%', ispemaraf;
+			else
+				new.terbaca_validasi:= 0;
+			end if;
+
 		end if;
 	end if;
 
@@ -256,8 +294,7 @@ begin
 			, coalesce(sp.no_urut,0) + 1 no_urut
 			, coalesce(sp.next_urut,1) next_urut
 			, case when a.status_data = upper('posting') then '1' else null end status_paraf
-			--, case when a.terbaca_validasi = 0 then null else a.terbaca_validasi end 
-			, 0 terbaca
+			, case when a.terbaca_validasi = 0 then null else a.terbaca_validasi end terbaca
 			from tr_loo a
 			inner join pegawai b on a.user_pengirim_id = b.pegawai_id
 			inner join satuan_kerja_fix sf on a.satuan_kerja_pengirim_id = sf.satuan_kerja_id

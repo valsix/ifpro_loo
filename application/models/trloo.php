@@ -271,6 +271,44 @@ DESCRIPTION			:
 		$this->execQuery($str);
 	}
 
+	function updateByField()
+	{
+		$str = "
+		UPDATE tr_loo A SET
+		".$this->getField("FIELD")."= '".$this->getField("FIELD_VALUE")."'
+		--, LAST_UPDATE_USER= '".$this->getField("LAST_UPDATE_USER")."'
+		--, LAST_UPDATE_DATE= NOW()
+		WHERE TR_LOO_ID = ".$this->getField("TR_LOO_ID")."
+		";
+		$this->query = $str;
+		// echo $str;exit;
+		return $this->execQuery($str);
+	}
+
+	function updateByFieldValueTime()
+	{
+		$str = "
+		UPDATE tr_loo A SET
+		". $this->getField("FIELD")."= ". $this->getField("FIELD_VALUE")."
+		WHERE TR_LOO_ID= ".$this->getField("TR_LOO_ID")."
+		";
+		$this->query = $str;
+		// echo $str;exit;
+		return $this->execQuery($str);
+	}
+
+	function updateByFieldTime()
+	{
+		$str = "
+		UPDATE tr_loo A SET
+		".$this->getField("FIELD")."= CURRENT_TIMESTAMP
+		WHERE TR_LOO_ID= ".$this->getField("TR_LOO_ID")."
+		";
+		$this->query = $str;
+		// echo $str;exit;
+		return $this->execQuery($str);
+	}
+
 	function updateByFieldValidasiNomor()
 	{
 		$str = "

@@ -817,7 +817,7 @@ if($this->USER_GROUP == "LOOLOI" || in_array("LOOLOI", explode(",", $this->USER_
                                     $pg == "permohonan_stpd_status" ||
                                     $pg == "permohonan_stpd_persetujuan"
 
-                                    || ( ($pg == "loo_add" || $pg == "loo_draft" || $pg == "loo_perlu_persetujuan" || $pg == "loo_perlu_persetujuan_detil" || $pg == "loo_status") && !empty($menulooloi))
+                                    || ( ($pg == "loo_add" || $pg == "loo_draft" || $pg == "loo_perlu_persetujuan" || $pg == "loo_perlu_persetujuan_detil" || $pg == "loo_status" || $pg == "loo_status_detil") && !empty($menulooloi))
                                 
                                 )
                             ){
@@ -863,22 +863,25 @@ if($this->USER_GROUP == "LOOLOI" || in_array("LOOLOI", explode(",", $this->USER_
                             if(!empty($menulooloi))
                             {
                                 $vcurrent= [];
-                                if($pg == "loo_perlu_persetujuan_detil")
+                                if($pg == "loo_perlu_persetujuan_detil" || $reqMode == "loo_perlu_persetujuan_detil")
                                 {
                                     $vcurrent["loo_perlu_persetujuan"]= "current";
+                                }
+                                else if($pg == "loo_status_detil")
+                                {
+                                    $vcurrent["loo_status"]= "current";
                                 }
                                 else if($reqMode == "loo_draft")
                                 {
                                     $vcurrent["loo_draft"]= "current";
                                 }
-
                             ?>
                             <div>
                                 <span><i class="fa fa-pencil-square-o fa-lg" style="color: #29b7ea"></i> LOO</span>
                                 <a class="menu-utama" href="main/index/loo_add"><i class="fa fa-pencil"></i>Permohonan</a>
                                 <!-- $pg == "loo_perlu_persetujuan_detil" -->
                                 <a class="menu-utama <?=$vcurrent["loo_perlu_persetujuan"]?>" href="main/index/loo_perlu_persetujuan"><i class="fa fa-pencil"></i>Perlu Persetujuan</a>
-                                <a class="menu-utama" href="main/index/loo_status"><i class="fa fa-pencil"></i>Status</a>
+                                <a class="menu-utama <?=$vcurrent["loo_status"]?>" href="main/index/loo_status"><i class="fa fa-pencil"></i>Status</a>
                                 <a class="menu-utama <?=$vcurrent["loo_draft"]?>" href="main/index/loo_draft"><i class="fa fa-pencil"></i>Draft</a>
                             </div>
                             <?

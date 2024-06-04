@@ -10,6 +10,8 @@ $this->load->model("TrLooParaf");
 $this->load->model("SatuanKerja");
 
 $reqId= $this->input->get("reqId");
+$reqVmode= $this->input->get("reqMode");
+
 $cekquery= $this->input->get("c");
 
 $reqIdDraft= $reqId;
@@ -40,6 +42,7 @@ else
     $reqPeriodeSewa= $set->getField("PERIODE_SEWA");
 
     $reqSatuanKerjaPengirimId= $set->getField("SATUAN_KERJA_PENGIRIM_ID");
+    $reqUserPengirimId= $set->getField("USER_PENGIRIM_ID");
     $reqStatusData= $set->getField("STATUS_DATA");
     $reqUserId= $set->getField("USER_PEMBUAT_ID");
     // $reqxxx= $set->getField("USER_POSISI_PARAF_ID");
@@ -279,7 +282,7 @@ $(function(){
                 <?
                 }
 
-                if (!empty($reqId) && $reqStatusData == "VALIDASI" && $reqUserAtasanId == $sessid)
+                if (!empty($reqId) && $reqStatusData == "VALIDASI" && $reqUserPengirimId == $sessid)
                 {
                     $aksibutton= "1";
                 ?>
@@ -2014,7 +2017,7 @@ function submitForm(reqStatusData){
         <?
         if ($reqStatusData == "VALIDASI" && $reqUserId != $sessid) 
         {
-            if($reqUserAtasanId == $sessid && $reqKelompokJabatan == "DIREKSI")
+            if($reqUserPengirimId == $sessid && $reqKelompokJabatan == "DIREKSI")
             {
         ?>
         <?
@@ -2152,7 +2155,16 @@ function setsimpan(reqStatusData)
             }
             else
             {
-                $.messager.alertTopLink('Info', infodata, 'info', "main/index/loo_add/?reqId="+rowid);
+                vreload= "main/index/loo_add/?reqId="+rowid;
+                <?
+                if(!empty($reqVmode))
+                {
+                ?>
+                vreload+= "&reqMode=<?=$reqVmode?>";
+                <?
+                }
+                ?>
+                $.messager.alertTopLink('Info', infodata, 'info', vreload);
             }
         }
     });

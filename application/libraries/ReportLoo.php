@@ -95,6 +95,7 @@ class ReportLoo
 	function setterbaca($arrparam)
 	{
 		$CI = &get_instance();
+		$CI->load->model("TrLoo");
 		$CI->load->model("TrLooParaf");
 		$arrgetsessionuser= $this->getsessionuser();
 		// print_r($arrgetsessionuser);exit;
@@ -104,7 +105,20 @@ class ReportLoo
 		$reqStatusSurat= $arrparam["reqStatusSurat"];
 		// print_r($arrparam);exit;
 
-		if($reqStatusSurat == "PARAF")
+		if($reqStatusSurat == "VALIDASI")
+		{
+			$setdetil= new TrLoo();
+			$setdetil->setField("FIELD", "TERBACA_VALIDASI");
+			$setdetil->setField("FIELD_VALUE", "1");
+			$setdetil->setField("LAST_UPDATE_USER", $sessionloginid);
+			$setdetil->setField("TR_LOO_ID", $reqId);
+			if($setdetil->updateByField())
+			{
+				$arrtriger= array("reqId"=>$reqId, "mode"=>"updateparaf");
+				$this->trigerpaksa($arrtriger);
+			}
+		}
+		else if($reqStatusSurat == "PARAF")
 		{
 			$setdetil= new TrLooParaf();
 			$setdetil->setField("LAST_UPDATE_USER", $sessionloginid);
