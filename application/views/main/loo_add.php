@@ -42,6 +42,17 @@ else
     $reqDp= $set->getField("DP");
     $reqPeriodeSewa= $set->getField("PERIODE_SEWA");
 
+    $reqSewaBiayaSatuanUnit= $set->getField("SEWA_BIAYA_SATUAN_UNIT");
+    $reqSewaBiayaSatuanService= $set->getField("SEWA_BIAYA_SATUAN_SERVICE");
+    $reqSewaTotalBiayaUnit= $set->getField("SEWA_TOTAL_BIAYA_UNIT");
+    $reqSewaBiayaPerBulanUnit= $set->getField("SEWA_BIAYA_PER_BULAN_UNIT");
+    $reqSewaBiayaPerBulanService= $set->getField("SEWA_BIAYA_PER_BULAN_SERVICE");
+    $reqSewaTotalBiayaService= $set->getField("SEWA_TOTAL_BIAYA_SERVICE");
+    $reqTotalBiayaPerBulanNoPpn= $set->getField("TOTAL_BIAYA_PER_BULAN_NO_PPN");
+    $reqTotalBiayaNoPpn= $set->getField("TOTAL_BIAYA_NO_PPN");
+    $reqTotalBiayaPerBulanPpn= $set->getField("TOTAL_BIAYA_PER_BULAN_PPN");
+    $reqTotalBiayaPpn= $set->getField("TOTAL_BIAYA_PPN");
+
     $reqSatuanKerjaPengirimId= $set->getField("SATUAN_KERJA_PENGIRIM_ID");
     $reqUserPengirimId= $set->getField("USER_PENGIRIM_ID");
     $reqStatusData= $set->getField("STATUS_DATA");
@@ -363,7 +374,7 @@ $(function(){
                                 else
                                 {
                                 ?>
-                                <!-- <input type="text" id="reqSatuanKerjaPengirimId" class="easyui-combotree" name="reqSatuanKerjaPengirimId" data-options="
+                                <input type="text" id="reqSatuanKerjaPengirimId" class="easyui-combotree" name="reqSatuanKerjaPengirimId" data-options="
                                 onClick: function(rec){
                                     $('#reqUserPengirimId').val(rec.NIP);
                                     var url = 'web/satuan_kerja_json/combo_paraf/?reqId='+rec.SATUAN_KERJA_ID;
@@ -382,7 +393,7 @@ $(function(){
                                 , url:'web/satuan_kerja_json/combotreesatker/'
                                 , prompt:'Tentukan Pengirim...'," value="<?=$reqSatuanKerjaPengirimId?>"
                                 required="required"
-                                /> -->
+                                />
                                 <?
                                 }
                                 ?>
@@ -1243,7 +1254,69 @@ $(function(){
                                 <input type="text" class="easyui-validatebox textbox form-control" required name="vketerangan[]" value="<?=$valketerangan?>" data-options="required:true" style="width:90%; display: inline; text-align: right;" />
                             </td>
                         </tr>
-                        
+                        <tr>
+                            <th colspan="6">RINCIAN NILAI SEWA</th>
+                        </tr>
+                        <tr>
+                            <td colspan="6">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <td style="width: 30%; text-align: right;">KETERANGAN</td>
+                                            <td style="width: 20%; text-align: right;">BIAYA SATUAN</td>
+                                            <td style="width: 20%; text-align: right;">PER BULAN</td>
+                                            <td style="text-align: right;">TOTAL</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Harga Sewa Unit</td>
+                                            <td>
+                                                <input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control" name="reqSewaBiayaSatuanUnit" id="reqSewaBiayaSatuanUnit" style="display: inline; text-align: right;" value="<?=numberToIna($reqSewaBiayaSatuanUnit)?>" />
+                                            </td>
+                                            <td>
+                                                <input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control" name="reqSewaBiayaPerBulanUnit" id="reqSewaBiayaPerBulanUnit" style="display: inline; text-align: right;" value="<?=numberToIna($reqSewaBiayaPerBulanUnit)?>" />
+                                            </td>
+                                            <td>
+                                                <input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control" name="reqSewaTotalBiayaUnit" id="reqSewaTotalBiayaUnit" style="display: inline; text-align: right;" value="<?=numberToIna($reqSewaTotalBiayaUnit)?>" />
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Service Charge Tahun Pertama</td>
+                                            <td>
+                                                <input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control" name="reqSewaBiayaSatuanService" id="reqSewaBiayaSatuanService" style="display: inline; text-align: right;" value="<?=numberToIna($reqSewaBiayaSatuanService)?>" />
+                                            </td>
+                                            <td>
+                                                <input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control" name="reqSewaBiayaPerBulanService" id="reqSewaBiayaPerBulanService" style="display: inline; text-align: right;" value="<?=numberToIna($reqSewaBiayaPerBulanService)?>" />
+                                            </td>
+                                            <td>
+                                                <input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control" name="reqSewaTotalBiayaService" id="reqSewaTotalBiayaService" style="display: inline; text-align: right;" value="<?=numberToIna($reqSewaTotalBiayaService)?>" />
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Total (Tanpa PPN)</td>
+                                            <td></td>
+                                            <td>
+                                                <input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control" name="reqTotalBiayaPerBulanNoPpn" id="reqTotalBiayaPerBulanNoPpn" style="display: inline; text-align: right;" value="<?=numberToIna($reqTotalBiayaPerBulanNoPpn)?>" />
+                                            </td>
+                                            <td>
+                                                <input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control" name="reqTotalBiayaNoPpn" id="reqTotalBiayaNoPpn" style="display: inline; text-align: right;" value="<?=numberToIna($reqTotalBiayaNoPpn)?>" />
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Total (Dengan PPN)</td>
+                                            <td></td>
+                                            <td>
+                                                <input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control" name="reqTotalBiayaPerBulanPpn" id="reqTotalBiayaPerBulanPpn" style="display: inline; text-align: right;" value="<?=numberToIna($reqTotalBiayaPerBulanPpn)?>" />
+                                            </td>
+                                            <td>
+                                                <input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control" name="reqTotalBiayaPpn" id="reqTotalBiayaPpn" style="display: inline; text-align: right;" value="<?=numberToIna($reqTotalBiayaPpn)?>" />
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                        </tr>
                     </thead>
                 </table>
 
@@ -1976,6 +2049,105 @@ function hitungtotalharga(vmode)
     {
         $("#reqHargaOutdoorService").val(vtotal);
     }
+
+    // rincian sewa
+    vtotal= 0;
+    $(".totalsewaunitindoorafterdiskon, .totalsewaunitoutdoorafterdiskon").each(function(){
+        infoid= $(this).attr('id');
+        infoval= $(this).val();
+        infoval = infoval ? infoval : 0;
+        infoval= FormatAngkaNumber(infoval);
+
+        vtotal= parseFloat(vtotal) + parseFloat(infoval);
+        // console.log(infoval);
+    });
+    // console.log(vtotal);
+    vtotal= setformat(vtotal);
+    $("#reqSewaBiayaSatuanUnit").val(vtotal);
+    // ================================================
+
+    reqHargaIndoorSewa= getvalnumber($("#reqHargaIndoorSewa").val());
+    reqHargaOutdoorSewa= getvalnumber($("#reqHargaOutdoorSewa").val());
+    // console.log(reqHargaIndoorSewa+"+"+reqHargaOutdoorSewa);
+    vtotal= parseFloat(reqHargaIndoorSewa) + parseFloat(reqHargaOutdoorSewa);
+    vtotal= setformat(vtotal);
+    $("#reqSewaBiayaPerBulanUnit").val(vtotal);
+    // ================================================
+
+    reqSewaBiayaPerBulanUnit= getvalnumber($("#reqSewaBiayaPerBulanUnit").val());
+    reqPeriodeSewa= getvalnumber($("#reqPeriodeSewa").val());
+    vtotal= parseFloat(reqSewaBiayaPerBulanUnit) * parseFloat(reqPeriodeSewa);
+    vtotal= setformat(vtotal);
+    $("#reqSewaTotalBiayaUnit").val(vtotal);
+    // ================================================
+
+    vtotal= 0;
+    // $(".totalsewascindoorafterdiskon, .totalsewascoutdoorafterdiskon").each(function(){
+    $(".totalsewascindoorafterppndiskon, .totalsewascoutdoorafterppndiskon").each(function(){
+        infoid= $(this).attr('id');
+        infoval= $(this).val();
+        infoval = infoval ? infoval : 0;
+        infoval= FormatAngkaNumber(infoval);
+
+        vtotal= parseFloat(vtotal) + parseFloat(infoval);
+        // console.log(infoval);
+    });
+    // console.log(vtotal);
+    vtotal= setformat(vtotal);
+    $("#reqSewaBiayaSatuanService").val(vtotal);
+    // ================================================
+
+    reqHargaIndoorService= getvalnumber($("#reqHargaIndoorSewa").val());
+    reqHargaOutdoorService= getvalnumber($("#reqHargaOutdoorService").val());
+    // console.log(reqHargaIndoorService+"+"+reqHargaOutdoorService);
+    vtotal= parseFloat(reqHargaIndoorService) + parseFloat(reqHargaOutdoorService);
+    vtotal= setformat(vtotal);
+    $("#reqSewaBiayaPerBulanService").val(vtotal);
+    // ================================================
+
+    reqSewaBiayaPerBulanService= getvalnumber($("#reqSewaBiayaPerBulanService").val());
+    reqPeriodeSewa= getvalnumber($("#reqPeriodeSewa").val());
+    vtotal= parseFloat(reqSewaBiayaPerBulanService) * parseFloat(reqPeriodeSewa);
+    vtotal= setformat(vtotal);
+    $("#reqSewaTotalBiayaService").val(vtotal);
+    // ================================================
+
+    reqSewaBiayaPerBulanUnit= getvalnumber($("#reqSewaBiayaPerBulanUnit").val());
+    reqSewaBiayaPerBulanService= getvalnumber($("#reqSewaBiayaPerBulanService").val());
+    // console.log(reqSewaBiayaPerBulanUnit+"+"+reqSewaBiayaPerBulanService);
+    vtotal= parseFloat(reqSewaBiayaPerBulanUnit) + parseFloat(reqSewaBiayaPerBulanService);
+    vtotal= setformat(vtotal);
+    $("#reqTotalBiayaPerBulanNoPpn").val(vtotal);
+    // ================================================
+
+    reqSewaTotalBiayaUnit= getvalnumber($("#reqSewaTotalBiayaUnit").val());
+    reqSewaTotalBiayaService= getvalnumber($("#reqSewaTotalBiayaService").val());
+    // console.log(reqSewaTotalBiayaUnit+"+"+reqSewaTotalBiayaService);
+    vtotal= parseFloat(reqSewaTotalBiayaUnit) + parseFloat(reqSewaTotalBiayaService);
+    vtotal= setformat(vtotal);
+    $("#reqTotalBiayaNoPpn").val(vtotal);
+    // ================================================
+
+    reqTotalBiayaPerBulanPpn= reqTotalBiayaPpn= 0;
+    reqPph= getvalnumber($("#reqPph").val());
+    if(reqPph > 0)
+    {
+        reqTotalBiayaPerBulanPpn= getvalnumber($("#reqTotalBiayaPerBulanNoPpn").val());
+        reqTotalBiayaPerBulanPpn= parseFloat(reqTotalBiayaPerBulanPpn) * parseFloat(reqPph);
+
+        reqTotalBiayaPpn= getvalnumber($("#reqTotalBiayaNoPpn").val());
+        reqTotalBiayaPpn= parseFloat(reqTotalBiayaPpn) * parseFloat(reqPph);
+    }
+    $("#reqTotalBiayaPerBulanPpn").val(setformat(reqTotalBiayaPerBulanPpn));
+    $("#reqTotalBiayaPpn").val(setformat(reqTotalBiayaPpn));
+    // ================================================
+}
+
+function getvalnumber(v)
+{
+    v= FormatAngkaNumber(v);
+    v= notnullval(v);
+    return v;
 }
 
 function hitungluas(vmode)

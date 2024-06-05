@@ -31,6 +31,17 @@ $reqHargaOutdoorService= $set->getField("HARGA_OUTDOOR_SERVICE");
 $reqDp= $set->getField("DP");
 $reqPeriodeSewa= $set->getField("PERIODE_SEWA");
 
+$reqSewaBiayaSatuanUnit= $set->getField("SEWA_BIAYA_SATUAN_UNIT");
+$reqSewaBiayaSatuanService= $set->getField("SEWA_BIAYA_SATUAN_SERVICE");
+$reqSewaTotalBiayaUnit= $set->getField("SEWA_TOTAL_BIAYA_UNIT");
+$reqSewaBiayaPerBulanUnit= $set->getField("SEWA_BIAYA_PER_BULAN_UNIT");
+$reqSewaBiayaPerBulanService= $set->getField("SEWA_BIAYA_PER_BULAN_SERVICE");
+$reqSewaTotalBiayaService= $set->getField("SEWA_TOTAL_BIAYA_SERVICE");
+$reqTotalBiayaPerBulanNoPpn= $set->getField("TOTAL_BIAYA_PER_BULAN_NO_PPN");
+$reqTotalBiayaNoPpn= $set->getField("TOTAL_BIAYA_NO_PPN");
+$reqTotalBiayaPerBulanPpn= $set->getField("TOTAL_BIAYA_PER_BULAN_PPN");
+$reqTotalBiayaPpn= $set->getField("TOTAL_BIAYA_PPN");
+
 $arrlokasi= [];
 $statement= " AND A.TR_LOO_ID = ".$reqId." AND VMODE ILIKE '%luas_sewa%'";
 $set= new TrLooDetil();
@@ -872,26 +883,26 @@ while($set->nextRow())
     <tr>
       <td style="border:solid black 0.5;text-align: center;">1</td>
       <td style="border:solid black 0.5;padding-left: 5px;">Harga Sewa Unit</td>
-      <td style="border:solid black 0.5;text-align:right;padding-right: 5px;"> 140.000      </td>
-      <td style="border:solid black 0.5;text-align:right;padding-right: 5px;"> 13.381.200       </td>
-      <td style="border:solid black 0.5;text-align:right;padding-right: 5px;"> 321.148.800      </td>
+      <td style="border:solid black 0.5;text-align:right;padding-right: 5px;"><?=numberToIna($reqSewaBiayaSatuanUnit)?></td>
+      <td style="border:solid black 0.5;text-align:right;padding-right: 5px;"><?=numberToIna($reqSewaBiayaPerBulanUnit)?></td>
+      <td style="border:solid black 0.5;text-align:right;padding-right: 5px;"><?=numberToIna($reqSewaTotalBiayaUnit)?></td>
     </tr>
     <tr>
       <td style="border:solid black 0.5;text-align: center;">2</td>
       <td style="border:solid black 0.5;padding-left: 5px;">Service Charge Tahun Pertama          </td>
-      <td style="border:solid black 0.5;text-align:right;padding-right: 5px;"> 124.865      </td>
-      <td style="border:solid black 0.5;text-align:right;padding-right: 5px;"> 7.956.389      </td>
-      <td style="border:solid black 0.5;text-align:right;padding-right: 5px;"> 95.476.670       </td>
+      <td style="border:solid black 0.5;text-align:right;padding-right: 5px;"><?=numberToIna($reqSewaBiayaSatuanService)?></td>
+      <td style="border:solid black 0.5;text-align:right;padding-right: 5px;"><?=numberToIna($reqSewaBiayaPerBulanService)?></td>
+      <td style="border:solid black 0.5;text-align:right;padding-right: 5px;"><?=numberToIna($reqSewaTotalBiayaService)?></td>
     </tr>
     <tr>
       <td style="border:solid black 0.5;padding-left: 5px;" colspan="3">Total (Tanpa PPN)         </td>
-      <td style="border:solid black 0.5;text-align:right;padding-right: 5px;"> 21.337.589       </td>
-      <td style="border:solid black 0.5;text-align:right;padding-right: 5px;"> 416.625.470     </td>
+      <td style="border:solid black 0.5;text-align:right;padding-right: 5px;"><?=numberToIna($reqTotalBiayaPerBulanNoPpn)?></td>
+      <td style="border:solid black 0.5;text-align:right;padding-right: 5px;"><?=numberToIna($reqTotalBiayaNoPpn)?></td>
     </tr>
     <tr>
       <td style="border:solid black 0.5;padding-left: 5px;" colspan="3">Total (Dengan PPN)          </td>
-      <td style="border:solid black 0.5;text-align:right;padding-right: 5px;"> 23.684.724       </td>
-      <td style="border:solid black 0.5;text-align:right;padding-right: 5px;"> 462.454.272      </td>
+      <td style="border:solid black 0.5;text-align:right;padding-right: 5px;"><?=numberToIna($reqTotalBiayaPerBulanPpn)?></td>
+      <td style="border:solid black 0.5;text-align:right;padding-right: 5px;"><?=numberToIna($reqTotalBiayaPpn)?></td>
     </tr>
     <tr>
       <td><br></td>

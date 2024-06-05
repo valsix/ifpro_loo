@@ -581,6 +581,50 @@ on tr_loo_paraf
 for each row
 execute procedure p_tr_loo_paraf();
 
+create or replace function ambildetilloo(vparamid numeric, vparam character varying)
+  returns character varying as
+$body$
+declare
+vreturn character varying;
+rec_data record;
+x numeric := 1;
+begin
+    vreturn:='';
+
+    for rec_data in (
+	select *
+	from
+	(
+		select
+		a1.nama || ' - ' || case when upper(a.area) = upper('i') then 'Indoor' else 'Outdoor' end || ' - ' || a.nama
+		vinfo
+		, a.lokasi_loo_detil_id info_id
+		from lokasi_loo_detil a
+		inner join lantai_loo a1 on a.lantai_loo_id = a1.lantai_loo_id
+		where a.lokasi_loo_detil_id in
+		(
+			select vid from tr_loo_detil
+			where tr_loo_id = vparamid and vmode ilike '%luas_sewa_%'
+		)
+
+	) a
+	order by info_id asc
+    )
+    loop
+            if x = 1 then
+                vreturn := rec_data.vinfo;
+            else
+                vreturn := vreturn || vparam || rec_data.vinfo;
+            end if;
+	   x := x + 1;
+    end loop;
+    
+   return vreturn;
+end;
+$body$
+language plpgsql volatile cost 100;
+alter function ambildetilloo(numeric, character varying) owner to postgres;
+
 drop table if exists utility_charge;
 create table utility_charge
 (

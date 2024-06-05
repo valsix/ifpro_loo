@@ -241,6 +241,16 @@ class trloo_json extends CI_Controller
 		$reqHargaOutdoorService= $this->input->post("reqHargaOutdoorService");
 		$reqDp= $this->input->post("reqDp");
 		$reqPeriodeSewa= $this->input->post("reqPeriodeSewa");
+		$reqSewaBiayaSatuanUnit= $this->input->post("reqSewaBiayaSatuanUnit");
+		$reqSewaBiayaSatuanService= $this->input->post("reqSewaBiayaSatuanService");
+		$reqSewaTotalBiayaUnit= $this->input->post("reqSewaTotalBiayaUnit");
+		$reqSewaBiayaPerBulanUnit= $this->input->post("reqSewaBiayaPerBulanUnit");
+		$reqSewaBiayaPerBulanService= $this->input->post("reqSewaBiayaPerBulanService");
+		$reqSewaTotalBiayaService= $this->input->post("reqSewaTotalBiayaService");
+		$reqTotalBiayaPerBulanNoPpn= $this->input->post("reqTotalBiayaPerBulanNoPpn");
+		$reqTotalBiayaPerBulanPpn= $this->input->post("reqTotalBiayaPerBulanPpn");
+		$reqTotalBiayaNoPpn= $this->input->post("reqTotalBiayaNoPpn");
+		$reqTotalBiayaPpn= $this->input->post("reqTotalBiayaPpn");
 
 		if($reqStatusData == "UBAHDATAPARAF" || $reqStatusData == "UBAHDATAREVISI")
 		{
@@ -292,6 +302,16 @@ class trloo_json extends CI_Controller
 		$set->setField("HARGA_OUTDOOR_SERVICE", ValToNullDB(dotToNo($reqHargaOutdoorService)));
 		$set->setField("DP", ValToNullDB(dotToNo($reqDp)));
 		$set->setField("PERIODE_SEWA", ValToNullDB(dotToNo($reqPeriodeSewa)));
+		$set->setField("SEWA_BIAYA_SATUAN_UNIT", ValToNullDB(dotToNo($reqSewaBiayaSatuanUnit)));
+		$set->setField("SEWA_BIAYA_SATUAN_SERVICE", ValToNullDB(dotToNo($reqSewaBiayaSatuanService)));
+		$set->setField("SEWA_TOTAL_BIAYA_UNIT", ValToNullDB(dotToNo($reqSewaTotalBiayaUnit)));
+		$set->setField("SEWA_BIAYA_PER_BULAN_UNIT", ValToNullDB(dotToNo($reqSewaBiayaPerBulanUnit)));
+		$set->setField("SEWA_BIAYA_PER_BULAN_SERVICE", ValToNullDB(dotToNo($reqSewaBiayaPerBulanService)));
+		$set->setField("SEWA_TOTAL_BIAYA_SERVICE", ValToNullDB(dotToNo($reqSewaTotalBiayaService)));
+		$set->setField("TOTAL_BIAYA_PER_BULAN_NO_PPN", ValToNullDB(dotToNo($reqTotalBiayaPerBulanNoPpn)));
+		$set->setField("TOTAL_BIAYA_PER_BULAN_PPN", ValToNullDB(dotToNo($reqTotalBiayaPerBulanPpn)));
+		$set->setField("TOTAL_BIAYA_NO_PPN", ValToNullDB(dotToNo($reqTotalBiayaNoPpn)));
+		$set->setField("TOTAL_BIAYA_PPN", ValToNullDB(dotToNo($reqTotalBiayaPpn)));
 
 		$set->setField("USER_PEMBUAT_ID", $sesid);
 		$set->setField("STATUS_DATA", $reqStatusData);
