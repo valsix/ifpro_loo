@@ -19,6 +19,7 @@ $arrdetil= $arrlokasi= [];
 if(empty($reqId))
 {
     $reqMode= "insert";
+    $reqPph= "1.11";
 }
 else
 {
@@ -104,13 +105,15 @@ else
 
 $arrutilitycharge= [];
 $set= new Combo();
-$set->comboUtilityCharge(array(), -1,-1, "", "ORDER BY UTILITY_CHARGE_ID");
+$set->looutilityharge(array(), -1,-1, "", "ORDER BY UTILITY_CHARGE_ID");
 while($set->nextRow())
 {
     $arrdata= [];
     $arrdata["id"]= $set->getField("UTILITY_CHARGE_ID");
+    $arrdata["lokasilooid"]= $set->getField("LOKASI_LOO_ID");
     $arrdata["nama"]= $set->getField("NAMA");
     $arrdata["ket"]= $set->getField("KETERANGAN");
+    $arrdata["harga"]= $set->getField("HARGA");
     array_push($arrutilitycharge, $arrdata);
 }
 // print_r($arrutilitycharge);exit;
@@ -336,7 +339,7 @@ $(function(){
                             <td>:</td>
                             <td>
                                 <input type="text" name="reqProdukId" class="easyui-combobox" id="reqProdukId" data-options="width:'350', valueField:'id', textField:'text', editable:false, url:'combo_json/comboProduk'" required value="<?=$reqProdukId?>" />
-                                &nbsp;&nbsp;PPH
+                                &nbsp;&nbsp;PPN
                                 <input type="text" class="vlxuangclass easyui-validatebox textbox form-control" name="reqPph" id="reqPph" style="width:5%; padding: initial; display: inline; text-align: right;" value="<?=numberToIna($reqPph)?>" />           
                             </td>
                         </tr>
@@ -360,7 +363,7 @@ $(function(){
                                 else
                                 {
                                 ?>
-                                <input type="text" id="reqSatuanKerjaPengirimId" class="easyui-combotree" name="reqSatuanKerjaPengirimId" data-options="
+                                <!-- <input type="text" id="reqSatuanKerjaPengirimId" class="easyui-combotree" name="reqSatuanKerjaPengirimId" data-options="
                                 onClick: function(rec){
                                     $('#reqUserPengirimId').val(rec.NIP);
                                     var url = 'web/satuan_kerja_json/combo_paraf/?reqId='+rec.SATUAN_KERJA_ID;
@@ -379,7 +382,7 @@ $(function(){
                                 , url:'web/satuan_kerja_json/combotreesatker/'
                                 , prompt:'Tentukan Pengirim...'," value="<?=$reqSatuanKerjaPengirimId?>"
                                 required="required"
-                                />
+                                /> -->
                                 <?
                                 }
                                 ?>
@@ -875,14 +878,16 @@ $(function(){
                                 </td>
                             </tr>
                             <tr>
+                                <th colspan="6">Service Charge</th>
+                            </tr>
+                            <tr>
                                 <td colspan="3">
                                     <table class="table">
                                         <tbody id="tarifinfosewascindoor">
                                             <tr>
-                                                <td class="tdcolor" style="width: 25%">Service Charge</td>
-                                                <td class="tdcolor" style="width: 25%">Tarif (after pph)</td>
-                                                <td class="tdcolor" style="width: 15%">Discount</td>
-                                                <td class="tdcolor" style="width: 35%">Tarif (after discount)</td>
+                                                <td class="tdcolor" style="width: 35%">Harga awal setelah ppn</td>
+                                                <td class="tdcolor" style="width: 20%">Discount</td>
+                                                <td class="tdcolor" style="width: 45%">Harga akhir setelah ppn (after disc)</td>
                                             </tr>
                                             <?
                                             foreach ($arrlokasi as $k => $v)
@@ -915,12 +920,11 @@ $(function(){
                                                     <input type="hidden" name="vmode[]" value="<?=$valmode?>" />
                                                     <input type="hidden" name="vid[]" class="valsetid" value="<?=$vkeyid?>" />
                                                     <input type="hidden" name="vketerangan[]" />
-                                                    <input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control totalsewascindoor" name="vnilai[]" placeholder="Isi Rp/m2" data-options="required:true" style="width:65%; display: inline; text-align: right;" value="<?=numberToIna($valnilai)?>" /> <label class="labeltotal">Rp/m2</label>
-                                                </td>
-                                                <td>
+                                                    <input type="hidden" class="totalsewascindoor" name="vnilai[]" value="<?=numberToIna($valnilai)?>" />
+
                                                     <?
                                                     $valnilai= 0;
-                                                    $valmode= "tarif_sewa_sc_indoor_after_pph";
+                                                    $valmode= "tarif_sewa_sc_indoor_after_ppn";
                                                     $infocarikey= $vkeyid."-".$valmode;
                                                     $arrkondisicheck= in_array_column($infocarikey, "keyrowdetil", $arrdetil);
                                                     if(!empty($arrkondisicheck))
@@ -929,10 +933,7 @@ $(function(){
                                                         $valnilai= $arrdetil[$vindex]["vnilai"];
                                                     }
                                                     ?>
-                                                    <input type="hidden" name="vmode[]" value="<?=$valmode?>" />
-                                                    <input type="hidden" name="vid[]" class="valsetid" value="<?=$vkeyid?>" />
-                                                    <input type="hidden" name="vketerangan[]" />
-                                                    <input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control totalsewascindoorafterpph" name="vnilai[]" placeholder="Isi %" data-options="required:true" style="width:65%; display: inline; text-align: right;" value="<?=numberToIna($valnilai)?>" /> <label class="labeltotal">Rp/m2</label>
+                                                    <input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control totalsewascindoorafterppn" name="vnilai[]" placeholder="Isi Rp/m2" data-options="required:true" style="width:65%; display: inline; text-align: right;" value="<?=numberToIna($valnilai)?>" /> <label class="labeltotal">Rp/m2</label>
                                                 </td>
                                                 <td>
                                                     <?
@@ -950,8 +951,7 @@ $(function(){
                                                     <input type="hidden" name="vid[]" class="valsetid" value="<?=$vkeyid?>" />
                                                     <input type="hidden" name="vketerangan[]" />
                                                     <input type="text" class="vlxuangclass easyui-validatebox textbox form-control totalsewascindoordiskon" name="vnilai[]" placeholder="Isi %" data-options="required:true" style="width:65%; display: inline; text-align: right;" value="<?=numberToIna($valnilai)?>" /> <label class="labeltotal">%</label>
-                                                </td>
-                                                <td>
+
                                                     <?
                                                     $valnilai= 0;
                                                     $valmode= "tarif_sewa_sc_indoor_after_diskon";
@@ -966,7 +966,24 @@ $(function(){
                                                     <input type="hidden" name="vmode[]" value="<?=$valmode?>" />
                                                     <input type="hidden" name="vid[]" class="valsetid" value="<?=$vkeyid?>" />
                                                     <input type="hidden" name="vketerangan[]" />
-                                                    <input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control totalsewascindoorafterdiskon" name="vnilai[]" placeholder="Isi Rp/m2" data-options="required:true" style="width:65%; display: inline; text-align: right;" value="<?=numberToIna($valnilai)?>" /> <label class="labeltotal">Rp/m2</label>
+                                                    <input type="hidden" class="totalsewascindoorafterdiskon" name="vnilai[]" value="<?=numberToIna($valnilai)?>" />
+                                                </td>
+                                                <td>
+                                                    <?
+                                                    $valnilai= 0;
+                                                    $valmode= "tarif_sewa_sc_indoor_after_ppn_diskon";
+                                                    $infocarikey= $vkeyid."-".$valmode;
+                                                    $arrkondisicheck= in_array_column($infocarikey, "keyrowdetil", $arrdetil);
+                                                    if(!empty($arrkondisicheck))
+                                                    {
+                                                        $vindex= $arrkondisicheck[0];
+                                                        $valnilai= $arrdetil[$vindex]["vnilai"];
+                                                    }
+                                                    ?>
+                                                    <input type="hidden" name="vmode[]" value="<?=$valmode?>" />
+                                                    <input type="hidden" name="vid[]" class="valsetid" value="<?=$vkeyid?>" />
+                                                    <input type="hidden" name="vketerangan[]" />
+                                                    <input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control totalsewascindoorafterppndiskon" name="vnilai[]" placeholder="Isi Rp/m2" data-options="required:true" style="width:65%; display: inline; text-align: right;" value="<?=numberToIna($valnilai)?>" /> <label class="labeltotal">Rp/m2</label>
                                                 </td>
                                             </tr>
                                             <?
@@ -980,10 +997,9 @@ $(function(){
                                     <table class="table">
                                         <tbody id="tarifinfosewascoutdoor">
                                             <tr>
-                                                <td class="tdcolor" style="width: 25%">Service Charge</td>
-                                                <td class="tdcolor" style="width: 25%">Tarif (after pph)</td>
-                                                <td class="tdcolor" style="width: 15%">Discount</td>
-                                                <td class="tdcolor" style="width: 35%">Tarif (after discount)</td>
+                                                <td class="tdcolor" style="width: 35%">Harga awal setelah ppn</td>
+                                                <td class="tdcolor" style="width: 20%">Discount</td>
+                                                <td class="tdcolor" style="width: 45%">Harga akhir setelah ppn (after disc)</td>
                                             </tr>
                                             <?
                                             foreach ($arrlokasi as $k => $v)
@@ -1016,12 +1032,11 @@ $(function(){
                                                     <input type="hidden" name="vmode[]" value="<?=$valmode?>" />
                                                     <input type="hidden" name="vid[]" class="valsetid" value="<?=$vkeyid?>" />
                                                     <input type="hidden" name="vketerangan[]" />
-                                                    <input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control totalsewascoutdoor" name="vnilai[]" placeholder="Isi Rp/m2" data-options="required:true" style="width:65%; display: inline; text-align: right;" value="<?=numberToIna($valnilai)?>" /> <label class="labeltotal">Rp/m2</label>
-                                                </td>
-                                                <td>
+                                                    <input type="hidden" class="totalsewascoutdoor" name="vnilai[]" value="<?=numberToIna($valnilai)?>" />
+
                                                     <?
                                                     $valnilai= 0;
-                                                    $valmode= "tarif_sewa_sc_outdoor_after_pph";
+                                                    $valmode= "tarif_sewa_sc_outdoor_after_ppn";
                                                     $infocarikey= $vkeyid."-".$valmode;
                                                     $arrkondisicheck= in_array_column($infocarikey, "keyrowdetil", $arrdetil);
                                                     if(!empty($arrkondisicheck))
@@ -1030,10 +1045,7 @@ $(function(){
                                                         $valnilai= $arrdetil[$vindex]["vnilai"];
                                                     }
                                                     ?>
-                                                    <input type="hidden" name="vmode[]" value="<?=$valmode?>" />
-                                                    <input type="hidden" name="vid[]" class="valsetid" value="<?=$vkeyid?>" />
-                                                    <input type="hidden" name="vketerangan[]" />
-                                                    <input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control totalsewascoutdoorafterpph" name="vnilai[]" placeholder="Isi %" data-options="required:true" style="width:65%; display: inline; text-align: right;" value="<?=numberToIna($valnilai)?>" /> <label class="labeltotal">Rp/m2</label>
+                                                    <input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control totalsewascoutdoorafterppn" name="vnilai[]" placeholder="Isi Rp/m2" data-options="required:true" style="width:65%; display: inline; text-align: right;" value="<?=numberToIna($valnilai)?>" /> <label class="labeltotal">Rp/m2</label>
                                                 </td>
                                                 <td>
                                                     <?
@@ -1051,8 +1063,7 @@ $(function(){
                                                     <input type="hidden" name="vid[]" class="valsetid" value="<?=$vkeyid?>" />
                                                     <input type="hidden" name="vketerangan[]" />
                                                     <input type="text" class="vlxuangclass easyui-validatebox textbox form-control totalsewascoutdoordiskon" name="vnilai[]" placeholder="Isi %" data-options="required:true" style="width:65%; display: inline; text-align: right;" value="<?=numberToIna($valnilai)?>" /> <label class="labeltotal">%</label>
-                                                </td>
-                                                <td>
+
                                                     <?
                                                     $valnilai= 0;
                                                     $valmode= "tarif_sewa_sc_outdoor_after_diskon";
@@ -1067,7 +1078,24 @@ $(function(){
                                                     <input type="hidden" name="vmode[]" value="<?=$valmode?>" />
                                                     <input type="hidden" name="vid[]" class="valsetid" value="<?=$vkeyid?>" />
                                                     <input type="hidden" name="vketerangan[]" />
-                                                    <input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control totalsewascoutdoorafterdiskon" name="vnilai[]" placeholder="Isi Rp/m2" data-options="required:true" style="width:65%; display: inline; text-align: right;" value="<?=numberToIna($valnilai)?>" /> <label class="labeltotal">Rp/m2</label>
+                                                    <input type="hidden" class="totalsewascoutdoorafterdiskon" name="vnilai[]" value="<?=numberToIna($valnilai)?>" />
+                                                </td>
+                                                <td>
+                                                    <?
+                                                    $valnilai= 0;
+                                                    $valmode= "tarif_sewa_sc_outdoor_after_ppn_diskon";
+                                                    $infocarikey= $vkeyid."-".$valmode;
+                                                    $arrkondisicheck= in_array_column($infocarikey, "keyrowdetil", $arrdetil);
+                                                    if(!empty($arrkondisicheck))
+                                                    {
+                                                        $vindex= $arrkondisicheck[0];
+                                                        $valnilai= $arrdetil[$vindex]["vnilai"];
+                                                    }
+                                                    ?>
+                                                    <input type="hidden" name="vmode[]" value="<?=$valmode?>" />
+                                                    <input type="hidden" name="vid[]" class="valsetid" value="<?=$vkeyid?>" />
+                                                    <input type="hidden" name="vketerangan[]" />
+                                                    <input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control totalsewascoutdoorafterppndiskon" name="vnilai[]" placeholder="Isi Rp/m2" data-options="required:true" style="width:65%; display: inline; text-align: right;" value="<?=numberToIna($valnilai)?>" /> <label class="labeltotal">Rp/m2</label>
                                                 </td>
                                             </tr>
                                             <?
@@ -1330,10 +1358,15 @@ function sethargautilitycharge(node)
 
     $("#hargautilitycharge").empty();
     // console.log(arrutilitycharge)
-    if(Array.isArray(arrutilitycharge) && arrutilitycharge.length)
+
+    reqLokasiLooId= $("#reqLokasiLooId").combotree("getValue");
+    varrutilitycharge= arrutilitycharge.filter(item => item.lokasilooid === reqLokasiLooId);
+    // console.log(varrutilitycharge);
+
+    if(Array.isArray(varrutilitycharge) && varrutilitycharge.length)
     {
         vtable= '';
-        $.each(arrutilitycharge, function( index, value ) {
+        $.each(varrutilitycharge, function( index, value ) {
             // console.log( index + ": " + value["id"] );
             vdetilid= value["id"];
 
@@ -1341,6 +1374,7 @@ function sethargautilitycharge(node)
             {
                 vnama= value["nama"];
                 vket= value["ket"];
+                vharga= value["harga"];
 
                 vtable+= ''
                 +'<tr class="grouplokasiclass'+vid+'">'
@@ -1350,7 +1384,7 @@ function sethargautilitycharge(node)
                 +       '<input type="hidden" name="vmode[]" value="harga_utility_charge" />'
                 +       '<input type="hidden" name="vid[]" class="valsetid" value="'+vdetilid+'" />'
                 +       '<input type="hidden" name="vketerangan[]" value="'+vket+'" />'
-                +       '<input type="text" class="vlxuangclass easyui-validatebox textbox form-control" name="vnilai[]" placeholder="Isi Luas (m2)" data-options="required:true" style="width:85%; display: inline; text-align: right;" value="0" /> <label class="labeltotal">'+vket+'</label>'
+                +       '<input type="text" class="vlxuangclass easyui-validatebox textbox form-control" name="vnilai[]" placeholder="Isi Luas (m2)" data-options="required:true" style="width:85%; display: inline; text-align: right;" value="'+setformat(vharga)+'" /> <label class="labeltotal">'+vket+'</label>'
                 +   '</td>'
                 +'</tr>';
             }
@@ -1362,27 +1396,27 @@ function sethargautilitycharge(node)
 
 function openLookup(tipe) 
 {
-    /*tparam= [];
+    tparam= [];
 
-    var obj = {};
-    obj["DESKRIPSI"] = "sdsasdasd";
-    obj["KODE"] = "kode";
-    obj["LANTAI"] = "lantai 11";
-    obj["LOKASI_LOO_ID"] = "1";
-    obj["NAMA"] = "nama";
-    obj["NAMA_LOKASI_LOO"] = "SOSORO MALL - MERAK";
-    obj["TIPE_INFO"] = null;
-    obj["id"] = "1";
-    obj["state"] = "open";
-    obj["LUAS"] = "95.58";
-    obj["KD_TARIF"] = "200000";
-    obj["TARIF_SC"] = "92400";
-    obj["text"] = "nama";
-    tparam.push(obj);
+    // var obj = {};
+    // obj["DESKRIPSI"] = "sdsasdasd";
+    // obj["KODE"] = "kode";
+    // obj["LANTAI"] = "lantai 11";
+    // obj["LOKASI_LOO_ID"] = "1";
+    // obj["NAMA"] = "nama";
+    // obj["NAMA_LOKASI_LOO"] = "SOSORO MALL - MERAK";
+    // obj["TIPE_INFO"] = null;
+    // obj["id"] = "1";
+    // obj["state"] = "open";
+    // obj["LUAS"] = "95.58";
+    // obj["KD_TARIF"] = "200000";
+    // obj["TARIF_SC"] = "83243.24";
+    // obj["text"] = "nama";
+    // tparam.push(obj);
     // console.log(tparam);return false;
     // untuk percobanaan
     // addmulti("I", tparam);
-    // addmulti("O", tparam);*/
+    // addmulti("O", tparam);
 
     reqIdLokasi= $("#reqLokasiLooId").combotree("getValue");
     if (reqIdLokasi) 
@@ -1511,7 +1545,7 @@ function appenddata(vtipe, vdetilparam)
         vafterpph= vsebelumpph;
         if(reqPph > 0)
         {
-            vafterpph= parseFloat(vsebelumpph) / parseFloat(reqPph);
+            vafterpph= Math.round(parseFloat(vsebelumpph) * parseFloat(reqPph));
         }
 
         vtable= ''
@@ -1525,26 +1559,29 @@ function appenddata(vtipe, vdetilparam)
         +       '<input type="hidden" name="vmode[]" value="tarif_sewa_sc_indoor" />'
         +       '<input type="hidden" name="vid[]" class="valsetid" value="'+id+'" />'
         +       '<input type="hidden" name="vketerangan[]" />'
-        +       '<input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control totalsewascindoor" name="vnilai[]" placeholder="Isi Rp/m2" data-options="required:true" style="width:65%; display: inline; text-align: right;" value="'+vtarifsc+'" /> <label class="labeltotal">Rp/m2</label>'
-        +   '</td>'
-        +   '<td>'
-        +       '<input type="hidden" name="vmode[]" value="tarif_sewa_sc_indoor_after_pph" />'
+        +       '<input type="hidden" class="totalsewascindoor" name="vnilai[]" value="'+vtarifsc+'" />'
+
+        +       '<input type="hidden" name="vmode[]" value="tarif_sewa_sc_indoor_after_ppn" />'
         +       '<input type="hidden" name="vid[]" class="valsetid" value="'+id+'" />'
         +       '<input type="hidden" name="vketerangan[]" />'
-        +       '<input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control totalsewascindoorafterpph" name="vnilai[]" placeholder="Isi %" data-options="required:true" style="width:65%; display: inline; text-align: right;" value="'+setformat(vafterpph)+'" /> <label class="labeltotal">Rp/m2</label>'
+        +       '<input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control totalsewascindoorafterppn" name="vnilai[]" placeholder="Isi Rp/m2" data-options="required:true" style="width:65%; display: inline; text-align: right;" value="'+vafterpph+'" /> <label class="labeltotal">Rp/m2</label>'
         +   '</td>'
-                                                    
         +   '<td>'
         +       '<input type="hidden" name="vmode[]" value="tarif_sewa_sc_indoor_diskon" />'
         +       '<input type="hidden" name="vid[]" class="valsetid" value="'+id+'" />'
         +       '<input type="hidden" name="vketerangan[]" />'
         +       '<input type="text" class="vlxuangclass easyui-validatebox textbox form-control totalsewascindoordiskon" name="vnilai[]" placeholder="Isi %" data-options="required:true" style="width:65%; display: inline; text-align: right;" value="0" /> <label class="labeltotal">%</label>'
-        +   '</td>'
-        +   '<td>'
+
         +       '<input type="hidden" name="vmode[]" value="tarif_sewa_sc_indoor_after_diskon" />'
         +       '<input type="hidden" name="vid[]" class="valsetid" value="'+id+'" />'
         +       '<input type="hidden" name="vketerangan[]" />'
-        +       '<input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control totalsewascindoorafterdiskon" name="vnilai[]" placeholder="Isi Rp/m2" data-options="required:true" style="width:65%; display: inline; text-align: right;" /> <label class="labeltotal">Rp/m2</label>'
+        +       '<input type="hidden" class="totalsewascindoorafterdiskon" name="vnilai[]" value="'+vtarifsc+'" />'
+        +   '</td>'
+        +   '<td>'
+        +       '<input type="hidden" name="vmode[]" value="tarif_sewa_sc_indoor_after_ppn_diskon" />'
+        +       '<input type="hidden" name="vid[]" class="valsetid" value="'+id+'" />'
+        +       '<input type="hidden" name="vketerangan[]" />'
+        +       '<input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control totalsewascindoorafterppndiskon" name="vnilai[]" placeholder="Isi Rp/m2" data-options="required:true" style="width:65%; display: inline; text-align: right;" value="'+vtarifsc+'" /> <label class="labeltotal">Rp/m2</label>'
         +   '</td>'
         +'</tr>'
         ;
@@ -1613,7 +1650,7 @@ function appenddata(vtipe, vdetilparam)
         vafterpph= vsebelumpph;
         if(reqPph > 0)
         {
-            vafterpph= parseFloat(vsebelumpph) / parseFloat(reqPph);
+            vafterpph= Math.round(parseFloat(vsebelumpph) * parseFloat(reqPph));
         }
 
         vtable= ''
@@ -1627,24 +1664,29 @@ function appenddata(vtipe, vdetilparam)
         +       '<input type="hidden" name="vmode[]" value="tarif_sewa_sc_outdoor" />'
         +       '<input type="hidden" name="vid[]" class="valsetid" value="'+id+'" />'
         +       '<input type="hidden" name="vketerangan[]" />'
-        +       '<input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control totalsewascoutdoor" name="vnilai[]" placeholder="Isi Rp/m2" data-options="required:true" style="width:65%; display: inline; text-align: right;" value="'+vtarifsc+'" /> <label class="labeltotal">Rp/m2</label>'
-        +   '</td>'
-        +   '<td>'
-        +       '<input type="hidden" name="vmode[]" value="tarif_sewa_sc_outdoor_after_pph" />'
+        +       '<input type="hidden" class="totalsewascoutdoor" name="vnilai[]" value="'+vtarifsc+'" />'
+
+        +       '<input type="hidden" name="vmode[]" value="tarif_sewa_sc_outdoor_after_ppn" />'
         +       '<input type="hidden" name="vid[]" class="valsetid" value="'+id+'" />'
         +       '<input type="hidden" name="vketerangan[]" />'
-        +       '<input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control totalsewascoutdoorafterpph" name="vnilai[]" placeholder="Isi %" data-options="required:true" style="width:65%; display: inline; text-align: right;" value="'+setformat(vafterpph)+'" /> <label class="labeltotal">Rp/m2</label>'
+        +       '<input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control totalsewascoutdoorafterppn" name="vnilai[]" placeholder="Isi Rp/m2" data-options="required:true" style="width:65%; display: inline; text-align: right;" value="'+vafterpph+'" /> <label class="labeltotal">Rp/m2</label>'
+        +   '</td>'
         +   '<td>'
         +       '<input type="hidden" name="vmode[]" value="tarif_sewa_sc_outdoor_diskon" />'
         +       '<input type="hidden" name="vid[]" class="valsetid" value="'+id+'" />'
         +       '<input type="hidden" name="vketerangan[]" />'
         +       '<input type="text" class="vlxuangclass easyui-validatebox textbox form-control totalsewascoutdoordiskon" name="vnilai[]" placeholder="Isi %" data-options="required:true" style="width:65%; display: inline; text-align: right;" value="0" /> <label class="labeltotal">%</label>'
-        +   '</td>'
-        +   '<td>'
+
         +       '<input type="hidden" name="vmode[]" value="tarif_sewa_sc_outdoor_after_diskon" />'
         +       '<input type="hidden" name="vid[]" class="valsetid" value="'+id+'" />'
         +       '<input type="hidden" name="vketerangan[]" />'
-        +       '<input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control totalsewascoutdoorafterdiskon" name="vnilai[]" placeholder="Isi Rp/m2" data-options="required:true" style="width:65%; display: inline; text-align: right;" /> <label class="labeltotal">Rp/m2</label>'
+        +       '<input type="hidden" class="totalsewascoutdoorafterdiskon" name="vnilai[]" value="'+vtarifsc+'" />'
+        +   '</td>'
+        +   '<td>'
+        +       '<input type="hidden" name="vmode[]" value="tarif_sewa_sc_outdoor_after_ppn_diskon" />'
+        +       '<input type="hidden" name="vid[]" class="valsetid" value="'+id+'" />'
+        +       '<input type="hidden" name="vketerangan[]" />'
+        +       '<input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control totalsewascoutdoorafterppndiskon" name="vnilai[]" placeholder="Isi Rp/m2" data-options="required:true" style="width:65%; display: inline; text-align: right;" value="'+vtarifsc+'" /> <label class="labeltotal">Rp/m2</label>'
         +   '</td>'
         +'</tr>'
         ;
@@ -1755,40 +1797,21 @@ function hitungafterpph()
     reqPph= FormatAngkaNumber(reqPph);
     reqPph= notnullval(reqPph);
 
-    $(".totalsewascindoorafterpph").each(function(){
-        vsebelumpph= $(this).closest('tr').find('.totalsewascindoor').val();
-        vsebelumpph= FormatAngkaNumber(vsebelumpph);
-        vsebelumpph= notnullval(vsebelumpph);
-
-        vafterpph= vsebelumpph;
-        if(reqPph > 0)
-        {
-            vafterpph= parseFloat(vsebelumpph) / parseFloat(reqPph);
-        }
-        // console.log(parseFloat(vsebelumpph)+" / "+parseFloat(reqPph));
-        // console.log(vafterpph);
-        $(this).val(setformat(vafterpph));
+    $(".totalsewascindoordiskon").each(function(){
         hitunghargasewa("totalsewascindoordiskon");
     });
 
-    $(".totalsewascoutdoorafterpph").each(function(){
-        vsebelumpph= $(this).closest('tr').find('.totalsewascoutdoor').val();
-        vsebelumpph= FormatAngkaNumber(vsebelumpph);
-        vsebelumpph= notnullval(vsebelumpph);
-
-        vafterpph= vsebelumpph;
-        if(reqPph > 0)
-        {
-            vafterpph= parseFloat(vsebelumpph) / parseFloat(reqPph);
-        }
-        // console.log(vafterpph);
-        $(this).val(setformat(vafterpph));
+    $(".totalsewascoutdoordiskon").each(function(){
         hitunghargasewa("totalsewascoutdoordiskon");
     });
 }
 
 function hitunghargasewa(vmode)
 {
+    reqPph= $("#reqPph").val();
+    reqPph= FormatAngkaNumber(reqPph);
+    reqPph= notnullval(reqPph);
+
     vtotal= 0;
     vindex= 0;
     $("."+vmode).each(function(){
@@ -1808,13 +1831,13 @@ function hitunghargasewa(vmode)
         }
         else if(vmode == "totalsewascindoordiskon")
         {
-            // vawalharga= $(this).closest('tr').find('.totalsewascindoor').val();
-            vawalharga= $(this).closest('tr').find('.totalsewascindoorafterpph').val();
+            vawalharga= $(this).closest('tr').find('.totalsewascindoor').val();
+            // vawalharga= $(this).closest('tr').find('.totalsewascindoorafterpph').val();
         }
         else if(vmode == "totalsewascoutdoordiskon")
         {
-            // vawalharga= $(this).closest('tr').find('.totalsewascoutdoor').val();
-            vawalharga= $(this).closest('tr').find('.totalsewascoutdoorafterpph').val();
+            vawalharga= $(this).closest('tr').find('.totalsewascoutdoor').val();
+            // vawalharga= $(this).closest('tr').find('.totalsewascoutdoorafterpph').val();
         }
 
         vawalharga= FormatAngkaNumber(vawalharga);
@@ -1833,10 +1856,22 @@ function hitunghargasewa(vmode)
         else if(vmode == "totalsewascindoordiskon")
         {
             $(this).closest('tr').find('.totalsewascindoorafterdiskon').val(setformat(vafterdiskon));
+            vafterppndiskon= vafterdiskon;
+            if(reqPph > 0)
+            {
+                vafterppndiskon= Math.round(parseFloat(vafterdiskon) * parseFloat(reqPph));
+            }
+            $(this).closest('tr').find('.totalsewascindoorafterppndiskon').val(setformat(vafterppndiskon));
         }
         else if(vmode == "totalsewascoutdoordiskon")
         {
             $(this).closest('tr').find('.totalsewascoutdoorafterdiskon').val(setformat(vafterdiskon));
+            vafterppndiskon= vafterdiskon;
+            if(reqPph > 0)
+            {
+                vafterppndiskon= Math.round(parseFloat(vafterdiskon) * parseFloat(reqPph));
+            }
+            $(this).closest('tr').find('.totalsewascoutdoorafterppndiskon').val(setformat(vafterppndiskon));
         }
 
         if(vmode == "totalsewaunitindoordiskon" || "totalsewaunitoutdoordiskon")
@@ -1877,11 +1912,13 @@ function hitunghargasewa(vmode)
     }
     else if(vmode == "totalsewascindoordiskon")
     {
-        vmodetotal= "totalsewascindoorafterdiskon";
+        // vmodetotal= "totalsewascindoorafterdiskon";
+        vmodetotal= "totalsewascindoorafterppndiskon";
     }
     else if(vmode == "totalsewascoutdoordiskon")
     {
-        vmodetotal= "totalsewascoutdoorafterdiskon";
+        // vmodetotal= "totalsewascoutdoorafterdiskon";
+        vmodetotal= "totalsewascoutdoorafterppndiskon";
     }
 
     if(vmodetotal !== "")
@@ -1903,11 +1940,14 @@ function hitungtotalharga(vmode)
     }
     else if(vmode == "totalsewascindoordiskon")
     {
-        vmodetotal= "totalsewascindoorafterdiskon";
+        // vmodetotal= "totalsewascindoorafterdiskon";
+        vmodetotal= "totalsewascindoorafterppndiskon";
     }
     else if(vmode == "totalsewascoutdoordiskon")
     {
-        vmodetotal= "totalsewascoutdoorafterdiskon";
+        // vmodetotal= "totalsewascoutdoorafterdiskon";
+        vmodetotal= "totalsewascoutdoorafterppndiskon";
+
     }
 
     vtotal= 0;

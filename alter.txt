@@ -32,6 +32,16 @@ create table tr_loo
 	, harga_outdoor_service numeric
 	, dp numeric
 	, periode_sewa numeric
+	, sewa_biaya_satuan_unit numeric
+	, sewa_biaya_satuan_service numeric
+	, sewa_total_biaya_unit numeric
+	, sewa_biaya_per_bulan_unit numeric
+	, sewa_biaya_per_bulan_service numeric
+	, sewa_total_biaya_service numeric
+	, total_biaya_per_bulan_no_ppn numeric
+	, total_biaya_per_bulan_ppn numeric
+	, total_biaya_no_ppn numeric
+	, total_biaya_ppn numeric
 	, terparaf numeric
 	, terbaca_validasi integer
 	, approval_qr_date timestamp without time zone
@@ -583,3 +593,16 @@ create table utility_charge
 insert into utility_charge(utility_charge_id, nama, keterangan) values (1, 'Listrik', 'kwh');
 insert into utility_charge(utility_charge_id, nama, keterangan) values (2, 'Gas', 'kg');
 insert into utility_charge(utility_charge_id, nama, keterangan) values (3, 'Air', 'm3');
+
+delete from loo_utility_charge;
+insert into loo_utility_charge (loo_utility_charge_id, lokasi_loo_id, utility_charge_id, harga)
+select
+row_number () over (order by a.lokasi_loo_id, a1.utility_charge_id) loo_utility_charge_id
+, a.lokasi_loo_id, a1.utility_charge_id, a1.harga
+from lokasi_loo a
+,
+(
+select utility_charge_id, case utility_charge_id when 1 then 1647.2 when 2 then 19200 when 3 then 25000 else 0 end harga
+from utility_charge
+) a1
+order by a.lokasi_loo_id, a1.utility_charge_id;
