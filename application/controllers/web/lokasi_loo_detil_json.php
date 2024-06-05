@@ -79,7 +79,7 @@ class lokasi_loo_detil_json extends CI_Controller
 				* which means that the same row can be displayed in two pages - while
 				* another row will not be displayed at all.
 				*/
-				$sOrder = " ORDER BY A.NAMA asc";
+				$sOrder = " ORDER BY A.LOKASI_LOO_ID, A.LANTAI_LOO_ID, A.AREA ASC";
 			}
 		}
 

@@ -124,7 +124,7 @@ DESCRIPTION			:
     * @param int from Awal record yang diambil 
     * @return boolean True jika sukses, false jika tidak 
     **/ 
-    function selectByParams($paramsArray=array(),$limit=-1,$from=-1,$statement="", $order=" ORDER BY A.LOKASI_LOO_DETIL_ID ASC")
+    function selectByParams($paramsArray=array(),$limit=-1,$from=-1,$statement="", $order=" ORDER BY A.LOKASI_LOO_ID, A.LANTAI_LOO_ID, A.AREA ASC")
 	{
 		// LOKASI_LOO_DETIL_ID, A.LOKASI_LOO_ID, A.KODE, A.NAMA, A.LANTAI_LOO_ID, A.PRIME, A.LUAS, A.KD_TARIF, A.DESKRIPSI
 		$str = "
