@@ -53,6 +53,9 @@ else
     $reqTotalBiayaPerBulanPpn= $set->getField("TOTAL_BIAYA_PER_BULAN_PPN");
     $reqTotalBiayaPpn= $set->getField("TOTAL_BIAYA_PPN");
 
+    $reqSecurityDeposit= $set->getField("SECURITY_DEPOSIT");
+    $reqFittingOut= $set->getField("FITTING_OUT");
+
     $reqSatuanKerjaPengirimId= $set->getField("SATUAN_KERJA_PENGIRIM_ID");
     $reqUserPengirimId= $set->getField("USER_PENGIRIM_ID");
     $reqStatusData= $set->getField("STATUS_DATA");
@@ -944,6 +947,9 @@ $(function(){
                                                         $valnilai= $arrdetil[$vindex]["vnilai"];
                                                     }
                                                     ?>
+                                                    <input type="hidden" name="vmode[]" value="<?=$valmode?>" />
+                                                    <input type="hidden" name="vid[]" class="valsetid" value="<?=$vkeyid?>" />
+                                                    <input type="hidden" name="vketerangan[]" />
                                                     <input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control totalsewascindoorafterppn" name="vnilai[]" placeholder="Isi Rp/m2" data-options="required:true" style="width:65%; display: inline; text-align: right;" value="<?=numberToIna($valnilai)?>" /> <label class="labeltotal">Rp/m2</label>
                                                 </td>
                                                 <td>
@@ -1056,6 +1062,9 @@ $(function(){
                                                         $valnilai= $arrdetil[$vindex]["vnilai"];
                                                     }
                                                     ?>
+                                                    <input type="hidden" name="vmode[]" value="<?=$valmode?>" />
+                                                    <input type="hidden" name="vid[]" class="valsetid" value="<?=$vkeyid?>" />
+                                                    <input type="hidden" name="vketerangan[]" />
                                                     <input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control totalsewascoutdoorafterppn" name="vnilai[]" placeholder="Isi Rp/m2" data-options="required:true" style="width:65%; display: inline; text-align: right;" value="<?=numberToIna($valnilai)?>" /> <label class="labeltotal">Rp/m2</label>
                                                 </td>
                                                 <td>
@@ -1315,6 +1324,18 @@ $(function(){
                                         </tr>
                                     </tbody>
                                 </table>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Jaminan Sewa (Security Deposit)</td>
+                            <td>:</td>
+                            <td>
+                                <input type="text" readonly id="reqSecurityDeposit" class="vlxuangclass easyui-validatebox textbox form-control" required name="reqSecurityDeposit" value="<?=numberToIna($reqSecurityDeposit)?>" data-options="required:true" style="display: inline; text-align: right;" />
+                            </td>
+                            <td>Fitting Out</td>
+                            <td>:</td>
+                            <td>
+                                <input type="text" id="reqFittingOut" class="vlxuangclass easyui-validatebox textbox form-control" required name="reqFittingOut" value="<?=numberToIna($reqFittingOut)?>" data-options="required:true" style="display: inline; text-align: right;" />
                             </td>
                         </tr>
                     </thead>
@@ -1824,7 +1845,7 @@ function callformatdyna()
             hitunghargasewa("totalsewascoutdoordiskon");
         });
 
-        $("#reqPph").keyup(function() {
+        $("#reqPph, #reqPeriodeSewa").keyup(function() {
             hitungafterpph();
         });
 
@@ -2141,6 +2162,13 @@ function hitungtotalharga(vmode)
     $("#reqTotalBiayaPerBulanPpn").val(setformat(reqTotalBiayaPerBulanPpn));
     $("#reqTotalBiayaPpn").val(setformat(reqTotalBiayaPpn));
     // ================================================
+
+    reqTotalBiayaPerBulanNoPpn= getvalnumber($("#reqTotalBiayaPerBulanNoPpn").val());
+    vtotal= parseFloat(2) * parseFloat(reqTotalBiayaPerBulanNoPpn);
+    vtotal= setformat(vtotal);
+    $("#reqSecurityDeposit").val(vtotal);
+    // ================================================
+    
 }
 
 function getvalnumber(v)

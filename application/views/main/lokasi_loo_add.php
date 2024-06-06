@@ -33,6 +33,7 @@ else
     $reqNamaBank= $lokasi_loo->getField("NAMA_BANK");
     $reqRekeningBank= $lokasi_loo->getField("REKENING_BANK");
     $reqAtasNamaBank= $lokasi_loo->getField("ATAS_NAMA_BANK");
+    $reqNamaCabang= $lokasi_loo->getField("NAMA_CABANG");
 
     $reqIdUtilityarr= array();
     $reqValName='';
@@ -179,48 +180,6 @@ $(function(){
                             </td>
                         </tr>
                         <tr>
-                            <td>Email </td>
-                            <td>:</td>
-                            <td>
-                                <input type="text" id="reqEmail" class="easyui-validatebox textbox form-control" required name="reqEmail"  value="<?=$reqEmail ?>" data-options="required:true" style="width:90%" />
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>No. Telepon </td>
-                            <td>:</td>
-                            <td>
-                                <input type="text" id="reqTelepon" class="easyui-validatebox textbox form-control" required name="reqTelepon"  value="<?=$reqTelepon ?>" data-options="required:true" style="width:90%" />
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Nama PJ </td>
-                            <td>:</td>
-                            <td>
-                                <input type="text" id="reqNamaPj" class="easyui-validatebox textbox form-control" required name="reqNamaPj"  value="<?=$reqNamaPj ?>" data-options="required:true" style="width:90%" />
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Nama Bank </td>
-                            <td>:</td>
-                            <td>
-                                <input type="text" id="reqNamaBank" class="easyui-validatebox textbox form-control" required name="reqNamaBank"  value="<?=$reqNamaBank ?>" data-options="required:true" style="width:90%" />
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Rekening Bank </td>
-                            <td>:</td>
-                            <td>
-                                <input type="text" id="reqRekeningBank" class="easyui-validatebox textbox form-control" required name="reqRekeningBank"  value="<?=$reqRekeningBank ?>" data-options="required:true" style="width:90%" />
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Atas Nama Bank </td>
-                            <td>:</td>
-                            <td>
-                                <input type="text" id="reqAtasNamaBank" class="easyui-validatebox textbox form-control" required name="reqAtasNamaBank"  value="<?=$reqAtasNamaBank ?>" data-options="required:true" style="width:90%" />
-                            </td>
-                        </tr>
-                        <tr>
                             <td>Deskripsi</td>
                             <td>:</td>
                             <td>
@@ -322,6 +281,58 @@ $(function(){
                                 <input type="hidden" name="reqUtilityChargeId" id="reqUtilityChargeId"   value="<?=$reqUtilityChargeId?>">
                             </td>
                         </tr>  -->
+                        <tr>
+                            <th colspan="3">Transfer Bank</th>
+                        </tr>
+                        <tr>
+                            <td>Nama Bank </td>
+                            <td>:</td>
+                            <td>
+                                <input type="text" id="reqNamaBank" class="easyui-validatebox textbox form-control" required name="reqNamaBank"  value="<?=$reqNamaBank ?>" data-options="required:true" style="width:90%" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Rekening Bank </td>
+                            <td>:</td>
+                            <td>
+                                <input type="text" id="reqRekeningBank" class="easyui-validatebox textbox form-control" required name="reqRekeningBank"  value="<?=$reqRekeningBank ?>" data-options="required:true" style="width:90%" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Atas Nama Bank </td>
+                            <td>:</td>
+                            <td>
+                                <input type="text" id="reqAtasNamaBank" class="easyui-validatebox textbox form-control" required name="reqAtasNamaBank"  value="<?=$reqAtasNamaBank ?>" data-options="required:true" style="width:90%" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Cabang </td>
+                            <td>:</td>
+                            <td>
+                                <input type="text" id="reqNamaCabang" class="easyui-validatebox textbox form-control" required name="reqNamaCabang"  value="<?=$reqNamaCabang ?>" data-options="required:true" style="width:90%" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Email </td>
+                            <td>:</td>
+                            <td>
+                                <input type="text" id="reqEmail" class="easyui-validatebox textbox form-control" required name="reqEmail"  value="<?=$reqEmail ?>" data-options="required:true" style="width:90%" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>No. Telepon </td>
+                            <td>:</td>
+                            <td>
+                                <input type="text" id="reqTelepon" class="easyui-validatebox textbox form-control" required name="reqTelepon"  value="<?=$reqTelepon ?>" data-options="required:true" style="width:90%" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Nama PJ </td>
+                            <td>:</td>
+                            <td>
+                                <input type="text" id="reqNamaPj" class="easyui-validatebox textbox form-control" required name="reqNamaPj"  value="<?=$reqNamaPj ?>" data-options="required:true" style="width:90%" />
+                            </td>
+                        </tr>
                     </thead>
                 </table>
 

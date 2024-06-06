@@ -30,22 +30,27 @@ DESCRIPTION			:
 		/*Auto-generate primary key(s) by next max value (integer) */
 		// $this->setField("LOKASI_LOO_ID", $this->getNextId("LOKASI_LOO_ID","LOKASI_LOO")); 
 		$str = "
-				INSERT INTO LOKASI_LOO (
-				   KODE, NAMA, SERVICE_CHARGE, DESKRIPSI, EMAIL, TELEPON, NAMA_PJ, NAMA_BANK, REKENING_BANK, ATAS_NAMA_BANK, Utility_Charge
-				   ) 
-				VALUES (
-					'".$this->getField("KODE")."', 
-					'".$this->getField("NAMA")."', 
-					'".$this->getField("SERVICE_CHARGE")."', 
-					'".$this->getField("DESKRIPSI")."',
-					'".$this->getField("EMAIL")."',
-					'".$this->getField("TELEPON")."',
-					'".$this->getField("NAMA_PJ")."',
-					'".$this->getField("NAMA_BANK")."',
-					'".$this->getField("REKENING_BANK")."',
-					'".$this->getField("ATAS_NAMA_BANK")."',
-					'".$this->getField("Utility_Charge")."'
-				)"; 
+		INSERT INTO LOKASI_LOO 
+		(
+			KODE, NAMA, SERVICE_CHARGE, DESKRIPSI, EMAIL, TELEPON, NAMA_PJ
+			, NAMA_BANK, REKENING_BANK, ATAS_NAMA_BANK, NAMA_CABANG
+			, Utility_Charge
+		) 
+		VALUES 
+		(
+			'".$this->getField("KODE")."'
+			, '".$this->getField("NAMA")."'
+			, '".$this->getField("SERVICE_CHARGE")."'
+			, '".$this->getField("DESKRIPSI")."'
+			, '".$this->getField("EMAIL")."'
+			, '".$this->getField("TELEPON")."'
+			, '".$this->getField("NAMA_PJ")."'
+			, '".$this->getField("NAMA_BANK")."'
+			, '".$this->getField("REKENING_BANK")."'
+			, '".$this->getField("ATAS_NAMA_BANK")."'
+			, '".$this->getField("NAMA_CABANG")."'
+			, '".$this->getField("Utility_Charge")."'
+		)"; 
 		$this->id = $this->getField("LOKASI_LOO_ID");
 		$this->query = $str;
 
@@ -89,21 +94,22 @@ DESCRIPTION			:
 	{
 		/*Auto-generate primary key(s) by next max value (integer) */
 		$str = "
-			   UPDATE LOKASI_LOO
-				SET   
-					   KODE      	= '".$this->getField("KODE")."',
-					   NAMA      	= '".$this->getField("NAMA")."',
-					   SERVICE_CHARGE      	= '".$this->getField("SERVICE_CHARGE")."',
-					   Utility_Charge      	= '".$this->getField("Utility_Charge")."',
-					   EMAIL= '".$this->getField("EMAIL")."',
-					   TELEPON= '".$this->getField("TELEPON")."',
-					   NAMA_PJ= '".$this->getField("NAMA_PJ")."',
-					   NAMA_BANK= '".$this->getField("NAMA_BANK")."',
-					   REKENING_BANK= '".$this->getField("REKENING_BANK")."',
-					   ATAS_NAMA_BANK= '".$this->getField("ATAS_NAMA_BANK")."',
-					   DESKRIPSI		= '".$this->getField("DESKRIPSI")."'
-				WHERE  LOKASI_LOO_ID    	= '".$this->getField("LOKASI_LOO_ID")."'
-				"; 
+		UPDATE LOKASI_LOO
+		SET   
+			KODE= '".$this->getField("KODE")."'
+			, NAMA= '".$this->getField("NAMA")."'
+			, SERVICE_CHARGE= '".$this->getField("SERVICE_CHARGE")."'
+			, Utility_Charge= '".$this->getField("Utility_Charge")."'
+			, EMAIL= '".$this->getField("EMAIL")."'
+			, TELEPON= '".$this->getField("TELEPON")."'
+			, NAMA_PJ= '".$this->getField("NAMA_PJ")."'
+			, NAMA_BANK= '".$this->getField("NAMA_BANK")."'
+			, REKENING_BANK= '".$this->getField("REKENING_BANK")."'
+			, ATAS_NAMA_BANK= '".$this->getField("ATAS_NAMA_BANK")."'
+			, NAMA_CABANG= '".$this->getField("NAMA_CABANG")."'
+			, DESKRIPSI= '".$this->getField("DESKRIPSI")."'
+		WHERE  LOKASI_LOO_ID    	= '".$this->getField("LOKASI_LOO_ID")."'
+		"; 
 		// echo $str;exit;
 		$this->query = $str;
 		return $this->execQuery($str);

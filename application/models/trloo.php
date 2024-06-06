@@ -38,7 +38,7 @@ DESCRIPTION			:
 			, HARGA_OUTDOOR_SERVICE, DP, PERIODE_SEWA
 			, SEWA_BIAYA_SATUAN_UNIT, SEWA_BIAYA_SATUAN_SERVICE, SEWA_TOTAL_BIAYA_UNIT, SEWA_BIAYA_PER_BULAN_UNIT
 			, SEWA_BIAYA_PER_BULAN_SERVICE, SEWA_TOTAL_BIAYA_SERVICE, TOTAL_BIAYA_PER_BULAN_NO_PPN, TOTAL_BIAYA_PER_BULAN_PPN
-			, TOTAL_BIAYA_NO_PPN, TOTAL_BIAYA_PPN
+			, TOTAL_BIAYA_NO_PPN, TOTAL_BIAYA_PPN, SECURITY_DEPOSIT, FITTING_OUT
 		)
 		VALUES 
 		(
@@ -73,6 +73,8 @@ DESCRIPTION			:
 			, ".$this->getField("TOTAL_BIAYA_PER_BULAN_PPN")."
 			, ".$this->getField("TOTAL_BIAYA_NO_PPN")."
 			, ".$this->getField("TOTAL_BIAYA_PPN")."
+			, ".$this->getField("SECURITY_DEPOSIT")."
+			, ".$this->getField("FITTING_OUT")."
 		)";
 		$this->id = $this->getField("TR_LOO_ID");
 		$this->query = $str;
@@ -114,6 +116,8 @@ DESCRIPTION			:
 		, TOTAL_BIAYA_PER_BULAN_PPN= ".$this->getField("TOTAL_BIAYA_PER_BULAN_PPN")."
 		, TOTAL_BIAYA_NO_PPN= ".$this->getField("TOTAL_BIAYA_NO_PPN")."
 		, TOTAL_BIAYA_PPN= ".$this->getField("TOTAL_BIAYA_PPN")."
+		, SECURITY_DEPOSIT= ".$this->getField("SECURITY_DEPOSIT")."
+		, FITTING_OUT= ".$this->getField("FITTING_OUT")."
 		WHERE TR_LOO_ID= ".$this->getField("TR_LOO_ID")."
 		"; 
 		// echo $str;exit;

@@ -42,6 +42,8 @@ create table tr_loo
 	, total_biaya_per_bulan_ppn numeric
 	, total_biaya_no_ppn numeric
 	, total_biaya_ppn numeric
+	, security_deposit numeric
+	, fitting_out numeric
 	, terparaf numeric
 	, terbaca_validasi integer
 	, approval_qr_date timestamp without time zone

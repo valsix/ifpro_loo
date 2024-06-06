@@ -228,7 +228,7 @@ class lokasi_loo_json extends CI_Controller
 		$reqNamaBank= $this->input->post("reqNamaBank");
 		$reqRekeningBank= $this->input->post("reqRekeningBank");
 		$reqAtasNamaBank= $this->input->post("reqAtasNamaBank");
-
+		$reqNamaCabang= $this->input->post("reqNamaCabang");
 
 		$set->setField("LOKASI_LOO_ID", $reqId);
 		$set->setField("KODE", $reqKode);
@@ -243,6 +243,7 @@ class lokasi_loo_json extends CI_Controller
 		$set->setField("NAMA_BANK", $reqNamaBank);
 		$set->setField("REKENING_BANK", $reqRekeningBank);
 		$set->setField("ATAS_NAMA_BANK", $reqAtasNamaBank);
+		$set->setField("NAMA_CABANG", $reqNamaCabang);
 
 		if ($reqMode == "insert") {
 			$set->setField("LAST_CREATE_USER", $this->USERNAME);

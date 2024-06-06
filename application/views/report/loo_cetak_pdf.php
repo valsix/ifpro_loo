@@ -7,6 +7,7 @@ include_once("libraries/vendor/autoload.php");
 $this->load->model("TrLoo");
 $this->load->model("TrLooDetil");
 $this->load->model("Combo");
+$this->load->model("LokasiLoo");
 
 $reqId= $this->input->get("reqId");
 
@@ -16,6 +17,7 @@ $statement= " AND A.TR_LOO_ID = ".$reqId;
 $set= new TrLoo();
 $set->selectcetak(array(), -1,-1, $statement);
 $set->firstRow();
+$reqLokasiLooId= $set->getField("LOKASI_LOO_ID");
 $reqLokasiNama= $set->getField("LOKASI_NAMA");
 $reqCustomerNama= $set->getField("NAMA_PEMILIK");
 $reqCustomerTempat= $set->getField("TEMPAT");
@@ -30,6 +32,8 @@ $reqHargaIndoorService= $set->getField("HARGA_INDOOR_SERVICE");
 $reqHargaOutdoorService= $set->getField("HARGA_OUTDOOR_SERVICE");
 $reqDp= $set->getField("DP");
 $reqPeriodeSewa= $set->getField("PERIODE_SEWA");
+$reqSecurityDeposit= $set->getField("SECURITY_DEPOSIT");
+$reqFittingOut= $set->getField("FITTING_OUT");
 
 $reqSewaBiayaSatuanUnit= $set->getField("SEWA_BIAYA_SATUAN_UNIT");
 $reqSewaBiayaSatuanService= $set->getField("SEWA_BIAYA_SATUAN_SERVICE");
@@ -41,6 +45,9 @@ $reqTotalBiayaPerBulanNoPpn= $set->getField("TOTAL_BIAYA_PER_BULAN_NO_PPN");
 $reqTotalBiayaNoPpn= $set->getField("TOTAL_BIAYA_NO_PPN");
 $reqTotalBiayaPerBulanPpn= $set->getField("TOTAL_BIAYA_PER_BULAN_PPN");
 $reqTotalBiayaPpn= $set->getField("TOTAL_BIAYA_PPN");
+$reqPph= $set->getField("PPH");
+
+$reqDpBayar= ($reqDp / 100) * ( $reqSewaTotalBiayaUnit * $reqPph);
 
 $arrlokasi= [];
 $statement= " AND A.TR_LOO_ID = ".$reqId." AND VMODE ILIKE '%luas_sewa%'";
@@ -105,6 +112,19 @@ while($set->nextRow())
     array_push($arrutilitycharge, $arrdata);
 }
 // print_r($arrutilitycharge);exit;
+
+if(empty($reqLokasiLooId)) $reqLokasiLooId= -1;
+
+$set= new LokasiLoo();
+$set->selectByParams(array("A.LOKASI_LOO_ID" => $reqLokasiLooId));
+$set->firstRow();
+$reqEmail= $set->getField("EMAIL");
+$reqTelepon= $set->getField("TELEPON");
+$reqNamaPj= $set->getField("NAMA_PJ");
+$reqNamaBank= $set->getField("NAMA_BANK");
+$reqRekeningBank= $set->getField("REKENING_BANK");
+$reqAtasNamaBank= $set->getField("ATAS_NAMA_BANK");
+$reqNamaCabang= $set->getField("NAMA_CABANG");
 ?>
 <base href="<?=base_url();?>">
 <link href="css/gaya-surat.css" rel="stylesheet" type="text/css">
@@ -925,7 +945,7 @@ while($set->nextRow())
     </tr>
     <tr>
       <td ></td>
-      <td colspan="5">Jaminan Sewa sebesar<b> Rp 42.675.178    </b>        </td>
+      <td colspan="5">Jaminan Sewa sebesar<b> Rp <?=numberToIna($reqSecurityDeposit)?></b>        </td>
     </tr>
     <tr>
       <td ></td>
@@ -938,7 +958,7 @@ while($set->nextRow())
     </tr>
     <tr>
       <td ></td>
-      <td colspan="5"> Fitting out sewa sebesar     <b>Rp   3.500.000</b>                                 
+      <td colspan="5"> Fitting out sewa sebesar     <b>Rp   <?=numberToIna($reqFittingOut)?></b>                                 
       </td>
     </tr>
     <tr>
@@ -982,7 +1002,7 @@ while($set->nextRow())
                Down Payment sebesar    
             </td>
             <td style="width:5%">:</td>
-            <td >Rp   71.295.034     </td>
+            <td >Rp   <?=numberToIna($reqDpBayar)?></td>
           </tr>
         </table>
       </td>      
@@ -999,7 +1019,7 @@ while($set->nextRow())
                Security Deposit sebesar
             </td>
             <td style="width:5%">:</td>
-            <td >Rp    42.675.178</td>
+            <td >Rp    <?=numberToIna($reqSecurityDeposit)?></td>
           </tr>
         </table>
       </td>
@@ -1016,7 +1036,7 @@ while($set->nextRow())
                Fitting Out sebesar
             </td>
             <td style="width:5%">:</td>
-            <td >Rp    3.500.000     </td>
+            <td >Rp    <?=numberToIna($reqFittingOut)?></td>
           </tr>
         </table>
       </td>
@@ -1074,7 +1094,7 @@ while($set->nextRow())
               :
             </td>
             <td>
-              2050051300    
+              <?=$reqRekeningBank?>
             </td>
           </tr>
           <tr>
@@ -1087,7 +1107,7 @@ while($set->nextRow())
               :
             </td>
             <td>
-              PT Indonesia Ferry Properti    
+              <?=$reqAtasNamaBank?>
             </td>
           </tr>
           <tr>
@@ -1100,7 +1120,7 @@ while($set->nextRow())
               :
             </td>
             <td>
-              BCA (Bank Central Asia)
+              <?=$reqNamaBank?>
             </td>
           </tr>
           <tr>
@@ -1113,7 +1133,7 @@ while($set->nextRow())
               :
             </td>
             <td>
-              Merak    
+              <?=$reqNamaCabang?>
             </td>
           </tr>
         </table>                              
@@ -1136,7 +1156,7 @@ while($set->nextRow())
     </tr>
     <tr>
       <td></td>
-      <td colspan="5">Apabila telah melakukan pembayaran mohon mengirimkan bukti pembayaran ke email nolita@ifpro.co.id                        
+      <td colspan="5">Apabila telah melakukan pembayaran mohon mengirimkan bukti pembayaran ke email <?=$reqEmail?>                        
       </td>
     </tr>
     <tr>
@@ -1243,7 +1263,7 @@ while($set->nextRow())
     <tr><td><br></td></tr>
     <tr>
       <td>
-        Demikian penawaran ini kami sampaikan, apabila ada hal yang perlu kami jelaskan lebih lanjut, mohon berkenan menghubungi kami di 0896-0100-1997 (BapakTriadi). Atas perhatiannya diucapkan terima kasih.                                  
+        Demikian penawaran ini kami sampaikan, apabila ada hal yang perlu kami jelaskan lebih lanjut, mohon berkenan menghubungi kami di <?=$reqTelepon?> (<?=$reqNamaPj?>). Atas perhatiannya diucapkan terima kasih.                                  
       </td>
     </tr>
   </table>

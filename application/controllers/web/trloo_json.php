@@ -251,6 +251,8 @@ class trloo_json extends CI_Controller
 		$reqTotalBiayaPerBulanPpn= $this->input->post("reqTotalBiayaPerBulanPpn");
 		$reqTotalBiayaNoPpn= $this->input->post("reqTotalBiayaNoPpn");
 		$reqTotalBiayaPpn= $this->input->post("reqTotalBiayaPpn");
+		$reqSecurityDeposit= $this->input->post("reqSecurityDeposit");
+		$reqFittingOut= $this->input->post("reqFittingOut");
 
 		if($reqStatusData == "UBAHDATAPARAF" || $reqStatusData == "UBAHDATAREVISI")
 		{
@@ -312,6 +314,8 @@ class trloo_json extends CI_Controller
 		$set->setField("TOTAL_BIAYA_PER_BULAN_PPN", ValToNullDB(dotToNo($reqTotalBiayaPerBulanPpn)));
 		$set->setField("TOTAL_BIAYA_NO_PPN", ValToNullDB(dotToNo($reqTotalBiayaNoPpn)));
 		$set->setField("TOTAL_BIAYA_PPN", ValToNullDB(dotToNo($reqTotalBiayaPpn)));
+		$set->setField("SECURITY_DEPOSIT", ValToNullDB(dotToNo($reqSecurityDeposit)));
+		$set->setField("FITTING_OUT", ValToNullDB(dotToNo($reqFittingOut)));
 
 		$set->setField("USER_PEMBUAT_ID", $sesid);
 		$set->setField("STATUS_DATA", $reqStatusData);
