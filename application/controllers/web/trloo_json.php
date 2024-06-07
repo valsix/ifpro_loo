@@ -241,6 +241,7 @@ class trloo_json extends CI_Controller
 		$reqHargaOutdoorService= $this->input->post("reqHargaOutdoorService");
 		$reqDp= $this->input->post("reqDp");
 		$reqPeriodeSewa= $this->input->post("reqPeriodeSewa");
+		$reqTop= $this->input->post("reqTop");
 		$reqSewaBiayaSatuanUnit= $this->input->post("reqSewaBiayaSatuanUnit");
 		$reqSewaBiayaSatuanService= $this->input->post("reqSewaBiayaSatuanService");
 		$reqSewaTotalBiayaUnit= $this->input->post("reqSewaTotalBiayaUnit");
@@ -304,6 +305,7 @@ class trloo_json extends CI_Controller
 		$set->setField("HARGA_OUTDOOR_SERVICE", ValToNullDB(dotToNo($reqHargaOutdoorService)));
 		$set->setField("DP", ValToNullDB(dotToNo($reqDp)));
 		$set->setField("PERIODE_SEWA", ValToNullDB(dotToNo($reqPeriodeSewa)));
+		$set->setField("TOP", ValToNullDB(dotToNo($reqTop)));
 		$set->setField("SEWA_BIAYA_SATUAN_UNIT", ValToNullDB(dotToNo($reqSewaBiayaSatuanUnit)));
 		$set->setField("SEWA_BIAYA_SATUAN_SERVICE", ValToNullDB(dotToNo($reqSewaBiayaSatuanService)));
 		$set->setField("SEWA_TOTAL_BIAYA_UNIT", ValToNullDB(dotToNo($reqSewaTotalBiayaUnit)));

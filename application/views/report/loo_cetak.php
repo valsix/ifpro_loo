@@ -17,8 +17,8 @@ $arrparam= array("reqId"=>$reqId, "reqTemplate"=>$templateSurat, "lihat"=>$vliha
 $report= new ReportLoo();
 $docPDF= $report->generate($arrparam);
 
-$url = 'uploads/' . $reqId . '/' . $docPDF;
-// echo $url; exit;
+$url = 'uploadsloo/'.$reqId.'/'.$docPDF;
+// echo $url;exit;
 $content = file_get_contents('../css/cetaknew.css');
 $content = file_get_contents($url);
 

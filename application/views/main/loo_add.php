@@ -41,7 +41,7 @@ else
     $reqHargaOutdoorService= $set->getField("HARGA_OUTDOOR_SERVICE");
     $reqDp= $set->getField("DP");
     $reqPeriodeSewa= $set->getField("PERIODE_SEWA");
-
+    $reqTop= $set->getField("TOP");
     $reqSewaBiayaSatuanUnit= $set->getField("SEWA_BIAYA_SATUAN_UNIT");
     $reqSewaBiayaSatuanService= $set->getField("SEWA_BIAYA_SATUAN_SERVICE");
     $reqSewaTotalBiayaUnit= $set->getField("SEWA_TOTAL_BIAYA_UNIT");
@@ -246,6 +246,13 @@ $(function(){
                 {
                 ?>
                     <a class="btn btn-danger btn-sm pull-right" id="buttonpdf" onClick="submitPreview()" style="cursor: pointer;"><i class="fa fa-file-pdf-o"></i> View as PDF</a>
+                <?
+                }
+
+                if(!empty($reqId)) 
+                {
+                ?>
+                    <a class="btn btn-danger btn-sm pull-right" id="buttonpdf" onClick="submitLampiran()" style="cursor: pointer;"><i class="fa fa-file-pdf-o"></i> Lampiran II</a>
                 <?
                 }
                 ?>
@@ -1207,24 +1214,37 @@ $(function(){
                 <table class="table">
                     <thead>
                         <tr>
-                            <td style="width: 28%">Down Payment</td>
-                            <td style="width: 2%">:</td>
-                            <td style="width: 20%">
-                                <input type="text" id="reqDp" class="vlxuangclass easyui-validatebox textbox form-control" required name="reqDp" value="<?=numberToIna($reqDp)?>" data-options="required:true" style="width:60%; display: inline; text-align: right;" /> <label class="labeltotal">%</label>
-                            </td>
-                            <td style="width: 28%">Periode Sewa</td>
-                            <td style="width: 2%">:</td>
-                            <td style="width: 20%">
-                                <input type="text" id="reqPeriodeSewa" class="vlxuangclass easyui-validatebox textbox form-control" required name="reqPeriodeSewa" value="<?=numberToIna($reqPeriodeSewa)?>" data-options="required:true" style="width:60%; display: inline; text-align: right;" /> <label class="labeltotal">bulan</label>
+                            <td colspan="6">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <td style="width: 20%">Down Payment</td>
+                                            <td style="width: 2%">:</td>
+                                            <td>
+                                                <input type="text" id="reqDp" class="vlxuangclass easyui-validatebox textbox form-control" required name="reqDp" value="<?=numberToIna($reqDp)?>" data-options="required:true" style="width:60%; display: inline; text-align: right;" /> <label class="labeltotal">%</label>
+                                            </td>
+                                            <td style="width: 20%">Periode Sewa</td>
+                                            <td style="width: 2%">:</td>
+                                            <td>
+                                                <input type="text" id="reqPeriodeSewa" class="vlxuangclass easyui-validatebox textbox form-control" required name="reqPeriodeSewa" value="<?=numberToIna($reqPeriodeSewa)?>" data-options="required:true" style="width:60%; display: inline; text-align: right;" /> <label class="labeltotal">bulan</label>
+                                            </td>
+                                            <td style="width: 20%">TOP</td>
+                                            <td style="width: 2%">:</td>
+                                            <td>
+                                                <input type="text" id="reqTop" class="vlxuangclass easyui-validatebox textbox form-control" required name="reqTop" value="<?=numberToIna($reqTop)?>" data-options="required:true" style="width:60%; display: inline; text-align: right;" /> <label class="labeltotal">bulan</label>
+                                            </td>
+                                        </tr>
+                                    </thead>
+                                </table>
                             </td>
                         </tr>
                         <tr>
                             <th colspan="6">Jam Operasional</th>
                         </tr>
                         <tr>
-                            <td>Gedung</td>
-                            <td>:</td>
-                            <td>
+                            <td style="width: 28%">Gedung</td>
+                            <td style="width: 2%">:</td>
+                            <td style="width: 20%">
                                 <?
                                 $valketerangan= "10:00 s/d 22:00";
                                 $vkeyid= 1;
@@ -1242,9 +1262,9 @@ $(function(){
                                 <input type="hidden" name="vnilai[]" value="" />
                                 <input type="text" class="easyui-validatebox textbox form-control" required name="vketerangan[]" value="<?=$valketerangan?>" data-options="required:true" style="width:90%; display: inline; text-align: right;" />
                             </td>
-                            <td>Tenant</td>
-                            <td>:</td>
-                            <td>
+                            <td style="width: 28%">Tenant</td>
+                            <td style="width: 2%">:</td>
+                            <td style="width: 20%">
                                 <?
                                 $valketerangan= "10:00 s/d 22:00";
                                 $vkeyid= 2;
@@ -2244,6 +2264,11 @@ function notnullval(v)
 function submitPreview() 
 {
     parent.openAdd('app/loadUrl/report/loo_cetak/?reqId=<?=$reqId?>&templateSurat=loo');
+}
+
+function submitLampiran() 
+{
+    parent.openAdd('app/loadUrl/report/loo_cetak/?reqId=<?=$reqId?>&templateSurat=lampiran');
 }
 
 function submitForm(reqStatusData){

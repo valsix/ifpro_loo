@@ -26,8 +26,8 @@ class ReportLoo
 		$this->reqId= $reqId;
 		$this->reqTemplate= $reqTemplate;
 		
-		$FILE_DIR_TEMPLATE= "uploads/";
-		$FILE_DIR= "uploads/".$this->reqId."/";
+		$FILE_DIR_TEMPLATE= "uploadsloo/";
+		$FILE_DIR= "uploadsloo/".$this->reqId."/";
 
 		if (!file_exists($FILE_DIR)) {
 			makedirs($FILE_DIR, 0777, true);
@@ -68,11 +68,13 @@ class ReportLoo
 		    )
 		);
 
-		$saveAs= (generateZero($reqId, 6)).".pdf";
-		// echo $FILE_DIR.$saveAs;exit;
-		unlink($FILE_DIR.$saveAs);
+		$saveAs= $reqTemplate."_".(generateZero($reqId, 6)).".pdf";
+		$filelink= $FILE_DIR.$saveAs;
+		// echo $filelink;exit;
+		unlink($filelink);
 		// exit;
-		$wkhtmltopdf->saveAs($FILE_DIR.$saveAs);
+		$wkhtmltopdf->saveAs($filelink);
+		unlink($FILE_DIR.(generateZero(0, 6)).".pdf");
 		chmod($FILE_DIR, 0555);
 
 		/*if ($suratmasukinfo->NOMOR == "" || $suratmasukinfo->TTD_KODE == "" || $suratmasukinfo->JENIS_TTD == "BASAH") {

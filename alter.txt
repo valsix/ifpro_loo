@@ -31,6 +31,7 @@ create table tr_loo
 	, harga_indoor_service numeric
 	, harga_outdoor_service numeric
 	, dp numeric
+	, top numeric
 	, periode_sewa numeric
 	, sewa_biaya_satuan_unit numeric
 	, sewa_biaya_satuan_service numeric
