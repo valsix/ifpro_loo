@@ -68,13 +68,14 @@ class ReportLoo
 		    )
 		);
 
-		$saveAs= $reqTemplate."_".(generateZero($reqId, 6)).".pdf";
+		$vgenerate= "_".generateZero($reqId, 6);
+		$saveAs= $reqTemplate.$vgenerate.".pdf";
 		$filelink= $FILE_DIR.$saveAs;
 		// echo $filelink;exit;
 		unlink($filelink);
 		// exit;
 		$wkhtmltopdf->saveAs($filelink);
-		unlink($FILE_DIR.(generateZero(0, 6)).".pdf");
+		unlink($FILE_DIR.$vgenerate.".pdf");
 		chmod($FILE_DIR, 0555);
 
 		/*if ($suratmasukinfo->NOMOR == "" || $suratmasukinfo->TTD_KODE == "" || $suratmasukinfo->JENIS_TTD == "BASAH") {

@@ -2268,7 +2268,7 @@ function submitPreview()
 
 function submitLampiran() 
 {
-    parent.openAdd('app/loadUrl/report/loo_cetak/?reqId=<?=$reqId?>&templateSurat=lampiran');
+    parent.openAdd('app/loadUrl/report/loo_cetak/?reqId=<?=$reqId?>&templateSurat=loo_lampiran');
 }
 
 function submitForm(reqStatusData){
