@@ -3,10 +3,10 @@
 include_once("functions/string.func.php");
 include_once("functions/date.func.php");
 
-$this->load->model("TrLoo");
-$this->load->model("TrLooDetil");
+$this->load->model("TrLoi");
+$this->load->model("TrLoiDetil");
 $this->load->model("Combo");
-$this->load->model("TrLooParaf");
+$this->load->model("TrLoiParaf");
 $this->load->model("SatuanKerja");
 
 $reqId= $this->input->get("reqId");
@@ -18,14 +18,15 @@ $reqIdDraft= $reqId;
 $arrdetil= $arrlokasi= [];
 if(empty($reqId))
 {
+    $reqId= -1;
     $reqMode= "insert";
     $reqPph= "1.11";
 }
 else
 {
     $reqMode = "ubah";
-    $set= new TrLoo();
-    $set->selectByParams(array("A.TR_LOO_ID" => $reqId));
+    $set= new TrLoi();
+    $set->selectByParams(array("A.TR_LOI_ID" => $reqId));
     $set->firstRow();
     
     $reqProdukId= $set->getField("PRODUK_ID");
@@ -78,15 +79,15 @@ else
     $set->setField("TOTAL_DISKON_OUTDOOR_SERVICE", ValToNullDB(dotToNo($req)));
     */
 
-    $statement= " AND A.TR_LOO_ID = ".$reqId." AND VMODE ILIKE '%luas_sewa%'";
-    $set= new TrLooDetil();
+    $statement= " AND A.TR_LOI_ID = ".$reqId." AND VMODE ILIKE '%luas_sewa%'";
+    $set= new TrLoiDetil();
     $set->selectlokasi(array(), -1,-1, $statement);
     // echo $set->query;exit;
     while($set->nextRow())
     {
         $arrdata= [];
-        $arrdata["trloodetilid"]= $set->getField("TR_LOO_DETIL_ID");
-        $arrdata["trlooid"]= $set->getField("TR_LOO_ID");
+        $arrdata["trloidetilid"]= $set->getField("TR_LOI_DETIL_ID");
+        $arrdata["trloiid"]= $set->getField("TR_LOI_ID");
         $arrdata["vmode"]= $set->getField("VMODE");
         $arrdata["vid"]= $set->getField("VID");
         $arrdata["vnilai"]= $set->getField("NILAI");
@@ -96,8 +97,8 @@ else
         array_push($arrlokasi, $arrdata);
     }
 
-    $statement= " AND A.TR_LOO_ID = ".$reqId;
-    $set= new TrLooDetil();
+    $statement= " AND A.TR_LOI_ID = ".$reqId;
+    $set= new TrLoiDetil();
     $set->selectByParams(array(), -1,-1, $statement);
     while($set->nextRow())
     {
@@ -105,8 +106,8 @@ else
         $valmode= $set->getField("VMODE");
         $arrdata= [];
         $arrdata["keyrowdetil"]= $valid."-".$valmode;
-        $arrdata["trloodetilid"]= $set->getField("TR_LOO_DETIL_ID");;
-        $arrdata["trlooid"]= $set->getField("TR_LOO_ID");
+        $arrdata["trloidetilid"]= $set->getField("TR_LOI_DETIL_ID");;
+        $arrdata["trloiid"]= $set->getField("TR_LOI_ID");
         $arrdata["vmode"]= $valmode;
         $arrdata["vid"]= $valid;
         $arrdata["vnilai"]= $set->getField("NILAI");
@@ -140,12 +141,12 @@ if (!empty($reqId))
     if($reqStatusData == "DRAFT" || $reqStatusData == "REVISI"){}
     elseif($reqStatusData == "PARAF" || $reqStatusData == "VALIDASI")
     {
-        $statement.= " AND A.USER_POSISI_PARAF_ID = '".$sessid."' AND A.TR_LOO_ID = ".$reqIdDraft;
-        $set= new TrLoo();
+        $statement.= " AND A.USER_POSISI_PARAF_ID = '".$sessid."' AND A.TR_LOI_ID = ".$reqIdDraft;
+        $set= new TrLoi();
         $set->selectdraft(array(), -1, -1, $statement);
         // echo $set->query;exit;
         $set->firstRow();
-        $checkparafid= $set->getField("TR_LOO_ID");
+        $checkparafid= $set->getField("TR_LOI_ID");
         $checknextpemaraf= $set->getField("NEXT_URUT");
         $checkstatusbantu= $set->getField("STATUS_BANTU");
         $chekvalidasi= "";
@@ -155,7 +156,7 @@ if (!empty($reqId))
 
         if (empty($checkparafid) && empty($reqId))
         {
-            redirect("main/index/loo_perlu_persetujuan");
+            redirect("main/index/loi_perlu_persetujuan");
         }
         else
         {
@@ -183,10 +184,10 @@ if (!empty($reqId))
         }
     }
     else
-    redirect("main/index/loo_draft");
+    redirect("main/index/loi_draft");
 
-    $set= new TrLoo();
-    $set->selectByParamsDataLog(array("A.TR_LOO_ID"=>$reqId),-1,-1);
+    $set= new TrLoi();
+    $set->selectByParamsDataLog(array("A.TR_LOI_ID"=>$reqId),-1,-1);
     while($set->nextRow())
     {
         $arrdata= [];
@@ -250,7 +251,7 @@ $(function(){
 </head>
 
 <body class="bg-kanan-full">
-    <div id="judul-popup">Kelola LOO</div>
+    <div id="judul-popup">Kelola LOI</div>
     <div id="konten">
         <form id="ff" method="post" novalidate enctype="multipart/form-data">
             <div class="btn-atas clearfix">
@@ -398,7 +399,7 @@ $(function(){
                                 else
                                 {
                                 ?>
-                                <input type="text" id="reqSatuanKerjaPengirimId" class="easyui-combotree" name="reqSatuanKerjaPengirimId" data-options="
+                                <!-- <input type="text" id="reqSatuanKerjaPengirimId" class="easyui-combotree" name="reqSatuanKerjaPengirimId" data-options="
                                 onClick: function(rec){
                                     $('#reqUserPengirimId').val(rec.NIP);
                                     var url = 'web/satuan_kerja_json/combo_paraf/?reqId='+rec.SATUAN_KERJA_ID;
@@ -417,7 +418,7 @@ $(function(){
                                 , url:'web/satuan_kerja_json/combotreesatker/'
                                 , prompt:'Tentukan Pengirim...'," value="<?=$reqSatuanKerjaPengirimId?>"
                                 required="required"
-                                />
+                                /> -->
                                 <?
                                 }
                                 ?>
@@ -442,8 +443,8 @@ $(function(){
                                     <?
                                     if(!empty($reqId))
                                     {
-                                        $setinfoparaf= new TrLooParaf();
-                                        $setinfoparaf->selectByParams(array(), -1, -1, " AND A.STATUS_BANTU IS NULL AND A.TR_LOO_ID = ".$reqId, "ORDER BY A.NO_URUT");
+                                        $setinfoparaf= new TrLoiParaf();
+                                        $setinfoparaf->selectByParams(array(), -1, -1, " AND A.STATUS_BANTU IS NULL AND A.TR_LOI_ID = ".$reqId, "ORDER BY A.NO_URUT");
                                         while($setinfoparaf->nextRow())
                                         {
                                             $valparafnama= $setinfoparaf->getField("NAMA_SATKER");
@@ -480,10 +481,10 @@ $(function(){
                                         <div class="inner-lampiran">
                                             <input id ="reqFile" name="reqLinkFile[]" type="file" maxlength="10" class="multi maxsize-10240" value="" />
                                             <?
-                                            $set_attachement = new TrLoo();
-                                            $set_attachement->selectByParamsAttachment(array("A.TR_LOO_ID" => (int)$reqId));
+                                            $set_attachement = new TrLoi();
+                                            $set_attachement->selectByParamsAttachment(array("A.TR_LOI_ID" => (int)$reqId));
                                             while ($set_attachement->nextRow()) {
-                                                $attach_id= $set_attachement->getField("TR_LOO_ATTACHMENT_ID");
+                                                $attach_id= $set_attachement->getField("TR_LOI_ATTACHMENT_ID");
                                             ?>
                                                 
                                                 <div class="MultiFile-label">
@@ -509,7 +510,7 @@ $(function(){
                                                     {
                                                     ?>
                                                     <?= $set_attachement->getField("NAMA") ?>
-                                                    <a onClick="parent.openAdd('<?= base_url()."uploadsloo/".$reqId."/".$set_attachement->getField("ATTACHMENT") ?>')" >
+                                                    <a onClick="parent.openAdd('<?= base_url()."uploadsloi/".$reqId."/".$set_attachement->getField("ATTACHMENT") ?>')" >
                                                         <i style="cursor: pointer;" class="fa fa-eye" ></i>
                                                     </a>
                                                     |
@@ -2316,12 +2317,12 @@ function notnullval(v)
 
 function submitPreview() 
 {
-    parent.openAdd('app/loadUrl/report/loo_cetak/?reqId=<?=$reqId?>&templateSurat=loo');
+    parent.openAdd('app/loadUrl/report/loo_cetak/?reqId=<?=$reqId?>&templateSurat=loi');
 }
 
 function submitLampiran() 
 {
-    parent.openAdd('app/loadUrl/report/loo_cetak/?reqId=<?=$reqId?>&templateSurat=loo_lampiran');
+    parent.openAdd('app/loadUrl/report/loo_cetak/?reqId=<?=$reqId?>&templateSurat=loi_lampiran');
 }
 
 function submitForm(reqStatusData){
@@ -2440,7 +2441,7 @@ function submitForm(reqStatusData){
 function setsimpan(reqStatusData)
 {
     $('#ff').form('submit',{
-        url:'web/trloo_json/add',
+        url:'web/trloi_json/add',
         onSubmit:function(){
 
             if($(this).form('enableValidation').form('validate'))
@@ -2473,7 +2474,7 @@ function setsimpan(reqStatusData)
             }
             else
             {
-                vreload= "main/index/loo_add/?reqId="+rowid;
+                vreload= "main/index/loi_add/?reqId="+rowid;
                 <?
                 if(!empty($reqVmode))
                 {

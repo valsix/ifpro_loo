@@ -235,16 +235,16 @@ DESCRIPTION			:
 
     function insertlog()
 	{
-		$this->setField("TR_LOO_LOG_ID", $this->getNextId("TR_LOO_LOG_ID", "tr_loi_log"));
+		$this->setField("TR_LOI_LOG_ID", $this->getNextId("TR_LOI_LOG_ID", "tr_loi_log"));
 		$str = "
 		INSERT INTO tr_loi_log
 		(
-			TR_LOO_LOG_ID, TR_LOI_ID, TANGGAL, STATUS_SURAT, INFORMASI, CATATAN
+			TR_LOI_LOG_ID, TR_LOI_ID, TANGGAL, STATUS_SURAT, INFORMASI, CATATAN
 			, LAST_CREATE_USER, LAST_CREATE_DATE
 		)
 		VALUES 
 		(
-            ".$this->getField("TR_LOO_LOG_ID")."
+            ".$this->getField("TR_LOI_LOG_ID")."
             , ".$this->getField("TR_LOI_ID")."
             , CURRENT_TIMESTAMP
             , '".$this->getField("STATUS_SURAT")."'
@@ -256,23 +256,23 @@ DESCRIPTION			:
 
 		$this->query = $str;
 		// echo $str; exit;
-		$this->id = $this->getField("TR_LOO_LOG_ID");
+		$this->id = $this->getField("TR_LOI_LOG_ID");
 		return $this->execQuery($str);
 	}
 
 	function insertAttachment()
 	{
 		/*Auto-generate primary key(s) by next max value (integer) */
-		$this->setField("TR_LOO_ATTACHMENT_ID", $this->getNextId("TR_LOO_ATTACHMENT_ID", "tr_loi_attachment"));
+		$this->setField("TR_LOI_ATTACHMENT_ID", $this->getNextId("TR_LOI_ATTACHMENT_ID", "tr_loi_attachment"));
 
 		$str = "
 		INSERT INTO tr_loi_attachment
 		(
-			TR_LOO_ATTACHMENT_ID, TR_LOI_ID, ATTACHMENT, UKURAN, TIPE, NAMA, LAST_CREATE_USER, LAST_CREATE_DATE
+			TR_LOI_ATTACHMENT_ID, TR_LOI_ID, ATTACHMENT, UKURAN, TIPE, NAMA, LAST_CREATE_USER, LAST_CREATE_DATE
 		)
 		VALUES 
 		(
-			'".$this->getField("TR_LOO_ATTACHMENT_ID")."'
+			'".$this->getField("TR_LOI_ATTACHMENT_ID")."'
 			, '".$this->getField("TR_LOI_ID")."'
 			, '".$this->getField("ATTACHMENT")."'
 			, ".(int)$this->getField("UKURAN")."
@@ -386,7 +386,7 @@ DESCRIPTION			:
     * @param int from Awal record yang diambil 
     * @return boolean True jika sukses, false jika tidak 
     **/ 
-    function selectByParamsAttachment($paramsArray = array(), $limit = -1, $from = -1, $stat = '', $sOrder = " ORDER BY A.TR_LOO_ATTACHMENT_ID ASC ")
+    function selectByParamsAttachment($paramsArray = array(), $limit = -1, $from = -1, $stat = '', $sOrder = " ORDER BY A.TR_LOI_ATTACHMENT_ID ASC ")
 	{
 		$str = "
 		SELECT 
@@ -409,7 +409,7 @@ DESCRIPTION			:
 	{
 		$str = "
 		SELECT 
-			TR_LOO_LOG_ID, TR_LOI_ID, TO_CHAR(TANGGAL, 'YYYY-MM-DD HH24:MI:SS') TANGGAL, STATUS_SURAT, INFORMASI, CATATAN
+			TR_LOI_LOG_ID, TR_LOI_ID, TO_CHAR(TANGGAL, 'YYYY-MM-DD HH24:MI:SS') TANGGAL, STATUS_SURAT, INFORMASI, CATATAN
 			, LAST_CREATE_USER, LAST_CREATE_DATE
 		FROM tr_loi_log A
 		WHERE 1=1

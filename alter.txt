@@ -297,7 +297,7 @@ create or replace function p_tr_loo_loi()
 $body$
 declare
 vquery text;
-vid numeric;
+vnewid numeric;
 begin
 	
 	if coalesce(nullif(new.paksa_db , 'x'), 'x') != 'x' then
@@ -305,7 +305,7 @@ begin
 	end if;
 
 	if new.status_loi = 1 and old.status_loi is null then
-		select (coalesce((select max(tr_loi_id) from tr_loi),0) + 1) into vid;
+		select (coalesce((select max(tr_loi_id) from tr_loi),0) + 1) into vnewid;
 		insert into tr_loi
 		(
 			tr_loi_id, tr_loo_id, status_data
@@ -322,7 +322,7 @@ begin
 			, security_deposit, fitting_out
 		)
 		select
-			vid tr_loi_id, tr_loo_id, upper('draft') status_data
+			vnewid tr_loi_id, tr_loo_id, upper('draft') status_data
 			, no_urut, tahun, bulan, user_pembuat_id, user_pengirim_id, user_pengirim_nama
 			, user_pengirim_jabatan, satuan_kerja_pengirim_id
 			, produk_id, customer_id, lokasi_loo_id, pph
@@ -354,12 +354,30 @@ begin
 		(
 			select
 			row_number () over (order by tr_loo_paraf_id) tr_loi_paraf_id
-			, vid tr_loi_id, satuan_kerja_id_tujuan, user_id
+			, vnewid tr_loi_id, satuan_kerja_id_tujuan, user_id
 			, nama_user, nama_satker, no_urut, status_bantu, status_pejabat_ganti, kondisi_paraf
 			, 'paksa' paksa_db
 			from tr_loo_paraf
 			where tr_loo_id = new.tr_loo_id
 			order by tr_loo_paraf_id
+		) a
+		;
+
+		insert into tr_loi_detil
+		(
+			tr_loi_detil_id, tr_loi_id, vmode, vid, nilai, keterangan
+		)
+		select
+		tr_loi_detil_id + coalesce((select max(tr_loi_detil_id) from tr_loi_detil),0) tr_loi_detil_id
+		, tr_loi_id, vmode, vid, nilai, keterangan
+		from
+		(
+			select
+			row_number () over (order by tr_loo_detil_id) tr_loi_detil_id
+			, vnewid tr_loi_id, vmode, vid, nilai, keterangan
+			from tr_loo_detil
+			where tr_loo_id = new.tr_loo_id
+			order by tr_loo_detil_id
 		) a
 		;
 
@@ -787,6 +805,313 @@ create table tr_loi
 	, last_create_date timestamp without time zone
 	, status_loi integer
 	, constraint pk_tr_loi primary key (tr_loi_id)
+);
+
+create or replace function p_tr_loi()
+  returns trigger as
+$body$
+declare
+
+pejabatnip character varying;
+pejabatnama character varying;
+pejabatjabatan character varying;
+statuspejabatganti character varying;
+ispemaraf integer := 0;
+adaparaf integer := 0;
+persetujuaninfo character varying;
+jumlahstep numeric := 0;
+infonomorsurat character varying;
+userlihatstatus character varying;
+vtahun numeric := 0;
+vbulan numeric := 0;
+vnourut numeric := 0;
+vquery text;
+
+begin
+
+	if lower(new.paksa_db) = lower('paksa') then
+		new.paksa_db:= null;
+		return new;
+	end if;
+
+	if lower(new.paksa_db) = lower('revisi') then
+		update tr_loi_paraf set
+			status_paraf = null
+			, kode_paraf = null
+			, terbaca = null
+			, next_urut= 1
+		where tr_loi_id= new.tr_loi_id;
+
+		new.paksa_db:= null;
+		return new;
+	end if;
+
+	if lower(new.paksa_db) = lower('tnomor') then
+		new.paksa_db:= null;
+		infonomorsurat:= '/' || upper('ifpro') || '-' || upper('comm') || '/' || upper('loo') || '/' || (select upper(kode) from lokasi_loo where lokasi_loo_id = new.lokasi_loo_id) || '/' || (select ambil_bulan_romawi(to_char(now(), 'mm'))) || '/' || (select to_char(now(), 'yyyy'));
+		--raise notice '%', infonomorsurat;
+
+		new.info_nomor_surat:= infonomorsurat;
+		return new;
+	end if;
+
+	--untuk update posisi surat
+	if lower(new.paksa_db) = lower('updateparaf') then
+		select string_agg(a.user_id, ',') into userlihatstatus
+		from
+		(
+			select
+			row_number () over ( partition by a.tr_loi_id order by a.no_urut) urut
+			, a.tr_loi_id, a.user_id
+			from tr_loi_paraf a
+			where coalesce(nullif(a.kondisi_paraf, ''), null) is null
+			and coalesce(nullif(a.status_paraf, ''), null) is null
+			union all
+			select 1 urut, a.tr_loi_id, a.user_pengirim_id user_id
+			from tr_loi a
+			where status_data = upper('validasi')
+		) a
+		where urut = 1
+		and a.tr_loi_id = new.tr_loi_id
+		group by a.tr_loi_id;
+
+		new.user_posisi_paraf_id:= userlihatstatus;
+	end if;
+
+	if lower(new.paksa_db) = lower('updateparaf') then
+
+		select
+		info_loo_paraf(a.tr_loi_id) persetujuan_info, coalesce(a1.jumlah_step,0) + 1 jumlah_step
+		into persetujuaninfo, jumlahstep
+		from tr_loi a
+		left join
+		(
+			select
+			tr_loi_id, count(1) jumlah_step
+			from tr_loi_paraf
+			where status_paraf is null
+			group by tr_loi_id
+		) a1 on a.tr_loi_id = a1.tr_loi_id
+		where a.tr_loi_id = new.tr_loi_id;
+
+		new.persetujuan_info:= persetujuaninfo;
+		new.jumlah_step:= jumlahstep;
+
+		new.paksa_db:= null;
+		return new;
+	end if;
+
+	if lower(new.paksa_db) = lower('updateuserlihatstatus') then
+		select string_agg(a.user_id, ',') into userlihatstatus
+		from
+		(
+			select distinct a.user_id
+			from
+			(
+				select a.user_id
+				from tr_loi_paraf a
+				inner join tr_loi a1 on a.tr_loi_id = a1.tr_loi_id
+				where 1=1 and a.tr_loi_id = new.tr_loi_id
+				union all
+				select a.user_pembuat_id  user_id
+				from tr_loi a
+				where 1=1 and a.tr_loi_id = new.tr_loi_id
+				union all
+				select a.user_pengirim_id user_id
+				from tr_loi a
+				where 1=1 and a.tr_loi_id = new.tr_loi_id
+			) a
+		) a;
+
+		new.user_lihat_status:= userlihatstatus;
+		new.paksa_db:= null;
+		return new;
+	end if;
+
+	select
+	nip, nama_pegawai, jabatan, status_pejabat_ganti
+	into pejabatnip, pejabatnama, pejabatjabatan, statuspejabatganti
+	from satuan_kerja_fix where satuan_kerja_id = new.satuan_kerja_pengirim_id;
+
+	if tg_op = upper('update') then
+		if old.status_data = upper('validasi') and new.status_data = upper('posting') then
+			select count(1) into adaparaf
+			from tr_loi_paraf a
+			where 1=1 and tr_loi_id = new.tr_loi_id 
+			and coalesce(nullif(status_paraf, 'x'), 'x') = 'x';
+
+			if adaparaf = 0 then
+				if new.terbaca_validasi = 1 then
+					new.approval_qr_date:= current_timestamp;
+					new.ttd_kode:= upper('ttd') || pejabatnip || lpad(new.tr_loi_id::varchar, 6, '0') || to_char(current_timestamp, 'ddmmyyyyhh24miss');
+					new.terparaf:= 1;
+
+					select to_char(current_timestamp, 'yyyy')::integer, to_char(current_timestamp, 'mm')::integer
+					into vtahun, vbulan;
+
+					new.tahun:= vtahun;
+					new.bulan:= vbulan;
+
+					select coalesce(max(no_urut),0) + 1 into vnourut
+					from tr_loi where tahun = vtahun;
+
+					new.no_urut:= vnourut;
+
+					infonomorsurat:= vnourut || '/' || upper('ifpro') || '-' || upper('comm') || '/' || upper('loo') || '/' || (select upper(kode) from lokasi_loo where lokasi_loo_id = new.lokasi_loo_id) || '/' || (select ambil_bulan_romawi(generatezero(vbulan::text,1))) || '/' || vtahun::text;
+					--raise notice '%', infonomorsurat;
+					new.nomor_surat:= infonomorsurat;
+					new.user_posisi_paraf_id:= null;
+					new.status_loi:= 1;
+
+				else
+					new.approval_qr_date:= null;
+					new.terparaf:= null;
+					new.terbaca_validasi:= 0;
+					new.ttd_kode:= null;
+					new.status_data:= upper('validasi');
+				end if;
+
+				return new;
+			end if;
+		end if;
+	end if;
+
+	if tg_op = upper('insert') then
+		new.last_create_date:= now();
+	end if;
+
+	--kalau sudah ada nomor surat maka lewati
+	if tg_op = upper('update') then
+		if coalesce(nullif(new.nomor_surat , 'x'), 'x') != 'x' and old.status_loi is null and new.status_loi = 1 then
+			new.status_data:= upper('posting');
+			return new;
+		end if;
+	end if;
+
+	--kalau sudah ada nomor, maka tidak ada proses lagi, untuk update pakai paksa status
+	if coalesce(nullif(new.nomor_surat , 'x'), 'x') != 'x' then
+		return new;
+	end if;
+
+	new.user_pengirim_id:= pejabatnip;
+	new.user_pengirim_nama:= pejabatnama;
+	new.user_pengirim_jabatan:= pejabatjabatan;
+
+	if new.status_data = upper('draft') then
+		return new;
+	elsif new.status_data = upper('revisi') then
+		return new;
+	else
+		--kalau simpan data, tidak sesuai pejabat pengirim
+		if new.last_user = pejabatnip then
+			--raise notice '%', ispemaraf;
+		else
+			select count(1) into ispemaraf
+			from tr_loi_paraf a
+			where 1=1 and tr_loi_id = new.tr_loi_id 
+			and coalesce(nullif(status_paraf, 'x'), 'x') = 'x';
+
+			if ispemaraf > 0 then
+				new.status_data:= upper('paraf');
+			else
+				new.status_data:= upper('validasi');
+			end if;
+			
+			new.terparaf:= null;
+			if new.terbaca_validasi > 0 then
+				--raise notice '%', ispemaraf;
+			else
+				new.terbaca_validasi:= 0;
+			end if;
+
+		end if;
+	end if;
+
+	return new;
+
+end;
+$body$
+language plpgsql volatile cost 100;
+alter function p_tr_loi() owner to postgres;
+
+drop trigger if exists trg_tr_loi on tr_loi;
+create trigger trg_tr_loi
+before insert or update
+on tr_loi
+for each row
+execute procedure p_tr_loi();
+
+create or replace function tr_loi_p_hapus()
+  returns trigger as
+$body$
+declare
+    var_id integer;
+    varcheck integer;
+begin
+	if tg_op = upper('delete') then
+		delete from tr_loi_detil where tr_loi_id = old.tr_loi_id;
+		delete from tr_loi_paraf where tr_loi_id = old.tr_loi_id;
+		delete from tr_loi_log where tr_loi_id = old.tr_loi_id;
+		delete from tr_loi_attachment where tr_loi_id = old.tr_loi_id;
+		return old;
+	end if;
+   
+end;
+$body$
+language plpgsql volatile cost 100;
+alter function tr_loi_p_hapus() owner to postgres;
+
+drop trigger if exists tr_loi_t_hapus on tr_loi;
+create trigger tr_loi_t_hapus
+before delete
+on tr_loi
+for each row
+execute procedure tr_loi_p_hapus();
+
+drop table if exists tr_loi_detil;
+create table tr_loi_detil
+(
+	tr_loi_detil_id numeric not null
+	, tr_loi_id numeric not null
+	, vmode character varying
+	, vid numeric
+	, nilai numeric
+	, keterangan character varying
+	, constraint pk_tr_loi_detil primary key (tr_loi_detil_id)
+);
+
+drop table if exists tr_loi_log;
+create table tr_loi_log
+(
+	tr_loi_log_id numeric not null
+	, tr_loi_id numeric
+	, tanggal timestamp without time zone
+	, status_surat character varying
+	, informasi character varying
+	, catatan text
+	, last_create_user character varying
+	, last_create_date date
+	, last_update_user character varying
+	, last_update_date date
+	, constraint pk_tr_loi_log primary key (tr_loi_log_id)
+);
+
+drop table if exists tr_loi_attachment;
+create table tr_loi_attachment
+(
+	tr_loi_attachment_id numeric not null
+	, tr_loi_id numeric
+	, attachment text
+	, catatan character varying
+	, ukuran numeric
+	, tipe character varying(50)
+	, nama character varying
+	, no_urut numeric
+	, last_create_user character varying
+	, last_create_date timestamp without time zone
+	, last_update_user character varying
+	, last_update_date timestamp without time zone
+	, constraint pk_tr_loi_attachment primary key (tr_loi_attachment_id)
 );
 
 drop table if exists tr_loi_paraf;

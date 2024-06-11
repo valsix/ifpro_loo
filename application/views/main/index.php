@@ -898,7 +898,6 @@ if($this->USER_GROUP == "LOOLOI" || in_array("LOOLOI", explode(",", $this->USER_
                             </div>
                             <div>
                                 <span><i class="fa fa-pencil-square-o fa-lg" style="color: #29b7ea"></i> LOI</span>
-                                <a class="menu-utama" href="main/index/loi_add"><i class="fa fa-pencil"></i>Permohonan</a>
                                 <a class="menu-utama <?=$vcurrent["loi_perlu_persetujuan"]?>" href="main/index/loi_perlu_persetujuan"><i class="fa fa-pencil"></i>Perlu Persetujuan</a>
                                 <a class="menu-utama <?=$vcurrent["loi_status"]?>" href="main/index/loi_status"><i class="fa fa-pencil"></i>Status</a>
                                 <a class="menu-utama <?=$vcurrent["loi_draft"]?>" href="main/index/loi_draft"><i class="fa fa-pencil"></i>Draft</a>
