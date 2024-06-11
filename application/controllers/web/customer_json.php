@@ -36,7 +36,7 @@ class customer_json extends CI_Controller
 	function json()
 	{
 		$this->load->model("Customer");
-		$customer = new Customer();
+		$set = new Customer();
 
 		$reqKategori = $this->input->get("reqKategori");
 		// echo $reqKategori;exit;
@@ -161,15 +161,15 @@ class customer_json extends CI_Controller
 
 
 		$statement = " AND (UPPER(A.PIC) LIKE '%" . strtoupper($_GET['sSearch']) . "%')";
-		$allRecord = $customer->getCountByParams(array(), $statement_privacy . $statement);
+		$allRecord = $set->getCountByParams(array(), $statement_privacy . $statement);
 		// echo $allRecord;exit;
 		if ($_GET['sSearch'] == "")
 			$allRecordFilter = $allRecord;
 		else
-			$allRecordFilter =  $customer->getCountByParams(array(), $statement_privacy . $statement);
+			$allRecordFilter =  $set->getCountByParams(array(), $statement_privacy . $statement);
 
-		$customer->selectByParams(array(), $dsplyRange, $dsplyStart, $statement_privacy . $statement, $sOrder);
-		// echo $customer ->query; exit;
+		$set->selectByParams(array(), $dsplyRange, $dsplyStart, $statement_privacy . $statement, $sOrder);
+		// echo $set ->query; exit;
 		// echo "IKI ".$_GET['iDisplayStart'];
 
 		/*
@@ -182,15 +182,15 @@ class customer_json extends CI_Controller
 			"aaData" => array()
 		);
 
-		while ($customer->nextRow()) {
+		while ($set->nextRow()) {
 			$row = array();
 			for ($i = 0; $i < count($aColumns); $i++) {
 				if ($aColumns[$i] == "KETERANGAN")
-					$row[] = truncate($customer->getField($aColumns[$i]), 2);
+					$row[] = truncate($set->getField($aColumns[$i]), 2);
 				elseif ($aColumns[$i] == "ATTACHMENT")
-					$row[] = "<a href='uploads/'" . $customer->getField($aColumns[$i]) . " target='_blank'>" . $customer->getField($aColumns[$i]) . "</a>";
+					$row[] = "<a href='uploads/'" . $set->getField($aColumns[$i]) . " target='_blank'>" . $set->getField($aColumns[$i]) . "</a>";
 				else
-					$row[] = $customer->getField($aColumns[$i]);
+					$row[] = $set->getField($aColumns[$i]);
 			}
 			$output['aaData'][] = $row;
 		}
@@ -200,12 +200,10 @@ class customer_json extends CI_Controller
 	function add()
 	{
 		$this->load->model("Customer");
-		// $this->load->model("NaskahTemplate");
-		$customer = new Customer();
-		// $naskah_template = new NaskahTemplate();
+		$set = new Customer();
 
-		$reqMode 					= $this->input->post("reqMode");
-		$reqId 						= $this->input->post("reqId");
+		$reqMode= $this->input->post("reqMode");
+		$reqId= $this->input->post("reqId");
 
 		$reqPic= $this->input->post("reqPic");
 		$reqJenisPerusahaanId= $this->input->post("reqJenisPerusahaanId");
@@ -214,49 +212,30 @@ class customer_json extends CI_Controller
 		$reqTempat= $this->input->post("reqTempat");
 		$reqNamaPemilik= $this->input->post("reqNamaPemilik");
 		$reqNamaBrand= $this->input->post("reqNamaBrand");
+		$reqNpwp= $this->input->post("reqNpwp");
+		$reqNpwpAlamat= $this->input->post("reqNpwpAlamat");
+		$reqNomorNior= $this->input->post("reqNomorNior");
+		$reqAlamatDomisili= $this->input->post("reqAlamatDomisili");
 
-
-		// $naskah_template->selectByParams(array("A.LINK_URL" => $reqNaskahTemplate));
-		// $naskah_template->firstRow();
-
-		// $reqNaskahTemplateId = $naskah_template->getField("NASKAH_TEMPLATE_ID");;
-
-		// $this->load->library("FileHandler");
-		// $file = new FileHandler();
-		// $FILE_DIR = "uploads/";
-		// $reqLinkFile 			= $_FILES["reqLinkFile"];
-		// $reqLinkFileTempSize	=  $this->input->post("reqLinkFileTempSize");
-		// $reqLinkFileTempTipe	=  $this->input->post("reqLinkFileTempTipe");
-		// $reqLinkFileTemp		=  $this->input->post("reqLinkFileTemp");
-
-		$customer->setField("CUSTOMER_ID", $reqId);
-		$customer->setField("PIC", $reqPic);
-		$customer->setField("JENIS_PERUSAHAAN_ID", $reqJenisPerusahaanId);
-		$customer->setField("TELP", $reqTelp);
-		$customer->setField("EMAIL", $reqEmail);
-		$customer->setField("TEMPAT", $reqTempat);
-		$customer->setField("NAMA_PEMILIK", $reqNamaPemilik);
-		$customer->setField("NAMA_BRAND", $reqNamaBrand);
-
-		// $reqJenis = "JENIS-NASKAH-" . generateZero($reqId, 4);
-		// for ($i = 0; $i < count($reqLinkFile); $i++) {
-		// 	$renameFile = $reqJenis . date("Ymdhis") . rand() . "." . getExtension($reqLinkFile['name'][$i]);
-
-		// 	if ($file->uploadToDirArray('reqLinkFile', $FILE_DIR, $renameFile, $i)) {
-		// 		$insertLinkSize = $file->uploadedSize;
-		// 		$insertLinkTipe =  $file->uploadedExtension;
-		// 		$insertLinkFile =  $renameFile;
-		// 	}
-		// }
-
-		// $customer->setField("ATTACHMENT", $insertLinkFile);
+		$set->setField("CUSTOMER_ID", $reqId);
+		$set->setField("PIC", $reqPic);
+		$set->setField("JENIS_PERUSAHAAN_ID", $reqJenisPerusahaanId);
+		$set->setField("TELP", $reqTelp);
+		$set->setField("EMAIL", $reqEmail);
+		$set->setField("TEMPAT", $reqTempat);
+		$set->setField("NAMA_PEMILIK", $reqNamaPemilik);
+		$set->setField("NAMA_BRAND", $reqNamaBrand);
+		$set->setField("NPWP", $reqNpwp);
+		$set->setField("NPWP_ALAMAT", $reqNpwpAlamat);
+		$set->setField("NOMOR_NIOR", $reqNomorNior);
+		$set->setField("ALAMAT_DOMISILI", $reqAlamatDomisili);
 
 		if ($reqMode == "insert") {
-			$customer->setField("LAST_CREATE_USER", $this->USERNAME);
-			$customer->insert();
+			$set->setField("LAST_CREATE_USER", $this->USERNAME);
+			$set->insert();
 		} else {
-			$customer->setField("LAST_UPDATE_USER", $this->USERNAME);
-			$customer->update();
+			$set->setField("LAST_UPDATE_USER", $this->USERNAME);
+			$set->update();
 		}
 
 		echo "Data berhasil disimpan.";
@@ -267,7 +246,7 @@ class customer_json extends CI_Controller
 	function add_template()
 	{
 		$this->load->model("Customer");
-		$customer = new Customer();
+		$set = new Customer();
 
 		$reqMode 					= $this->input->post("reqMode");
 		$reqId 						= $this->input->post("reqId");
@@ -282,8 +261,8 @@ class customer_json extends CI_Controller
 		$reqLinkFileTemp		=  $this->input->post("reqLinkFileTemp");
 		$reqCustomerId		=  $this->input->post("reqCustomerId");
 
-		$customer->setField("SATUAN_KERJA_ID", $reqId);
-		$customer->deleteTemplate();
+		$set->setField("SATUAN_KERJA_ID", $reqId);
+		$set->deleteTemplate();
 
 		$reqJenis = "TEMPLATE" . generateZero($reqId, 4);
 		for ($i = 0; $i < count($reqLinkFile); $i++) {
@@ -299,11 +278,11 @@ class customer_json extends CI_Controller
 
 			if ($reqCustomerId[$i] == "") {
 			} else {
-				$customer->setField("SATUAN_KERJA_ID", $reqId);
-				$customer->setField("CUSTOMER_ID", $reqCustomerId[$i]);
-				$customer->setField("ATTACHMENT", $insertLinkFile);
-				$customer->setField("LAST_CREATE_USER", $this->USERNAME);
-				$customer->insertTemplate();
+				$set->setField("SATUAN_KERJA_ID", $reqId);
+				$set->setField("CUSTOMER_ID", $reqCustomerId[$i]);
+				$set->setField("ATTACHMENT", $insertLinkFile);
+				$set->setField("LAST_CREATE_USER", $this->USERNAME);
+				$set->insertTemplate();
 			}
 		}
 
@@ -314,11 +293,11 @@ class customer_json extends CI_Controller
 	{
 		$reqId	= $this->input->get('reqId');
 		$this->load->model("Customer");
-		$customer = new Customer();
+		$set = new Customer();
 
 
-		$customer->setField("CUSTOMER_ID", $reqId);
-		if ($customer->delete())
+		$set->setField("CUSTOMER_ID", $reqId);
+		if ($set->delete())
 			$arrJson["PESAN"] = "Data berhasil dihapus.";
 		else
 			$arrJson["PESAN"] = "Data gagal dihapus.";
@@ -329,15 +308,15 @@ class customer_json extends CI_Controller
 	function combo()
 	{
 		$this->load->model("Customer");
-		$customer = new Customer();
+		$set = new Customer();
 
-		$customer->selectByParams(array("NOT CUSTOMER_ID" => "0"));
+		$set->selectByParams(array("NOT CUSTOMER_ID" => "0"));
 		$i = 0;
-		while ($customer->nextRow()) {
-			$arr_json[$i]['id']		= $customer->getField("CUSTOMER_ID");
-			$arr_json[$i]['text']	= $customer->getField("NAMA");
-			$arr_json[$i]['JENIS_TTD']	= $customer->getField("JENIS_TTD");
-			$arr_json[$i]['PENERBIT_NOMOR']	= $customer->getField("PENERBIT_NOMOR");
+		while ($set->nextRow()) {
+			$arr_json[$i]['id']		= $set->getField("CUSTOMER_ID");
+			$arr_json[$i]['text']	= $set->getField("NAMA");
+			$arr_json[$i]['JENIS_TTD']	= $set->getField("JENIS_TTD");
+			$arr_json[$i]['PENERBIT_NOMOR']	= $set->getField("PENERBIT_NOMOR");
 			$i++;
 		}
 
@@ -348,7 +327,7 @@ class customer_json extends CI_Controller
 	function combo_statement()
 	{
 		$this->load->model("Customer");
-		$customer = new Customer();
+		$set = new Customer();
 
 		$reqId = $this->input->get("reqId");
 		$reqKelompokJabatan = $this->input->get("reqKelompokJabatan");
@@ -357,19 +336,19 @@ class customer_json extends CI_Controller
 		$statement .= " AND TIPE_NASKAH LIKE '%" . $reqId . "%' ";
 
 		$arr_json = array();
-		$customer->selectByParams(array("NOT CUSTOMER_ID" => "0"), -1, -1, $statement);
-		// echo $customer->query;exit;
+		$set->selectByParams(array("NOT CUSTOMER_ID" => "0"), -1, -1, $statement);
+		// echo $set->query;exit;
 		$i = 0;
-		while ($customer->nextRow()) {
-			$arr_json[$i]['id']		= $customer->getField("CUSTOMER_ID");
-			$arr_json[$i]['text']	= $customer->getField("NAMA");
-			$arr_json[$i]['JENIS_TTD']	= $customer->getField("JENIS_TTD");
-			$arr_json[$i]['PENERBIT_NOMOR']	= $customer->getField("PENERBIT_NOMOR");
+		while ($set->nextRow()) {
+			$arr_json[$i]['id']		= $set->getField("CUSTOMER_ID");
+			$arr_json[$i]['text']	= $set->getField("NAMA");
+			$arr_json[$i]['JENIS_TTD']	= $set->getField("JENIS_TTD");
+			$arr_json[$i]['PENERBIT_NOMOR']	= $set->getField("PENERBIT_NOMOR");
 
 			if ($this->CABANG_ID == "01") {
-				$arr_json[$i]['KD_LEVEL']	= $customer->getField("KD_LEVEL");
+				$arr_json[$i]['KD_LEVEL']	= $set->getField("KD_LEVEL");
 			} else {
-				$arr_json[$i]['KD_LEVEL']	= $customer->getField("KD_LEVEL_CABANG");
+				$arr_json[$i]['KD_LEVEL']	= $set->getField("KD_LEVEL_CABANG");
 			}
 
 			$i++;
@@ -384,7 +363,7 @@ class customer_json extends CI_Controller
 	function combo_request()
 	{
 		$this->load->model("Customer");
-		$customer = new Customer();
+		$set = new Customer();
 
 		$reqId = $this->input->get("reqId");
 
@@ -393,16 +372,16 @@ class customer_json extends CI_Controller
 		$statement .= " AND NOT COALESCE(NULLIF(KODE_SURAT, ''), 'X') = 'X' ";
 
 		$arr_json = array();
-		$customer->selectByParams(array("NOT CUSTOMER_ID" => "0"), -1, -1, $statement);
+		$set->selectByParams(array("NOT CUSTOMER_ID" => "0"), -1, -1, $statement);
 		$i = 0;
-		while ($customer->nextRow()) {
-			$arr_json[$i]['id']		= $customer->getField("CUSTOMER_ID");
-			$arr_json[$i]['text']	= $customer->getField("NAMA");
-			$arr_json[$i]['PENERBIT_NOMOR']	= $customer->getField("PENERBIT_NOMOR");
+		while ($set->nextRow()) {
+			$arr_json[$i]['id']		= $set->getField("CUSTOMER_ID");
+			$arr_json[$i]['text']	= $set->getField("NAMA");
+			$arr_json[$i]['PENERBIT_NOMOR']	= $set->getField("PENERBIT_NOMOR");
 			if ($this->CABANG_ID == "01")
-				$arr_json[$i]['KD_LEVEL']	= $customer->getField("KD_LEVEL");
+				$arr_json[$i]['KD_LEVEL']	= $set->getField("KD_LEVEL");
 			else
-				$arr_json[$i]['KD_LEVEL']	= $customer->getField("KD_LEVEL_CABANG");
+				$arr_json[$i]['KD_LEVEL']	= $set->getField("KD_LEVEL_CABANG");
 			$i++;
 		}
 
@@ -413,7 +392,7 @@ class customer_json extends CI_Controller
 	function combo_level()
 	{
 		$this->load->model("Customer");
-		$customer = new Customer();
+		$set = new Customer();
 
 		$reqId = $this->input->get("reqId");
 
@@ -421,16 +400,16 @@ class customer_json extends CI_Controller
 		$statement = " AND TIPE_NASKAH LIKE '%" . $reqId . "%' ";
 
 
-		$customer->selectByParams(array("NOT CUSTOMER_ID" => "0"), -1, -1, $statement);
+		$set->selectByParams(array("NOT CUSTOMER_ID" => "0"), -1, -1, $statement);
 		$i = 0;
 		$arr_json = array();
-		while ($customer->nextRow()) {
-			$arr_json[$i]['id']		= $customer->getField("CUSTOMER_ID");
-			$arr_json[$i]['text']	= $customer->getField("NAMA");
+		while ($set->nextRow()) {
+			$arr_json[$i]['id']		= $set->getField("CUSTOMER_ID");
+			$arr_json[$i]['text']	= $set->getField("NAMA");
 			if ($this->CABANG_ID == "01")
-				$arr_json[$i]['KD_LEVEL']	= $customer->getField("KD_LEVEL");
+				$arr_json[$i]['KD_LEVEL']	= $set->getField("KD_LEVEL");
 			else
-				$arr_json[$i]['KD_LEVEL']	= $customer->getField("KD_LEVEL_CABANG");
+				$arr_json[$i]['KD_LEVEL']	= $set->getField("KD_LEVEL_CABANG");
 
 			$i++;
 		}

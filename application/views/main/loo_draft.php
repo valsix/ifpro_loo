@@ -11,7 +11,7 @@ $arrtabledata= array(
     , array("label"=>"Customer", "field"=> "NAMA_PEMILIK", "display"=>"",  "width"=>"20", "colspan"=>"", "rowspan"=>"")
     , array("label"=>"Brand", "field"=> "NAMA_BRAND", "display"=>"",  "width"=>"", "colspan"=>"", "rowspan"=>"")
     , array("label"=>"Lokasi", "field"=> "INFO_DETIL_NAMA", "display"=>"",  "width"=>"25", "colspan"=>"", "rowspan"=>"")
-    , array("label"=>"TANGGAL", "field"=> "TANGGAL_DISPOSISI", "display"=>"",  "width"=>"25", "colspan"=>"", "rowspan"=>"")
+    , array("label"=>"TANGGAL", "field"=> "INFO_LAST_CREATE_DATE", "display"=>"",  "width"=>"25", "colspan"=>"", "rowspan"=>"")
 
     , array("label"=>"fieldid", "field"=> "TR_LOO_ID", "display"=>"1",  "width"=>"", "colspan"=>"", "rowspan"=>"")
 );

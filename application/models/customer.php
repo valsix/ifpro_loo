@@ -28,25 +28,32 @@ DESCRIPTION			:
 	function insert()
 	{
 		/*Auto-generate primary key(s) by next max value (integer) */
-		// $this->setField("CUSTOMER_ID", $this->getNextId("CUSTOMER_ID","CUSTOMER")); 
+		$this->setField("CUSTOMER_ID", $this->getNextId("CUSTOMER_ID","CUSTOMER")); 
 		$str = "
-				INSERT INTO CUSTOMER (
-				   PIC, TELP, EMAIL, TEMPAT, NAMA_PEMILIK, NAMA_BRAND, JENIS_PERUSAHAAN_ID) 
-				VALUES (
-					'".$this->getField("PIC")."', 
-					'".$this->getField("TELP")."', 
-					'".$this->getField("EMAIL")."', 
-					'".$this->getField("TEMPAT")."', 
-					'".$this->getField("NAMA_PEMILIK")."', 
-					'".$this->getField("NAMA_BRAND")."', 
-					'".$this->getField("JENIS_PERUSAHAAN_ID")."'
-				)"; 
+		INSERT INTO CUSTOMER 
+		(
+			PIC, TELP, EMAIL, TEMPAT, NAMA_PEMILIK, NAMA_BRAND, JENIS_PERUSAHAAN_ID
+			, NPWP, NPWP_ALAMAT, NOMOR_NIOR, ALAMAT_DOMISILI
+		) 
+		VALUES
+		(
+			'".$this->getField("PIC")."'
+			, '".$this->getField("TELP")."'
+			, '".$this->getField("EMAIL")."'
+			, '".$this->getField("TEMPAT")."'
+			, '".$this->getField("NAMA_PEMILIK")."'
+			, '".$this->getField("NAMA_BRAND")."'
+			, '".$this->getField("JENIS_PERUSAHAAN_ID")."'
+			, '".$this->getField("NPWP")."'
+			, '".$this->getField("NPWP_ALAMAT")."'
+			, '".$this->getField("NOMOR_NIOR")."'
+			, '".$this->getField("ALAMAT_DOMISILI")."'
+		)";
 		$this->id = $this->getField("CUSTOMER_ID");
 		$this->query = $str;
 
 		return $this->execQuery($str);
     }
-	
 	
 	function insertTemplate()
 	{
@@ -59,21 +66,24 @@ DESCRIPTION			:
 		return $this->execQuery($str);
     }
 
-  function update()
+  	function update()
 	{
-		/*Auto-generate primary key(s) by next max value (integer) */
 		$str = "
-			   UPDATE CUSTOMER
-				SET   
-					   PIC      	= '".$this->getField("PIC")."',
-					   TELP      	= '".$this->getField("TELP")."',
-					   EMAIL		= '".$this->getField("EMAIL")."',
-					   TEMPAT			= '".$this->getField("TEMPAT")."',
-					   NAMA_PEMILIK		= '".$this->getField("NAMA_PEMILIK")."',
-					   NAMA_BRAND		= '".$this->getField("NAMA_BRAND")."',
-					   JENIS_PERUSAHAAN_ID	= '".$this->getField("JENIS_PERUSAHAAN_ID")."'
-				WHERE  CUSTOMER_ID    	= '".$this->getField("CUSTOMER_ID")."'
-				"; 
+		UPDATE CUSTOMER
+		SET   
+			PIC= '".$this->getField("PIC")."'
+			, TELP= '".$this->getField("TELP")."'
+			, EMAIL= '".$this->getField("EMAIL")."'
+			, TEMPAT= '".$this->getField("TEMPAT")."'
+			, NAMA_PEMILIK= '".$this->getField("NAMA_PEMILIK")."'
+			, NAMA_BRAND= '".$this->getField("NAMA_BRAND")."'
+			, JENIS_PERUSAHAAN_ID	= '".$this->getField("JENIS_PERUSAHAAN_ID")."'
+			, NPWP= '".$this->getField("NPWP")."'
+			, NPWP_ALAMAT= '".$this->getField("NPWP_ALAMAT")."'
+			, NOMOR_NIOR= '".$this->getField("NOMOR_NIOR")."'
+			, ALAMAT_DOMISILI= '".$this->getField("ALAMAT_DOMISILI")."'
+		WHERE CUSTOMER_ID= '".$this->getField("CUSTOMER_ID")."'
+		";
 		// echo $str;exit;
 		$this->query = $str;
 		return $this->execQuery($str);
@@ -119,13 +129,15 @@ DESCRIPTION			:
     **/ 
     function selectByParams($paramsArray=array(),$limit=-1,$from=-1,$statement="", $order=" ORDER BY A.CUSTOMER_ID ASC")
 	{
+		// A.CUSTOMER_ID, A.PIC, A.TELP, A.EMAIL, A.TEMPAT, A.NAMA_PEMILIK, A.NAMA_BRAND, A.JENIS_PERUSAHAAN_ID
 		$str = "
-				SELECT 
-					A.CUSTOMER_ID, A.PIC, A.TELP, A.EMAIL, A.TEMPAT, A.NAMA_PEMILIK, A.NAMA_BRAND, A.JENIS_PERUSAHAAN_ID, B.NAMA NAMA_JENIS_PERUSAHAAN
-				FROM CUSTOMER A
-				LEFT JOIN JENIS_PERUSAHAAN B ON B.JENIS_PERUSAHAAN_ID = A.JENIS_PERUSAHAAN_ID
-				WHERE 1 = 1
-			"; 
+		SELECT 
+			B.NAMA NAMA_JENIS_PERUSAHAAN
+			, A.*
+		FROM CUSTOMER A
+		LEFT JOIN JENIS_PERUSAHAAN B ON B.JENIS_PERUSAHAAN_ID = A.JENIS_PERUSAHAAN_ID
+		WHERE 1 = 1
+		"; 
 		
 		while(list($key,$val) = each($paramsArray))
 		{

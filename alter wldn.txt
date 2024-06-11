@@ -32,3 +32,5 @@ ALTER TABLE lokasi_loo ADD COLUMN NAMA_BANK CHARACTER VARYING;
 ALTER TABLE lokasi_loo ADD COLUMN REKENING_BANK CHARACTER VARYING;
 ALTER TABLE lokasi_loo ADD COLUMN ATAS_NAMA_BANK CHARACTER VARYING;
 ALTER TABLE lokasi_loo ADD COLUMN NAMA_CABANG CHARACTER VARYING;
+
+alter table customer add column npwp character varying, add column npwp_alamat character varying, add column nomor_nior character varying, add column alamat_domisili character varying;

@@ -6,51 +6,15 @@ $this->load->model("SuratMasuk");
 
 $reqFilename = $this->uri->segment(3, "");
 
-$reqStatusSurat= $this->input->get("reqStatusSurat");
+$arrtabledata= array(
+    array("label"=>"Nomor", "field"=> "INFO_NOMOR_SURAT", "display"=>"",  "width"=>"20", "colspan"=>"", "rowspan"=>"")
+    , array("label"=>"Customer", "field"=> "NAMA_PEMILIK", "display"=>"",  "width"=>"20", "colspan"=>"", "rowspan"=>"")
+    , array("label"=>"Brand", "field"=> "NAMA_BRAND", "display"=>"",  "width"=>"", "colspan"=>"", "rowspan"=>"")
+    , array("label"=>"Lokasi", "field"=> "INFO_DETIL_NAMA", "display"=>"",  "width"=>"25", "colspan"=>"", "rowspan"=>"")
+    , array("label"=>"TANGGAL", "field"=> "INFO_LAST_CREATE_DATE", "display"=>"",  "width"=>"25", "colspan"=>"", "rowspan"=>"")
 
-$set= new SuratMasuk();
-
-$statement= " 
-AND CASE WHEN A.TERPARAF = 1 AND A.JENIS_NASKAH_ID IN (8,17,18,19,20) THEN SM_INFO IN ('AKAN_DISETUJUI') ELSE SM_INFO IN ('AKAN_DISETUJUI', 'PEMBUAT') END
-AND CASE WHEN A.TERPARAF = 1 AND A.JENIS_NASKAH_ID IN (8,17,18,19,20) THEN A.STATUS_SURAT IN ('PARAF', 'VALIDASI', 'PEMBUAT') ELSE A.STATUS_SURAT IN ('PARAF', 'VALIDASI') END
-";
-// $jumlahparaf= $set->getCountByParamsStatus(array(), $this->ID, $statement);
-$infostatus= "1";
-$satuankerjaganti= $this->SATUAN_KERJA_ID_ASAL;
-$jumlahparaf= $set->getCountByParamsStatusTujuan(array(), $this->ID, $infostatus, $satuankerjaganti, $statement);
-// echo $set->query;exit;
-
-$statement= " AND A.STATUS_SURAT = 'REVISI'";
-$jumlahrevisi= $set->getCountByParamsStatus(array(), $this->ID, $statement);
-
-if(empty($reqStatusSurat))
-	$reqStatusSurat= "PARAF";
-
-
-if($reqStatusSurat == "PARAF")
-{
-	$arrtabledata= array(
-		array("label"=>"TANGGAL", "field"=> "INFO_STATUS_TANGGAL", "display"=>"",  "width"=>"25", "colspan"=>"", "rowspan"=>"")
-		, array("label"=>"NO. SURAT", "field"=> "INFO_NOMOR_SURAT", "display"=>"",  "width"=>"20", "colspan"=>"", "rowspan"=>"")
-		, array("label"=>"PERIHAL", "field"=> "PERIHAL", "display"=>"",  "width"=>"25", "colspan"=>"", "rowspan"=>"")
-		, array("label"=>"STATUS", "field"=> "INFO_STATUS", "display"=>"",  "width"=>"", "colspan"=>"", "rowspan"=>"")
-		, array("label"=>"MENUNGGU PERSETUJUAN", "field"=> "PERSETUJUAN_INFO", "display"=>"",  "width"=>"", "colspan"=>"", "rowspan"=>"")
-		, array("label"=>"SISA STEP", "field"=> "JUMLAH_STEP", "display"=>"",  "width"=>"", "colspan"=>"", "rowspan"=>"")
-
-		, array("label"=>"fieldid", "field"=> "SURAT_MASUK_ID", "display"=>"1",  "width"=>"", "colspan"=>"", "rowspan"=>"")
-	);
-}
-else
-{
-	$arrtabledata= array(
-		array("label"=>"TANGGAL", "field"=> "INFO_STATUS_TANGGAL", "display"=>"",  "width"=>"25", "colspan"=>"", "rowspan"=>"")
-		, array("label"=>"NO. SURAT", "field"=> "INFO_NOMOR_SURAT", "display"=>"",  "width"=>"20", "colspan"=>"", "rowspan"=>"")
-		, array("label"=>"PERIHAL", "field"=> "PERIHAL", "display"=>"",  "width"=>"25", "colspan"=>"", "rowspan"=>"")
-		, array("label"=>"STATUS", "field"=> "INFO_STATUS", "display"=>"",  "width"=>"", "colspan"=>"", "rowspan"=>"")
-
-		, array("label"=>"fieldid", "field"=> "SURAT_MASUK_ID", "display"=>"1",  "width"=>"", "colspan"=>"", "rowspan"=>"")
-	);
-}
+    , array("label"=>"fieldid", "field"=> "TR_LOO_ID", "display"=>"1",  "width"=>"", "colspan"=>"", "rowspan"=>"")
+);
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
@@ -97,23 +61,9 @@ else
 		<div id="bluemenu" class="bluetabs">
         	<ul>
         		<a href="#" id="btnCari" style="display: none;" title="Cari"></a>
-        		<?
-                	if(in_array("DIVISI", explode(",", $this->USER_GROUP))) {
-                ?>
                 <li>
-                	<select id="reqPilihan" style="height: 30px;">
-                		<option value="">Pribadi</option>
-                		<option value="divisi">Divisi</option>
-                	</select>
-                </li>
-                <?
-            	}
-                ?>
-        		<li class="pull-right">
-                	<select id="reqStatusSurat">
-                        <option value="PARAF" <? if($reqStatusSurat == "PARAF") echo "selected";?>>In Progress (<?=$jumlahparaf?>)</option>
-                        <option value="REVISI" <? if($reqStatusSurat == "REVISI") echo "selected";?>>Dikembalikan (<?=$jumlahrevisi?>)</option>
-                    </select>
+                    <a id="btnEdit" title="Ubah"><img src="images/icon-edit.png" /> Ubah</a>
+                	<!-- <a id="btnCetak"><i class="fa fa-file-excel-o"></i> Export Excel</a> -->
                 </li>
 			</ul>
 		</div>
@@ -167,30 +117,31 @@ else
 
 	infoscrolly= 50;
 
-	$("#reqStatusSurat").change(function() {
-		setCariInfo();
-	});
-
-	$("#reqPilihan").change(function() {
-		var reqPilihan= reqPencarian= reqStatusSurat= "";
-		reqStatusSurat= $("#reqStatusSurat").val();
+	$('#btnCetak').on('click', function () {
+		var reqTahun= reqPencarian= "";
+		reqTahun= $("#reqTahun").val();
 		reqPencarian= $('#example_filter input').val();
+		reqPilihan= $("#reqPilihan").val();
 		reqPilihan= $("#reqPilihan").val();
 		if(typeof reqPilihan == "undefined")
         {
             reqPilihan= "";
         }
 
-        jsonurl= "json/surat_masuk_json/jsonstatus?reqPencarian="+reqPencarian+"&reqStatusSurat="+reqStatusSurat+"&reqPilihan="+reqPilihan;
-        datanewtable.DataTable().ajax.url(jsonurl).load();
+		newWindow = window.open("app/loadUrl/main/kotak_masuk_export/?reqJenisNaskahId=<?=$reqJenisNaskahId?>&reqTahun="+reqTahun+"&reqPencarian="+reqPencarian+"&reqPilihan="+reqPilihan, 'Cetak');
+		newWindow.focus();
+	});
+
+	$("#reqTahun,#reqStatusSurat,#reqPilihan").change(function() {
+		setCariInfo();
 	});
 
 	$('#btnCari').on('click', function () {
 		var reqTahun= reqPencarian= reqStatusSurat= "";
-		reqStatusSurat= $("#reqStatusSurat").val();
 		reqPencarian= $('#example_filter input').val();
 
-		document.location.href= 'main/index/<?=$reqFilename?>?reqStatusSurat='+reqStatusSurat;
+        jsonurl= "json/tr_loo_json/jsonloidraft?reqPencarian="+reqPencarian;
+        datanewtable.DataTable().ajax.url(jsonurl).load();
 	});
 
 	$("#triggercari").on("click", function () {
@@ -206,7 +157,7 @@ else
     });
 
 	jQuery(document).ready(function() {
-		var jsonurl= "json/surat_masuk_json/jsonstatus?reqStatusSurat=<?=$reqStatusSurat?>";
+		var jsonurl= "json/tr_loo_json/jsonloidraft";
 	    ajaxserverselectsingle.init(infotableid, jsonurl, arrdata);
 	});
 
@@ -240,12 +191,20 @@ else
                 // console.log(Object.keys(dataselected).length);
 
                 fieldinfoid= arrdata[indexfieldid]["field"];
+                fieldinforowid= arrdata[parseFloat(indexfieldid) - 1]["field"];
                 valinfoid= dataselected[fieldinfoid];
+                valinforowid= dataselected[fieldinforowid];
                 // console.log(valinfoid+"-"+valinforowid);
 
                 if(valinfoid !== "")
                 {
-					window.location = "main/index/status_detil/?reqMode=<?=$reqFilename?>&reqId="+valinfoid;
+                	reqPilihan= $("#reqPilihan").val();
+					if(typeof reqPilihan == "undefined")
+			        {
+			            reqPilihan= "";
+			        }
+
+					window.location = "main/index/loi_add/?reqMode=<?=$reqFilename?>&reqId="+valinfoid;
                 }
             }
         } );

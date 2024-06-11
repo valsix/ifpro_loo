@@ -14,24 +14,24 @@ DESCRIPTION			:
   ***/
   include_once("Entity.php");
 
-  class TrLoo extends Entity{ 
+  class TrLoi extends Entity{ 
 
 	var $query;
     /**
     * Class constructor.
     **/
-    function TrLoo()
+    function TrLoi()
 	{
       $this->Entity(); 
     }
 	
 	function insert()
 	{
-		$this->setField("TR_LOO_ID", $this->getNextId("TR_LOO_ID","tr_loo"));
+		$this->setField("TR_LOI_ID", $this->getNextId("TR_LOI_ID","tr_loi"));
 		$str = "
-		INSERT INTO tr_loo 
+		INSERT INTO tr_loi 
 		(
-			TR_LOO_ID, STATUS_DATA, USER_PEMBUAT_ID, SATUAN_KERJA_PENGIRIM_ID, PRODUK_ID, CUSTOMER_ID, LOKASI_LOO_ID
+			TR_LOI_ID, STATUS_DATA, USER_PEMBUAT_ID, SATUAN_KERJA_PENGIRIM_ID, PRODUK_ID, CUSTOMER_ID, LOKASI_LOO_ID
 			, PPH, TOTAL_LUAS_INDOOR, TOTAL_LUAS_OUTDOOR
 			, TOTAL_LUAS, TOTAL_DISKON_INDOOR_SEWA, TOTAL_DISKON_OUTDOOR_SEWA, TOTAL_DISKON_INDOOR_SERVICE
 			, TOTAL_DISKON_OUTDOOR_SERVICE, HARGA_INDOOR_SEWA, HARGA_OUTDOOR_SEWA, HARGA_INDOOR_SERVICE
@@ -42,7 +42,7 @@ DESCRIPTION			:
 		)
 		VALUES 
 		(
-			".$this->getField("TR_LOO_ID")."
+			".$this->getField("TR_LOI_ID")."
 			, '".$this->getField("STATUS_DATA")."'
 			, '".$this->getField("USER_PEMBUAT_ID")."'
 			, '".$this->getField("SATUAN_KERJA_PENGIRIM_ID")."'
@@ -77,7 +77,7 @@ DESCRIPTION			:
 			, ".$this->getField("SECURITY_DEPOSIT")."
 			, ".$this->getField("FITTING_OUT")."
 		)";
-		$this->id = $this->getField("TR_LOO_ID");
+		$this->id = $this->getField("TR_LOI_ID");
 		$this->query = $str;
 		// echo $str;exit;
 		return $this->execQuery($str);
@@ -86,7 +86,7 @@ DESCRIPTION			:
   	function update()
 	{
 		$str = "
-		UPDATE tr_loo
+		UPDATE tr_loi
 		SET
 		STATUS_DATA= '".$this->getField("STATUS_DATA")."'
 		, SATUAN_KERJA_PENGIRIM_ID= '".$this->getField("SATUAN_KERJA_PENGIRIM_ID")."'
@@ -120,7 +120,7 @@ DESCRIPTION			:
 		, TOTAL_BIAYA_PPN= ".$this->getField("TOTAL_BIAYA_PPN")."
 		, SECURITY_DEPOSIT= ".$this->getField("SECURITY_DEPOSIT")."
 		, FITTING_OUT= ".$this->getField("FITTING_OUT")."
-		WHERE TR_LOO_ID= ".$this->getField("TR_LOO_ID")."
+		WHERE TR_LOI_ID= ".$this->getField("TR_LOI_ID")."
 		"; 
 		// echo $str;exit;
 		$this->query = $str;
@@ -130,10 +130,10 @@ DESCRIPTION			:
     function updatetriger()
 	{
 		$str = "
-		UPDATE tr_loo
+		UPDATE tr_loi
 		SET
 		PAKSA_DB= '".$this->getField("PAKSA_DB")."'
-		WHERE TR_LOO_ID= ".$this->getField("TR_LOO_ID")."
+		WHERE TR_LOI_ID= ".$this->getField("TR_LOI_ID")."
 		"; 
 		// echo $str;exit;
 		$this->query = $str;
@@ -143,8 +143,8 @@ DESCRIPTION			:
 	function delete()
 	{
         $str = "
-        DELETE FROM tr_loo
-        WHERE TR_LOO_ID = ".$this->getField("TR_LOO_ID")."
+        DELETE FROM tr_loi
+        WHERE TR_LOI_ID = ".$this->getField("TR_LOI_ID")."
         ";
 				  
 		$this->query = $str;
@@ -154,18 +154,18 @@ DESCRIPTION			:
     function paraf()
 	{
 		$str = "
-		UPDATE tr_loo_paraf A SET
+		UPDATE tr_loi_paraf A SET
 			STATUS_PARAF= '1',
 			KODE_PARAF= '".$this->getField("KODE_PARAF")."',
 			LAST_UPDATE_USER= '".$this->getField("LAST_UPDATE_USER")."',
 			LAST_UPDATE_DATE= NOW()
-		WHERE A.TR_LOO_ID= '".$this->getField("TR_LOO_ID")."'
+		WHERE A.TR_LOI_ID= '".$this->getField("TR_LOI_ID")."'
 		AND SATUAN_KERJA_ID_TUJUAN IN 
 		(
 			CASE WHEN STATUS_BANTU = 1 THEN 
 			(
-				SELECT SATUAN_KERJA_ID_TUJUAN FROM tr_loo_paraf a 
-				WHERE A.TR_LOO_ID= '".$this->getField("TR_LOO_ID")."'
+				SELECT SATUAN_KERJA_ID_TUJUAN FROM tr_loi_paraf a 
+				WHERE A.TR_LOI_ID= '".$this->getField("TR_LOI_ID")."'
 				AND A.USER_ID= '".$this->getField("USER_ID")."'
 				AND A.SATUAN_KERJA_ID_TUJUAN = '".$this->getField("SATUAN_KERJA_ID_TUJUAN")."'
 			) ELSE '".$this->getField("SATUAN_KERJA_ID_TUJUAN")."' END
@@ -173,7 +173,7 @@ DESCRIPTION			:
 		";
 		/*AND EXISTS
 		(
-			SELECT 1 FROM SURAT_MASUK_AKSES X WHERE X.TR_LOO_ID = A.TR_LOO_ID 
+			SELECT 1 FROM SURAT_MASUK_AKSES X WHERE X.TR_LOI_ID = A.TR_LOI_ID 
 			AND X.USER_ID = A.USER_ID 
 			AND X.USER_ID = '".$this->getField("USER_ID")."' 
 			AND X.AKSES IN ('PEMARAF', 'PLHPEMARAF')
@@ -185,29 +185,29 @@ DESCRIPTION			:
 		// tambahan khusus
 		// update next urut
 		$str1= "
-		UPDATE tr_loo_paraf A SET
+		UPDATE tr_loi_paraf A SET
 		NEXT_URUT= 
 		(
 			SELECT NO_URUT + 1 
-			FROM tr_loo_paraf A
-			WHERE A.TR_LOO_ID = '".$this->getField("TR_LOO_ID")."'
+			FROM tr_loi_paraf A
+			WHERE A.TR_LOI_ID = '".$this->getField("TR_LOI_ID")."'
 			AND SATUAN_KERJA_ID_TUJUAN IN 
 			(
 				CASE WHEN STATUS_BANTU = 1 THEN 
 				(
-					SELECT SATUAN_KERJA_ID_TUJUAN FROM tr_loo_paraf a 
-					WHERE A.TR_LOO_ID= '".$this->getField("TR_LOO_ID")."'
+					SELECT SATUAN_KERJA_ID_TUJUAN FROM tr_loi_paraf a 
+					WHERE A.TR_LOI_ID= '".$this->getField("TR_LOI_ID")."'
 					AND A.USER_ID = '".$this->getField("USER_ID")."'
 					AND A.SATUAN_KERJA_ID_TUJUAN = '".$this->getField("SATUAN_KERJA_ID_TUJUAN")."'
 				) ELSE '".$this->getField("SATUAN_KERJA_ID_TUJUAN")."' END
 			)
 			AND A.STATUS_PARAF= '1'
 		)
-		WHERE A.TR_LOO_ID = '".$this->getField("TR_LOO_ID")."'
+		WHERE A.TR_LOI_ID = '".$this->getField("TR_LOI_ID")."'
 		";
 			/*AND EXISTS
 			(
-				SELECT 1 FROM SURAT_MASUK_AKSES X WHERE X.TR_LOO_ID = A.TR_LOO_ID 
+				SELECT 1 FROM SURAT_MASUK_AKSES X WHERE X.TR_LOI_ID = A.TR_LOI_ID 
 				AND X.USER_ID = A.USER_ID 
 				AND X.USER_ID = '".$this->getField("USER_ID")."' 
 				AND X.AKSES IN ('PEMARAF', 'PLHPEMARAF')
@@ -220,12 +220,12 @@ DESCRIPTION			:
 	{
 
 		$str = "
-		UPDATE tr_loo SET
+		UPDATE tr_loi SET
 			   STATUS_DATA= 'REVISI'
 			   --, REVISI= '".$this->getField("REVISI")."'
 			   --, REVISI_BY= '".$this->getField("REVISI_BY")."'
 			   --, REVISI_DATE= CURRENT_TIMESTAMP
-		   WHERE TR_LOO_ID= '".$this->getField("TR_LOO_ID")."' 
+		   WHERE TR_LOI_ID= '".$this->getField("TR_LOI_ID")."' 
 		   --AND SATUAN_KERJA_ID_ASAL= '".$this->getField("SATUAN_KERJA_ID_ASAL")."'
 		";
 		$this->query = $str;
@@ -235,17 +235,17 @@ DESCRIPTION			:
 
     function insertlog()
 	{
-		$this->setField("TR_LOO_LOG_ID", $this->getNextId("TR_LOO_LOG_ID", "tr_loo_log"));
+		$this->setField("TR_LOO_LOG_ID", $this->getNextId("TR_LOO_LOG_ID", "tr_loi_log"));
 		$str = "
-		INSERT INTO tr_loo_log
+		INSERT INTO tr_loi_log
 		(
-			TR_LOO_LOG_ID, TR_LOO_ID, TANGGAL, STATUS_SURAT, INFORMASI, CATATAN
+			TR_LOO_LOG_ID, TR_LOI_ID, TANGGAL, STATUS_SURAT, INFORMASI, CATATAN
 			, LAST_CREATE_USER, LAST_CREATE_DATE
 		)
 		VALUES 
 		(
             ".$this->getField("TR_LOO_LOG_ID")."
-            , ".$this->getField("TR_LOO_ID")."
+            , ".$this->getField("TR_LOI_ID")."
             , CURRENT_TIMESTAMP
             , '".$this->getField("STATUS_SURAT")."'
             , '".$this->getField("INFORMASI")."'
@@ -263,17 +263,17 @@ DESCRIPTION			:
 	function insertAttachment()
 	{
 		/*Auto-generate primary key(s) by next max value (integer) */
-		$this->setField("TR_LOO_ATTACHMENT_ID", $this->getNextId("TR_LOO_ATTACHMENT_ID", "tr_loo_attachment"));
+		$this->setField("TR_LOO_ATTACHMENT_ID", $this->getNextId("TR_LOO_ATTACHMENT_ID", "tr_loi_attachment"));
 
 		$str = "
-		INSERT INTO tr_loo_attachment
+		INSERT INTO tr_loi_attachment
 		(
-			TR_LOO_ATTACHMENT_ID, TR_LOO_ID, ATTACHMENT, UKURAN, TIPE, NAMA, LAST_CREATE_USER, LAST_CREATE_DATE
+			TR_LOO_ATTACHMENT_ID, TR_LOI_ID, ATTACHMENT, UKURAN, TIPE, NAMA, LAST_CREATE_USER, LAST_CREATE_DATE
 		)
 		VALUES 
 		(
 			'".$this->getField("TR_LOO_ATTACHMENT_ID")."'
-			, '".$this->getField("TR_LOO_ID")."'
+			, '".$this->getField("TR_LOI_ID")."'
 			, '".$this->getField("ATTACHMENT")."'
 			, ".(int)$this->getField("UKURAN")."
 			, '".$this->getField("TIPE")."'
@@ -285,16 +285,16 @@ DESCRIPTION			:
 		$this->query = $str;
 		// echo $str;
 		// exit;
-		$this->id = $this->getField("TR_LOO_ID");
+		$this->id = $this->getField("TR_LOI_ID");
 		return $this->execQuery($str);
 	}
 
 	function deleteAttachment()
 	{
 		$str= "
-		DELETE FROM tr_loo_attachment
+		DELETE FROM tr_loi_attachment
 		WHERE
-		TR_LOO_ID = '".$this->getField("TR_LOO_ID")."'";
+		TR_LOI_ID = '".$this->getField("TR_LOI_ID")."'";
 
 		$this->query = $str;
 		$this->execQuery($str);
@@ -303,11 +303,11 @@ DESCRIPTION			:
 	function updateByField()
 	{
 		$str = "
-		UPDATE tr_loo A SET
+		UPDATE tr_loi A SET
 		".$this->getField("FIELD")."= '".$this->getField("FIELD_VALUE")."'
 		--, LAST_UPDATE_USER= '".$this->getField("LAST_UPDATE_USER")."'
 		--, LAST_UPDATE_DATE= NOW()
-		WHERE TR_LOO_ID = ".$this->getField("TR_LOO_ID")."
+		WHERE TR_LOI_ID = ".$this->getField("TR_LOI_ID")."
 		";
 		$this->query = $str;
 		// echo $str;exit;
@@ -317,9 +317,9 @@ DESCRIPTION			:
 	function updateByFieldValueTime()
 	{
 		$str = "
-		UPDATE tr_loo A SET
+		UPDATE tr_loi A SET
 		". $this->getField("FIELD")."= ". $this->getField("FIELD_VALUE")."
-		WHERE TR_LOO_ID= ".$this->getField("TR_LOO_ID")."
+		WHERE TR_LOI_ID= ".$this->getField("TR_LOI_ID")."
 		";
 		$this->query = $str;
 		// echo $str;exit;
@@ -329,9 +329,9 @@ DESCRIPTION			:
 	function updateByFieldTime()
 	{
 		$str = "
-		UPDATE tr_loo A SET
+		UPDATE tr_loi A SET
 		".$this->getField("FIELD")."= CURRENT_TIMESTAMP
-		WHERE TR_LOO_ID= ".$this->getField("TR_LOO_ID")."
+		WHERE TR_LOI_ID= ".$this->getField("TR_LOI_ID")."
 		";
 		$this->query = $str;
 		// echo $str;exit;
@@ -341,17 +341,17 @@ DESCRIPTION			:
 	function updateByFieldValidasiNomor()
 	{
 		$str = "
-		UPDATE tr_loo A SET
+		UPDATE tr_loi A SET
 		NOMOR= '".$this->getField("NOMOR")."',
 		".$this->getField("FIELD")."= '".$this->getField("FIELD_VALUE")."'
 		--, LAST_UPDATE_USER= '".$this->getField("LAST_UPDATE_USER")."'
 		--, LAST_UPDATE_DATE= NOW()
-		WHERE TR_LOO_ID= ".$this->getField("TR_LOO_ID")." AND
+		WHERE TR_LOI_ID= ".$this->getField("TR_LOI_ID")." AND
 		(
 			--SATUAN_KERJA_ID_ASAL = '".$this->getField("SATUAN_KERJA_ID_ASAL")."' OR
 			USER_PEMBUAT_ID = '".$this->getField("USER_ID")."' 
 			OR USER_LIHAT_STATUS LIKE '%".$this->getField("USER_ID")."%'
-			--OR EXISTS(SELECT 1 FROM SURAT_MASUK_AKSES X WHERE X.TR_LOO_ID = A.TR_LOO_ID AND X.USER_ID = '".$this->getField("PEMARAF_ID")."')
+			--OR EXISTS(SELECT 1 FROM SURAT_MASUK_AKSES X WHERE X.TR_LOI_ID = A.TR_LOI_ID AND X.USER_ID = '".$this->getField("PEMARAF_ID")."')
 		)
 		";
 		$this->query = $str;
@@ -362,16 +362,16 @@ DESCRIPTION			:
 	function updateByFieldValidasi()
 	{
 		$str = "
-		UPDATE tr_loo A SET
+		UPDATE tr_loi A SET
 		".$this->getField("FIELD")."= '".$this->getField("FIELD_VALUE")."'
 		--, LAST_UPDATE_USER= '".$this->getField("LAST_UPDATE_USER")."'
 		--, LAST_UPDATE_DATE= NOW()
-		WHERE TR_LOO_ID = ".$this->getField("TR_LOO_ID")." AND
+		WHERE TR_LOI_ID = ".$this->getField("TR_LOI_ID")." AND
 		(
 			--SATUAN_KERJA_ID_ASAL = '".$this->getField("SATUAN_KERJA_ID_ASAL")."' OR
 			USER_PEMBUAT_ID = '".$this->getField("USER_ID")."'
 			OR USER_LIHAT_STATUS LIKE '%".$this->getField("USER_ID")."%'
-			--OR EXISTS(SELECT 1 FROM SURAT_MASUK_AKSES X WHERE X.TR_LOO_ID = A.TR_LOO_ID AND X.USER_ID = '".$this->getField("PEMARAF_ID")."')
+			--OR EXISTS(SELECT 1 FROM SURAT_MASUK_AKSES X WHERE X.TR_LOI_ID = A.TR_LOI_ID AND X.USER_ID = '".$this->getField("PEMARAF_ID")."')
 		)
 		";
 		$this->query = $str;
@@ -391,7 +391,7 @@ DESCRIPTION			:
 		$str = "
 		SELECT 
 			A.*
-		FROM tr_loo_attachment A
+		FROM tr_loi_attachment A
 		WHERE 1 = 1
 		";
 
@@ -405,13 +405,13 @@ DESCRIPTION			:
 		return $this->selectLimit($str, $limit, $from);
 	}
 
-	function selectByParamsDataLog($paramsArray = array(), $limit = -1, $from = -1, $stat = '', $order = "ORDER BY A.TR_LOO_ID, A.TANGGAL DESC")
+	function selectByParamsDataLog($paramsArray = array(), $limit = -1, $from = -1, $stat = '', $order = "ORDER BY A.TR_LOI_ID, A.TANGGAL DESC")
 	{
 		$str = "
 		SELECT 
-			TR_LOO_LOG_ID, TR_LOO_ID, TO_CHAR(TANGGAL, 'YYYY-MM-DD HH24:MI:SS') TANGGAL, STATUS_SURAT, INFORMASI, CATATAN
+			TR_LOO_LOG_ID, TR_LOI_ID, TO_CHAR(TANGGAL, 'YYYY-MM-DD HH24:MI:SS') TANGGAL, STATUS_SURAT, INFORMASI, CATATAN
 			, LAST_CREATE_USER, LAST_CREATE_DATE
-		FROM tr_loo_log A
+		FROM tr_loi_log A
 		WHERE 1=1
 		";
 
@@ -425,12 +425,12 @@ DESCRIPTION			:
 		return $this->selectLimit($str, $limit, $from);
 	}
 
-    function selectByParams($paramsArray=array(),$limit=-1,$from=-1,$statement="", $order=" ORDER BY A.TR_LOO_ID ASC")
+    function selectByParams($paramsArray=array(),$limit=-1,$from=-1,$statement="", $order=" ORDER BY A.TR_LOI_ID ASC")
 	{
 		$str = "
 		SELECT 
 		A.*
-		FROM tr_loo A
+		FROM tr_loi A
 		WHERE 1 = 1
 		"; 
 		
@@ -444,16 +444,16 @@ DESCRIPTION			:
 		return $this->selectLimit($str,$limit,$from); 
     }
 
-    function selectdraft($paramsArray=array(),$limit=-1,$from=-1,$statement="", $order=" ORDER BY A.TR_LOO_ID ASC")
+    function selectdraft($paramsArray=array(),$limit=-1,$from=-1,$statement="", $order=" ORDER BY A.TR_LOI_ID ASC")
 	{
 		$str = "
 		SELECT 
 			A1.TELP, A1.EMAIL, A1.TEMPAT, A1.NAMA_PEMILIK, A1.NAMA_BRAND
 			, A2.NAMA PRODUK_NAMA, A3.NAMA LOKASI_NAMA
-			, A3.NAMA || '<br/>' || ambildetilloo(A.TR_LOO_ID, '<br/>') INFO_DETIL_NAMA
+			, A3.NAMA || '<br/>' || ambildetilloo(A.TR_LOI_ID, '<br/>') INFO_DETIL_NAMA
 			, TO_CHAR(A.LAST_CREATE_DATE, 'YYYY-MM-DD HH24:MI:SS') INFO_LAST_CREATE_DATE
 			, A.*
-		FROM tr_loo A
+		FROM tr_loi A
 		INNER JOIN customer A1 ON A.CUSTOMER_ID = A1.CUSTOMER_ID
 		INNER JOIN produk A2 ON A.PRODUK_ID = A2.PRODUK_ID
 		INNER JOIN lokasi_loo A3 ON A.LOKASI_LOO_ID = A3.LOKASI_LOO_ID
@@ -470,14 +470,14 @@ DESCRIPTION			:
 		return $this->selectLimit($str,$limit,$from); 
     }
 
-    function selectcetak($paramsArray=array(),$limit=-1,$from=-1,$statement="", $order=" ORDER BY A.TR_LOO_ID ASC")
+    function selectcetak($paramsArray=array(),$limit=-1,$from=-1,$statement="", $order=" ORDER BY A.TR_LOI_ID ASC")
 	{
 		$str = "
 		SELECT 
 			A1.TELP, A1.EMAIL, A1.TEMPAT, A1.NAMA_PEMILIK, A1.NAMA_BRAND
 			, A2.NAMA PRODUK_NAMA, A3.NAMA LOKASI_NAMA
 			, A.*
-		FROM tr_loo A
+		FROM tr_loi A
 		INNER JOIN customer A1 ON A.CUSTOMER_ID = A1.CUSTOMER_ID
 		INNER JOIN produk A2 ON A.PRODUK_ID = A2.PRODUK_ID
 		INNER JOIN lokasi_loo A3 ON A.LOKASI_LOO_ID = A3.LOKASI_LOO_ID
@@ -501,7 +501,7 @@ DESCRIPTION			:
     **/ 
     function getCountByParams($paramsArray=array(), $statement="")
 	{
-		$str = "SELECT COUNT(1) AS ROWCOUNT FROM tr_loo A WHERE 1 = 1 ".$statement; 
+		$str = "SELECT COUNT(1) AS ROWCOUNT FROM tr_loi A WHERE 1 = 1 ".$statement; 
 		while(list($key,$val)=each($paramsArray))
 		{
 			$str .= " AND $key = '$val' ";
@@ -517,7 +517,7 @@ DESCRIPTION			:
 
     function getStatusSurat($paramsArray = array(), $statement = "")
 	{
-		$str = "SELECT STATUS_DATA ROWINFO FROM tr_loo A WHERE 1=1 ";
+		$str = "SELECT STATUS_DATA ROWINFO FROM tr_loi A WHERE 1=1 ";
 		while (list($key, $val) = each($paramsArray)) {
 			$str .= " AND $key = '$val' ";
 		}
@@ -562,14 +562,14 @@ DESCRIPTION			:
 						FROM
 						(
 							SELECT
-							A.TR_LOO_ID, A.DP, A.TOP, A.PPH, A.FITTING_OUT, A.SEWA_BIAYA_SATUAN_SERVICE SERVICE_CHARGE
-							, A3.NAMA || '<br/>' || AMBILDETILLOO(A.TR_LOO_ID, '<br/>') INFO_DETIL_NAMA
+							A.TR_LOI_ID, A.DP, A.TOP, A.PPH, A.FITTING_OUT, A.SEWA_BIAYA_SATUAN_SERVICE SERVICE_CHARGE
+							, A3.NAMA || '<br/>' || AMBILDETILLOO(A.TR_LOI_ID, '<br/>') INFO_DETIL_NAMA
 							, A1.TEMPAT NAMA_PENYEWA, A1.NAMA_BRAND NAMA_TOKO, A2.NAMA LINE_BUSINES
 							, A.TAHUN_SEWA, A.TOTAL_LUAS LUAS_AREA
 							, A.PERIODE_SEWA MASA_KERJA_SAMA
 							, A.SEWA_BIAYA_SATUAN_UNIT HARGA_SEWA_UNIT
 							, A.TOTAL_LUAS * A.SEWA_BIAYA_SATUAN_UNIT TOTAL_SEWA_PERBULAN
-							FROM (SELECT ROUND((PERIODE_SEWA / 12)) TAHUN_SEWA, * FROM tr_loo) A
+							FROM (SELECT ROUND((PERIODE_SEWA / 12)) TAHUN_SEWA, * FROM tr_loi) A
 							INNER JOIN customer A1 ON A.CUSTOMER_ID = A1.CUSTOMER_ID
 							INNER JOIN produk A2 ON A.PRODUK_ID = A2.PRODUK_ID
 							INNER JOIN lokasi_loo A3 ON A.LOKASI_LOO_ID = A3.LOKASI_LOO_ID
@@ -598,7 +598,7 @@ DESCRIPTION			:
 		WITH RECURSIVE cte AS 
 		(
 			SELECT
-			0 BULAN, A.TR_LOO_ID, A.ANGSURAN_SISA_DIKURANG_DP, A.MASA_KERJA_SAMA, A.BAYAR_SC_BULANAN
+			0 BULAN, A.TR_LOI_ID, A.ANGSURAN_SISA_DIKURANG_DP, A.MASA_KERJA_SAMA, A.BAYAR_SC_BULANAN
 			, ANGSURAN_SISA_DIKURANG_DP / TOP ANGSURAN_SEWA_BULANAN
 			, 'Saldo Awal' NAMA_ANGSURAN, NULL::NUMERIC VBULAN
 			, ANGSURAN_SISA_DIKURANG_DP / TOP SEWA_INC_PPN
@@ -628,11 +628,11 @@ DESCRIPTION			:
 							FROM
 							(
 								SELECT
-								A.TR_LOO_ID, A.DP, A.PPH, A.TOP, A.SEWA_BIAYA_SATUAN_SERVICE SERVICE_CHARGE
+								A.TR_LOI_ID, A.DP, A.PPH, A.TOP, A.SEWA_BIAYA_SATUAN_SERVICE SERVICE_CHARGE
 								, A.TAHUN_SEWA, A.TOTAL_LUAS LUAS_AREA
 								, A.PERIODE_SEWA MASA_KERJA_SAMA
 								, A.TOTAL_LUAS * A.SEWA_BIAYA_SATUAN_UNIT TOTAL_SEWA_PERBULAN
-								FROM (SELECT ROUND((PERIODE_SEWA / 12)) TAHUN_SEWA, * FROM tr_loo) A
+								FROM (SELECT ROUND((PERIODE_SEWA / 12)) TAHUN_SEWA, * FROM tr_loi) A
 								WHERE 1 = 1
 							) A
 						) A
@@ -643,7 +643,7 @@ DESCRIPTION			:
 			".$statement."
 			UNION ALL
 			SELECT
-			R.BULAN + 1 BULAN, R.TR_LOO_ID, R.ANGSURAN_SISA_DIKURANG_DP, R.MASA_KERJA_SAMA, R.BAYAR_SC_BULANAN, R.ANGSURAN_SEWA_BULANAN
+			R.BULAN + 1 BULAN, R.TR_LOI_ID, R.ANGSURAN_SISA_DIKURANG_DP, R.MASA_KERJA_SAMA, R.BAYAR_SC_BULANAN, R.ANGSURAN_SEWA_BULANAN
 			, 'Angsuran ' || (R.BULAN + 1)::TEXT NAMA_ANGSURAN, R.BULAN + 1 VBULAN
 			, R.ANGSURAN_SEWA_BULANAN SEWA_INC_PPN, COALESCE(R.TOTAL_SEWA,0) - COALESCE(R.SEWA_INC_PPN,0) TOTAL_SEWA
 			, R.SERVICE_CHARGE, R.SERVICE_CHARGE_INC_PPN

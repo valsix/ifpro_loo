@@ -5,7 +5,7 @@ include_once("functions/date.func.php");
 
 
 $this->load->model("Customer");
-$customer = new Customer();
+$set = new Customer();
 
 $reqId = $this->input->get("reqId");
 
@@ -15,18 +15,21 @@ $reqMode = "insert";
 else
 {
 	$reqMode = "ubah";
-	$customer->selectByParams(array("A.CUSTOMER_ID" => $reqId));
-	$customer->firstRow();
+	$set->selectByParams(array("A.CUSTOMER_ID" => $reqId));
+	$set->firstRow();
     
-	$reqId= $customer->getField("CUSTOMER_ID");
-	$reqPic= $customer->getField("PIC");
-	$reqJenisPerusahaanId= $customer->getField("JENIS_PERUSAHAAN_ID");
-	$reqTelp= $customer->getField("TELP");
-	$reqEmail= $customer->getField("EMAIL");
-	$reqTempat= $customer->getField("TEMPAT");
-	$reqNamaPemilik= $customer->getField("NAMA_PEMILIK");
-    $reqNamaBrand= $customer->getField("NAMA_BRAND");
-	
+	$reqId= $set->getField("CUSTOMER_ID");
+	$reqPic= $set->getField("PIC");
+	$reqJenisPerusahaanId= $set->getField("JENIS_PERUSAHAAN_ID");
+	$reqTelp= $set->getField("TELP");
+	$reqEmail= $set->getField("EMAIL");
+	$reqTempat= $set->getField("TEMPAT");
+	$reqNamaPemilik= $set->getField("NAMA_PEMILIK");
+    $reqNamaBrand= $set->getField("NAMA_BRAND");
+    $reqNpwp= $set->getField("NPWP");
+    $reqNpwpAlamat= $set->getField("NPWP_ALAMAT");
+    $reqNomorNior= $set->getField("NOMOR_NIOR");
+    $reqAlamatDomisili= $set->getField("ALAMAT_DOMISILI");
 }
 ?>
 
@@ -128,54 +131,72 @@ $(function(){
             <form id="ff" method="post" novalidate enctype="multipart/form-data">
                 <table class="table">
                     <thead>
-                    	<tr>
-                            <td>PIC</td>
-                            <td>:</td>
-                            <td>
-                                <input type="text" id="reqPic" class="easyui-validatebox textbox form-control" required name="reqPic"  value="<?=$reqPic ?>" data-options="required:true" style="width:90%" />
-                            </td>
-                        </tr>
                         <tr>           
                             <td>Jenis Perusahaan</td>
                             <td>:</td>
                             <td>
-                                <input type="text" name="reqJenisPerusahaanId" class="easyui-combobox"  id="reqJenisPerusahaanId"
+                                <input type="text" name="reqJenisPerusahaanId" class="easyui-combobox" id="reqJenisPerusahaanId"
                                        data-options="width:'350', valueField:'id', textField:'text', editable:false, url:'combo_json/comboJenisPerusahaan'" required value="<?=$reqJenisPerusahaanId?>" />
                             </td>
                         </tr>
                         <tr>
-                            <td>Telepon/HP</td>
-                            <td>:</td>
-                            <td>
-                                <input  id="reqTelp" class="easyui-validatebox textbox form-control" name="reqTelp"  value="<?=$reqTelp?>" data-options="required:false" style="width:150px" />
+                            <td style="width: 20%">Nama Pemilik</td>
+                            <td style="width: 10px">:</td>
+                            <td style="width: 24%">
+                                <input type="text" id="reqNamaPemilik" class="easyui-validatebox textbox form-control" required name="reqNamaPemilik" value="<?=$reqNamaPemilik?>" data-options="required:true" />
+                            </td>
+                            <td style="width: 20%">PIC</td>
+                            <td style="width: 10px">:</td>
+                            <td style="width: 24%">
+                                <input type="text" id="reqPic" class="easyui-validatebox textbox form-control" required name="reqPic" value="<?=$reqPic?>" data-options="required:true" />
                             </td>
                         </tr>
                         <tr>
                             <td>Email</td>
                             <td>:</td>
                             <td>
-                                <input type="text" id="reqEmail" class="easyui-validatebox textbox form-control" required name="reqEmail"  value="<?=$reqEmail ?>" data-options="required:true" style="width:90%" />
+                                <input type="text" id="reqEmail" class="easyui-validatebox textbox form-control" required name="reqEmail" value="<?=$reqEmail?>" data-options="required:true" style="width:90%" />
                             </td>
-                        </tr>
-                        <tr>
-                            <td>Tempat</td>
+                            <td>Telepon/HP</td>
                             <td>:</td>
                             <td>
-                                <input type="text" id="reqTempat" class="easyui-validatebox textbox form-control" required name="reqTempat"  value="<?=$reqTempat ?>" data-options="required:true" style="width:90%" />
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Nama Pemilik</td>
-                            <td>:</td>
-                            <td>
-                                <input type="text" id="reqNamaPemilik" class="easyui-validatebox textbox form-control" required name="reqNamaPemilik"  value="<?=$reqNamaPemilik ?>" data-options="required:true" style="width:90%" />
+                                <input id="reqTelp" class="easyui-validatebox textbox form-control" name="reqTelp" value="<?=$reqTelp?>" data-options="required:false" style="width:150px" />
                             </td>
                         </tr>
                         <tr>
                             <td>Nama Brand</td>
                             <td>:</td>
                             <td>
-                                <input type="text" id="reqNamaBrand" class="easyui-validatebox textbox form-control" required name="reqNamaBrand"  value="<?=$reqNamaBrand ?>" data-options="required:true" style="width:90%" />
+                                <input type="text" id="reqNamaBrand" class="easyui-validatebox textbox form-control" required name="reqNamaBrand" value="<?=$reqNamaBrand?>" data-options="required:true" />
+                            </td>
+                            <td>Tempat</td>
+                            <td>:</td>
+                            <td>
+                                <input type="text" id="reqTempat" class="easyui-validatebox textbox form-control" required name="reqTempat" value="<?=$reqTempat?>" data-options="required:true" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Nomor NPWP</td>
+                            <td>:</td>
+                            <td>
+                                <input type="text" id="reqNpwp" class="easyui-validatebox textbox form-control" required name="reqNpwp" value="<?=$reqNpwp?>" data-options="required:true" />
+                            </td>
+                            <td>Alamat NPWP</td>
+                            <td>:</td>
+                            <td>
+                                <input type="text" id="reqNpwpAlamat" class="easyui-validatebox textbox form-control" required name="reqNpwpAlamat" value="<?=$reqNpwpAlamat?>" data-options="required:true" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Nomor NIORA</td>
+                            <td>:</td>
+                            <td>
+                                <input type="text" id="reqNomorNior" class="easyui-validatebox textbox form-control" required name="reqNomorNior" value="<?=$reqNomorNior?>" data-options="required:true" />
+                            </td>
+                            <td>Alamat Domisili</td>
+                            <td>:</td>
+                            <td>
+                                <input type="text" id="reqAlamatDomisili" class="easyui-validatebox textbox form-control" required name="reqAlamatDomisili" value="<?=$reqAlamatDomisili?>" data-options="required:true" />
                             </td>
                         </tr>
                     </thead>
