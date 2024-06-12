@@ -137,7 +137,7 @@ $sessid= $this->ID;
 $checkparafid= "";
 if (!empty($reqId))
 {
-    if($reqStatusData == "DRAFT" || $reqStatusData == "REVISI"){}
+    if($reqStatusData == "DRAFT" || $reqStatusData == "REVISI" || $cekquery == "lihat"){}
     elseif($reqStatusData == "PARAF" || $reqStatusData == "VALIDASI")
     {
         $statement.= " AND A.USER_POSISI_PARAF_ID = '".$sessid."' AND A.TR_LOO_ID = ".$reqIdDraft;
@@ -379,7 +379,7 @@ $(function(){
                             </td>
                         </tr>
                         <tr>
-                            <td>Penanda tangan <span class="text-danger">*</td>
+                            <td>Penanda tangan <span class="text-danger">*</span></td>
                             <td>:</td>
                             <td>
                                 <?

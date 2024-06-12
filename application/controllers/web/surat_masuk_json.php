@@ -2621,7 +2621,7 @@ class surat_masuk_json extends CI_Controller
 		$jumlahdisposisitujuan= $checkdetil->getCountByParams(array(), " AND STATUS_DISPOSISI = 'TUJUAN' AND SURAT_MASUK_ID = ".$reqId);
 
 		// kalau ada data maka boleh ekseskusi data
-		if((!empty($reqSatuanKerjaIdTujuan) && count($reqSatuanKerjaIdTujuan) > 0) || !empty($reqSatuanKerjaIdTembusan) || ($jumlahdisposisitujuan > 0 && empty($reqSatuanKerjaIdTujuan)))
+		if((!empty($reqSatuanKerjaIdTujuan) && count($reqSatuanKerjaIdTujuan) > 0) || !empty($reqSatuanKerjaIdTembusan) || ($jumlahdisposisitujuan > 0 && empty($reqSatuanKerjaIdTujuan)) || $reqKondisiStatusSurat == "UBAHDATAPARAF")
 		{
 			// kalau ada data maka boleh ekseskusi data sesuai status disposisi
 			if( (!empty($reqSatuanKerjaIdTujuan) && count($reqSatuanKerjaIdTujuan) > 0)  || ($jumlahdisposisitujuan > 0 && empty($reqSatuanKerjaIdTujuan)) )
