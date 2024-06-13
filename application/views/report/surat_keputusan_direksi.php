@@ -77,38 +77,38 @@ $(document).ready(function(){
   
 <!-- End Kop Surat -->
 
-	<?
+  <?
     $surat_masuk = new SuratMasuk();
     $surat_masuk->selectByParams(array("A.SURAT_MASUK_ID" => $reqId), -1, -1, $statement);
     $surat_masuk->firstRow();
     $reqMenimbang=  $surat_masuk->getField("MENIMBANG"); $totMenimbang= strlen($reqMenimbang);
     $reqMengingat= $surat_masuk->getField("MENGINGAT"); $totMengingat= strlen($reqMengingat);
     $reqMenetapkan=  $surat_masuk->getField("MENETAPKAN"); $totMenetapkan= strlen($reqMenetapkan);
-    $reqPertama= $surat_masuk->getField("PERTAMA"); $totPertama= strlen($reqPertama);
-    $reqKedua= $surat_masuk->getField("KEDUA"); $totKedua= strlen($reqKedua);
-    $reqKetiga= $surat_masuk->getField("KETIGA"); $totKetiga= strlen($reqKetiga);
-    $reqKeempat=$surat_masuk->getField("KEEMPAT"); $totKeempat= strlen($reqKeempat);
-    $reqKelima= $surat_masuk->getField("KELIMA"); $totKelima= strlen($reqKelima);
-    $reqKeenam= $surat_masuk->getField("KEENAM"); $totKeenam= strlen($reqKeenam);
-    $reqKetujuh= $surat_masuk->getField("KETUJUH"); $totKetujuh= strlen($reqKetujuh);
-    $reqKedelapan= $surat_masuk->getField("KEDELAPAN"); $totKedelapan= strlen($reqKedelapan);
-    $reqKesembilan= $surat_masuk->getField("KESEMBILAN"); $totKesembilan= strlen($reqKesembilan);
-    $reqKesepuluh= $surat_masuk->getField("KESEPULUH"); $totKesepuluh= strlen($reqKesepuluh);
-    $reqKesebelas= $surat_masuk->getField("KESEBELAS"); $totKesebelas= strlen($reqKesebelas);
-    $reqKeduabelas= $surat_masuk->getField("KEDUABELAS"); $totKeduabelas= strlen($reqKeduabelas);
-    $reqKetigabelas= $surat_masuk->getField("KETIGABELAS"); $totKetigabelas= strlen($reqKetigabelas);
-    $reqKeempatbelas= $surat_masuk->getField("KEEMPATBELAS"); $totKeempatbelas= strlen($reqKeempatbelas);
-    $reqKelimabelas= $surat_masuk->getField("KELIMABELAS"); $totKelimabelas= strlen($reqKelimabelas);
-    $reqKeenambelas= $surat_masuk->getField("KEENAMBELAS"); $totKeenambelas= strlen($reqKeenambelas);
-    $reqKetujuhbelas= $surat_masuk->getField("KETUJUHBELAS"); $totKetujuhbelas= strlen($reqKetujuhbelas);
-    $reqKedelapanbelas= $surat_masuk->getField("KEDELAPANBELAS"); $totKedelapanbelas= strlen($reqKedelapanbelas);
-    $reqKesembilanbelas= $surat_masuk->getField("KESEMBILANBELAS"); $totKesembilanbelas= strlen($reqKesembilanbelas);
-    $reqKeduapuluh= $surat_masuk->getField("KEDUAPULUH"); $totKeduapuluh= strlen($reqKeduapuluh);
-    $reqKeduapuluhsatu= $surat_masuk->getField("KEDUAPULUHSATU"); $totKeduapuluhsatu= strlen($reqKeduapuluhsatu);
-    $reqKeduapuluhdua= $surat_masuk->getField("KEDUAPULUHDUA"); $totKeduapuluhdua= strlen($reqKeduapuluhdua);
-    $reqKeduapuluhtiga= $surat_masuk->getField("KEDUAPULUHTIGA"); $totKeduapuluhtiga= strlen($reqKeduapuluhtiga);
-    $reqKeduapuluhempat= $surat_masuk->getField("KEDUAPULUHEMPAT"); $totKeduapuluhempat= strlen($reqKeduapuluhempat);
-    $reqKeduapuluhlima= $surat_masuk->getField("KEDUAPULUHLIMA"); $totKeduapuluhlima= strlen($reqKeduapuluhlima);
+    $reqPertama= resetfroala($surat_masuk->getField("PERTAMA")); $totPertama= strlen($reqPertama);
+    $reqKedua= resetfroala($surat_masuk->getField("KEDUA")); $totKedua= strlen($reqKedua);
+    $reqKetiga= resetfroala($surat_masuk->getField("KETIGA")); $totKetiga= strlen($reqKetiga);
+    $reqKeempat= resetfroala($surat_masuk->getField("KEEMPAT")); $totKeempat= strlen($reqKeempat);
+    $reqKelima= resetfroala($surat_masuk->getField("KELIMA")); $totKelima= strlen($reqKelima);
+    $reqKeenam= resetfroala($surat_masuk->getField("KEENAM")); $totKeenam= strlen($reqKeenam);
+    $reqKetujuh= resetfroala($surat_masuk->getField("KETUJUH")); $totKetujuh= strlen($reqKetujuh);
+    $reqKedelapan= resetfroala($surat_masuk->getField("KEDELAPAN")); $totKedelapan= strlen($reqKedelapan);
+    $reqKesembilan= resetfroala($surat_masuk->getField("KESEMBILAN")); $totKesembilan= strlen($reqKesembilan);
+    $reqKesepuluh= resetfroala($surat_masuk->getField("KESEPULUH")); $totKesepuluh= strlen($reqKesepuluh);
+    $reqKesebelas= resetfroala($surat_masuk->getField("KESEBELAS")); $totKesebelas= strlen($reqKesebelas);
+    $reqKeduabelas= resetfroala($surat_masuk->getField("KEDUABELAS")); $totKeduabelas= strlen($reqKeduabelas);
+    $reqKetigabelas= resetfroala($surat_masuk->getField("KETIGABELAS")); $totKetigabelas= strlen($reqKetigabelas);
+    $reqKeempatbelas= resetfroala($surat_masuk->getField("KEEMPATBELAS")); $totKeempatbelas= strlen($reqKeempatbelas);
+    $reqKelimabelas= resetfroala($surat_masuk->getField("KELIMABELAS")); $totKelimabelas= strlen($reqKelimabelas);
+    $reqKeenambelas= resetfroala($surat_masuk->getField("KEENAMBELAS")); $totKeenambelas= strlen($reqKeenambelas);
+    $reqKetujuhbelas= resetfroala($surat_masuk->getField("KETUJUHBELAS")); $totKetujuhbelas= strlen($reqKetujuhbelas);
+    $reqKedelapanbelas= resetfroala($surat_masuk->getField("KEDELAPANBELAS")); $totKedelapanbelas= strlen($reqKedelapanbelas);
+    $reqKesembilanbelas= resetfroala($surat_masuk->getField("KESEMBILANBELAS")); $totKesembilanbelas= strlen($reqKesembilanbelas);
+    $reqKeduapuluh= resetfroala($surat_masuk->getField("KEDUAPULUH")); $totKeduapuluh= strlen($reqKeduapuluh);
+    $reqKeduapuluhsatu= resetfroala($surat_masuk->getField("KEDUAPULUHSATU")); $totKeduapuluhsatu= strlen($reqKeduapuluhsatu);
+    $reqKeduapuluhdua= resetfroala($surat_masuk->getField("KEDUAPULUHDUA")); $totKeduapuluhdua= strlen($reqKeduapuluhdua);
+    $reqKeduapuluhtiga= resetfroala($surat_masuk->getField("KEDUAPULUHTIGA")); $totKeduapuluhtiga= strlen($reqKeduapuluhtiga);
+    $reqKeduapuluhempat= resetfroala($surat_masuk->getField("KEDUAPULUHEMPAT")); $totKeduapuluhempat= strlen($reqKeduapuluhempat);
+    $reqKeduapuluhlima= resetfroala($surat_masuk->getField("KEDUAPULUHLIMA")); $totKeduapuluhlima= strlen($reqKeduapuluhlima);
 // echo $totMenimbang+$totMengingat+$totMenetapkan;exit();
     if (($totMenimbang+$totMengingat) >= 3200) 
     {
@@ -135,7 +135,16 @@ $(document).ready(function(){
        // $break6=1;
     }
 
-	?>
+    function resetfroala($vtext)
+    {
+      $visi= str_replace("uploads/froala/",base_url()."/uploads/froala/",$vtext);
+      $visi= str_replace("font", "fontxx", $visi);
+      $visi= str_replace("https://eoffice.myifpro.co.id/https://eoffice.myifpro.co.id//", base_url(),$visi);
+      $visi= preg_replace('/[^(\x20-\x7F)\x0A\x0D]*/','', $visi);
+      return $visi;
+    }
+
+  ?>
 
 <br>
 <br>

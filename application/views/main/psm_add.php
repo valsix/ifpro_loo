@@ -485,7 +485,7 @@ $(function(){
 <body>
     <div class="col-lg-12 col-konten-full">
         <div class="judul-halaman bg-course">
-            <span><img src="images/icon-course.png"></span> Kelola LOI
+            <span><img src="images/icon-course.png"></span> Kelola PSM
             <div class="btn-atas clearfix">
                 <?
                 $aksibutton= "";
