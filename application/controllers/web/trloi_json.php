@@ -254,6 +254,9 @@ class trloi_json extends CI_Controller
 		$reqTotalBiayaPpn= $this->input->post("reqTotalBiayaPpn");
 		$reqSecurityDeposit= $this->input->post("reqSecurityDeposit");
 		$reqFittingOut= $this->input->post("reqFittingOut");
+		$reqTanggalAwal= $this->input->post("reqTanggalAwal");
+		$reqTanggalAkhir= $this->input->post("reqTanggalAkhir");
+		$reqPromotionLevy= $this->input->post("reqPromotionLevy");
 
 		if($reqStatusData == "UBAHDATAPARAF" || $reqStatusData == "UBAHDATAREVISI")
 		{
@@ -318,6 +321,10 @@ class trloi_json extends CI_Controller
 		$set->setField("TOTAL_BIAYA_PPN", ValToNullDB(dotToNo($reqTotalBiayaPpn)));
 		$set->setField("SECURITY_DEPOSIT", ValToNullDB(dotToNo($reqSecurityDeposit)));
 		$set->setField("FITTING_OUT", ValToNullDB(dotToNo($reqFittingOut)));
+
+		$set->setField("TANGGAL_AWAL", dateToDbCheck($reqTanggalAwal));
+		$set->setField("TANGGAL_AKHIR", dateToDbCheck($reqTanggalAkhir));
+		$set->setField("PROMOTION_LEVY", ValToNullDB(dotToNo($reqPromotionLevy)));
 
 		$set->setField("USER_PEMBUAT_ID", $sesid);
 		$set->setField("STATUS_DATA", $reqStatusData);

@@ -4,6 +4,101 @@ include_once("functions/date.func.php");
 include_once("functions/default.func.php");
 include_once("functions/string.func.php");
 include_once("libraries/vendor/autoload.php");
+
+$this->load->model("TrLoi");
+$this->load->model("LokasiLoo");
+
+$reqId= $this->input->get("reqId");
+
+if(empty($reqId)) $reqId= -1;
+
+$statement= " AND A.TR_LOI_ID = ".$reqId;
+$set= new TrLoi();
+$set->selectcetak(array(), -1,-1, $statement);
+$set->firstRow();
+$reqLokasiNama= $set->getField("LOKASI_NAMA");
+$reqCustomerTempat= $set->getField("TEMPAT");
+$reqCustomerNama= $set->getField("NAMA_PEMILIK");
+$reqCustomerTlp= $set->getField("TELP");
+$reqCustomerNpwp= $set->getField("NPWP");
+$reqCustomerNpwpAlamat= $set->getField("NPWP_ALAMAT");
+$reqCustomerNomorNior= $set->getField("NOMOR_NIOR");
+$reqCustomerAlamatDomisili= $set->getField("ALAMAT_DOMISILI");
+$reqTanggalAwal= dateToPageCheck($set->getField("INFO_TANGGAL_AWAL"));
+$reqTanggalAkhir= dateToPageCheck($set->getField("INFO_TANGGAL_AKHIR"));
+$reqSewaBiayaPerBulanUnit= $set->getField("SEWA_BIAYA_PER_BULAN_UNIT");
+$reqTotalBiayaPerBulanPpn= $set->getField("TOTAL_BIAYA_PER_BULAN_PPN");
+$reqSatuTahunTotalBiayaPerBulanPpn= 12 * $reqTotalBiayaPerBulanPpn;
+$reqPromotionLevy= $set->getField("PROMOTION_LEVY");
+$reqAwalSecurityDeposit= $set->getField("SECURITY_DEPOSIT");
+$reqAwalFittingOut= $set->getField("FITTING_OUT");
+$reqTotalLuasIndoor= $set->getField("TOTAL_LUAS_INDOOR");
+$reqTotalLuasOutdoor= $set->getField("TOTAL_LUAS_OUTDOOR");
+
+$statement= " AND A.TR_LOI_ID = ".$reqId;
+$set= new TrLoi();
+$set->selectlampirandua(array(), -1,-1, $statement);
+$set->firstRow();
+$reqLokasiLooId= $set->getField("LOKASI_LOO_ID");
+$reqInfoDetilNama= $set->getField("INFO_DETIL_NAMA");
+$reqNamaPenyewa= $set->getField("NAMA_PENYEWA");
+$reqNamaToko= $set->getField("NAMA_TOKO");
+$reqLineBusines= $set->getField("LINE_BUSINES");
+$reqPolaBisnis= "Sewa";
+$reqTahunSewa= $set->getField("TAHUN_SEWA");
+$reqMasaKerjaSama= $set->getField("MASA_KERJA_SAMA");
+$reqLuasArea= $set->getField("LUAS_AREA");
+$reqHargaSewaUnit= numberToIna($set->getField("HARGA_SEWA_UNIT"));
+$reqHargaSewaPerBulan= numberToIna($set->getField("TOTAL_SEWA_PERBULAN"));
+$reqHargaSewaExPpn= numberToIna($set->getField("TOTAL_SEWA_TAHUN_EX_PPN"));
+$reqHargaSewaIncPpn= numberToIna($set->getField("TOTAL_SEWA_TAHUN_INC_PPN"));
+$reqFittingOut= numberToIna($set->getField("FITTING_OUT"));
+$reqServiceCharge= numberToIna($set->getField("SERVICE_CHARGE"));
+$reqSecurityDeposit= numberToIna($set->getField("SECURITY_DEPOSIT"));
+$reqDp= $set->getField("DP");
+$reqTop= $set->getField("TOP");
+
+$reqDownPayment= numberToIna($set->getField("DOWN_PAYMENT"));
+$reqAngsuranDp= numberToIna($set->getField("ANGSURAN_SISA_DIKURANG_DP"));
+$reqAngsuranBulanan= numberToIna($set->getField("ANGSURAN_SEWA_BULANAN"));
+$reqBayarSCBulanan= numberToIna($set->getField("BAYAR_SC_BULANAN"));
+
+$arrperhitungansewa= [];
+$statement= " AND A.TR_LOI_ID = ".$reqId;
+$set= new TrLoi();
+$set->selectperhitungantabel(array(), -1,-1, $statement);
+// echo $set->query;exit;
+while($set->nextRow())
+{
+  $arrdata= [];
+  $arrdata["NAMA_ANGSURAN"]= $set->getField("NAMA_ANGSURAN");
+  $arrdata["VBULAN"]= $set->getField("VBULAN");
+  $arrdata["SEWA_INC_PPN"]= numberToIna($set->getField("SEWA_INC_PPN"));
+  $arrdata["TOTAL_SEWA"]= numberToIna($set->getField("TOTAL_SEWA"));
+
+  $vdetil= $set->getField("SERVICE_CHARGE");
+  if($vdetil !== "TBA") $vdetil= numberToIna($vdetil);
+  $arrdata["SERVICE_CHARGE"]= $vdetil;
+
+  $vdetil= $set->getField("SERVICE_CHARGE_INC_PPN");
+  if($vdetil !== "TBA") $vdetil= numberToIna($vdetil);
+  $arrdata["SERVICE_CHARGE_INC_PPN"]= $vdetil;
+  array_push($arrperhitungansewa, $arrdata);
+}
+// print_r($arrperhitungansewa);exit;
+
+if(empty($reqLokasiLooId)) $reqLokasiLooId= -1;
+
+$set= new LokasiLoo();
+$set->selectByParams(array("A.LOKASI_LOO_ID" => $reqLokasiLooId));
+$set->firstRow();
+$reqEmail= $set->getField("EMAIL");
+$reqTelepon= $set->getField("TELEPON");
+$reqNamaPj= $set->getField("NAMA_PJ");
+$reqNamaBank= $set->getField("NAMA_BANK");
+$reqRekeningBank= $set->getField("REKENING_BANK");
+$reqAtasNamaBank= $set->getField("ATAS_NAMA_BANK");
+$reqNamaCabang= $set->getField("NAMA_CABANG");
 ?>
 <link href="<?= base_url() ?>css/gaya-surat.css" rel="stylesheet" type="text/css">
 <link href="<?= base_url() ?>lib/froala_editor_2.9.8/css/froala_style.css" rel="stylesheet" type="text/css">
@@ -16,6 +111,10 @@ include_once("libraries/vendor/autoload.php");
   td{
     padding-right: 5px;
     padding-left: 5px;
+  }
+
+  tr.border, td.border{
+    border: solid black 0.5px;
   }
 </style>
 <body>
@@ -52,7 +151,7 @@ include_once("libraries/vendor/autoload.php");
     </tr>
     <tr>
       <td colspan=7>
-        SOSORO MALL - MERAK / ANJUNGAN AGUNG MALL - BAKAUHENI / PLAZA MARINA - LABUAN BAJO
+        <?=$reqLokasiNama?>
       </td>
     </tr>
     <tr>
@@ -68,7 +167,7 @@ include_once("libraries/vendor/autoload.php");
       <td colspan="3">JABATAN</td>
     </tr>
     <tr>
-      <td colspan="3">CV / PT / BRAND</td>
+      <td colspan="3"><?=$reqCustomerTempat?></td>
     </tr>
     <tr>
       <td colspan="3">di Tempat</td>
@@ -81,7 +180,7 @@ include_once("libraries/vendor/autoload.php");
       <td colspan="5">Salam hangat dari PT Indonesia Ferry Properti.</td>
     </tr>
     <tr>
-      <td colspan="5">Bersama ini kami sampaikan Letter of Intent untuk lokasi sewa di Area Komersial Sosoro Mall Merak / Anjungan Agung Mall Bakauheni / Plaza Marina Labuan Bajo dengan syarat dan kondisi sebagai berikut:                                 </td>
+      <td colspan="5">Bersama ini kami sampaikan Letter of Intent untuk lokasi sewa di Area Komersial <?=$reqLokasiNama?> dengan syarat dan kondisi sebagai berikut:                                 </td>
     </tr>
     <tr>
       <td><br></td>
@@ -95,42 +194,42 @@ include_once("libraries/vendor/autoload.php");
       <td style="width:5%">1.1</td>
       <td style="width:15%">Nama</td>
       <td style="width:3%">:</td>
-      <td>......................</td>
+      <td><?=$reqCustomerNama?></td>
     </tr>
     <tr>
       <td></td>
       <td style="width:3%">1.2</td>
       <td style="width:15%">Nomor NPWP</td>
       <td style="width:3%">:</td>
-      <td>......................</td>
+      <td><?=$reqCustomerNomorNior?></td>
     </tr>
     <tr>
       <td></td>
       <td style="width:3%">1.3</td>
       <td style="width:15%">Alamat NPWP</td>
       <td style="width:3%">:</td>
-      <td>......................</td>
+      <td><?=$reqCustomerNpwpAlamat?></td>
     </tr>
     <tr>
       <td></td>
       <td style="width:3%">1.4</td>
       <td style="width:15%">Nomor NIORA</td>
       <td style="width:3%">:</td>
-      <td>......................</td>
+      <td><?=$reqCustomerNomorNior?></td>
     </tr>
     <tr>
       <td></td>
       <td style="width:3%">1.5</td>
       <td style="width:15%">Alamat Domisili</td>
       <td style="width:3%">:</td>
-      <td>......................</td>
+      <td><?=$reqCustomerAlamatDomisili?></td>
     </tr>
     <tr>
       <td></td>
       <td style="width:3%">1.6</td>
       <td style="width:15%">Telepon</td>
       <td style="width:3%">:</td>
-      <td>......................</td>
+      <td><?=$reqCustomerTlp?></td>
     </tr>
     <tr>
       <td><br></td>
@@ -179,21 +278,21 @@ include_once("libraries/vendor/autoload.php");
       <td style="width:3%">3.1</td>
       <td style="width:15%">Jangka Waktu</td>
       <td style="width:3%">:</td>
-      <td>24</td>
+      <td><?=$reqMasaKerjaSama?></td>
     </tr>
     <tr>
       <td></td>
       <td style="width:3%">3.2</td>
       <td style="width:15%">Tanggal Awal</td>
       <td style="width:3%">:</td>
-      <td>......................</td>
+      <td><?=$reqTanggalAwal?></td>
     </tr>
     <tr>
       <td></td>
       <td style="width:3%">3.3</td>
       <td style="width:15%">Tanggal Akhir</td>
       <td style="width:3%">:</td>
-      <td>......................</td>
+      <td><?=$reqTanggalAkhir?></td>
     </tr>
     <tr>
       <td><br></td>
@@ -211,18 +310,18 @@ include_once("libraries/vendor/autoload.php");
         <table>
           <tr>
             <td style="width:3%">Rp</td>
-            <td style="width:20%">13381200</td>
+            <td style="width:20%"><?=numberToIna($reqSewaBiayaPerBulanUnit)?></td>
             <td style="width:15%">/ m2 / bulan</td>
             <td style="width:15%" >(excl. PPN)</td>
             <td style="width:57%" ></td>
           </tr>
           <tr>
             <td colspan="2">Total harga sewa</td>
-            <td >24 bulan</td>
+            <td ><?=$reqMasaKerjaSama?> bulan</td>
           </tr>
           <tr>
             <td colspan="2">Sebesar</td>
-            <td >Rp 356475168</td>
+            <td >Rp <?=$reqHargaSewaIncPpn?></td>
             <td >(inc. PPN)</td>
           </tr>
         </table>
@@ -237,7 +336,7 @@ include_once("libraries/vendor/autoload.php");
         <table>
           <tr>
             <td style="width:3%">Rp</td>
-            <td style="width:20%">23684724</td>
+            <td style="width:20%"><?=numberToIna($reqTotalBiayaPerBulanPpn)?></td>
             <td style="width:15%">/ m2 / bulan</td>
             <td style="width:15%" >(excl. PPN)</td>
             <td style="width:57%" ></td>
@@ -246,7 +345,7 @@ include_once("libraries/vendor/autoload.php");
             <td colspan="5">Total service charge 1 (satu) tahun pertama yaitu sebesar</td>
           </tr>
           <tr>
-            <td colspan="2">Rp 356475168</td>
+            <td colspan="2">Rp <?=numberToIna($reqSatuTahunTotalBiayaPerBulanPpn)?></td>
             <td ></td>
             <td >(inc. PPN)</td>
           </tr>
@@ -268,7 +367,7 @@ include_once("libraries/vendor/autoload.php");
           <tr>
             <td style="width:45%">Biaya yang dikenakan kepada pihak Penyewa sebesar </td>      
             <td style="width:3%">Rp</td>      
-            <td style="width:20%"></td>      
+            <td style="width:20%"><?=numberToIna($reqPromotionLevy)?></td>
             <td style="width:10%">/ m2 / bulan</td>
             <td></td>      
           </tr>
@@ -326,7 +425,7 @@ include_once("libraries/vendor/autoload.php");
     <tr>
       <td></td>
       <td colspan="5">
-        <b>Rp 71295033,6      </b>
+        <b>Rp <?=numberToIna($reqDownPayment)?></b>
       </td>
     </tr>
     <tr>
@@ -339,7 +438,7 @@ include_once("libraries/vendor/autoload.php");
     <tr>
       <td></td>
       <td colspan="5">
-        <b>Rp 42675178,38           </b>
+        <b>Rp <?=numberToIna($reqAwalSecurityDeposit)?></b>
       </td>
     </tr>
     <tr>
@@ -402,17 +501,17 @@ include_once("libraries/vendor/autoload.php");
           <tr>
             <td width="20%">BANK</td>
             <td width="3%">:</td>
-            <td>.......................</td>
+            <?=$reqNamaBank?>
           </tr>
           <tr>
             <td>NOMOR REKENING</td>
             <td>:</td>
-            <td>.......................</td>
+            <?=$reqRekeningBank?>
           </tr>
           <tr>
             <td>ATAS NAMA</td>
             <td>:</td>
-            <td>.......................</td>
+            <?=$reqAtasNamaBank?>
           </tr>
         </table>                     
       </td>
@@ -427,7 +526,7 @@ include_once("libraries/vendor/autoload.php");
     <tr>
       <td></td>
       <td colspan="5">
-        Apabila telah melakukan pembayaran mohon mengirimkan bukti pembayaran ke email ......@ifpro.co.id.
+        Apabila telah melakukan pembayaran mohon mengirimkan bukti pembayaran ke email <?=$reqEmail?>
       </td>
     </tr>
     <tr>
@@ -622,26 +721,28 @@ include_once("libraries/vendor/autoload.php");
       <td colspan=2 style="border:solid black 0.5px;"> Unit</td>
       <td style="width:3%;border:solid black 0.5px;text-align: center;">:</td>
       <td style="border:solid black 0.5px;" colspan="2">
-         GF.01
-        <br> GF.03                    
+        <?=$reqInfoDetilNama?>
       </td>
     </tr>
     <tr>
       <td colspan=2 style="border:solid black 0.5px;"> Nama Penyewa</td>
       <td style="width:3%;border:solid black 0.5px;text-align: center;">:</td>
       <td style="border:solid black 0.5px;"colspan="2">
+        <?=$reqNamaPenyewa?>
       </td>
     </tr>
     <tr>
       <td colspan=2 style="border:solid black 0.5px;">Nama Toko</td>
       <td style="width:3%;border:solid black 0.5px;text-align: center;">:</td>
       <td style="border:solid black 0.5px;"colspan="2">
+        <?=$reqNamaToko?>
       </td>
     </tr>
     <tr>
       <td colspan=2 style="border:solid black 0.5px;">Lini Bisnis</td>
       <td style="width:3%;border:solid black 0.5px;text-align: center;">:</td>
       <td style="border:solid black 0.5px;"colspan="2">
+        <?=$reqLineBusines?>
       </td>
     </tr>
     <tr>
@@ -659,30 +760,30 @@ include_once("libraries/vendor/autoload.php");
     <tr>
       <td colspan=2 style="border:solid black 0.5px;">Pola Bisnis         </td>
       <td style="width:3%;border:solid black 0.5px;text-align: center;">:</td>
-      <td style="border:solid black 0.5px;" colspan="2">Sewa             </td>
+      <td style="border:solid black 0.5px;" colspan="2"><?=$reqPolaBisnis?></td>
     </tr>
     <tr>
       <td colspan=2 style="border:solid black 0.5px;">Masa Kerja Sama                 </td>
       <td style="width:3%;border:solid black 0.5px;text-align: center;">:</td>
-      <td style="width:20%;border:solid black 0.5px;">24             </td>
+      <td style="width:20%;border:solid black 0.5px;"><?=$reqMasaKerjaSama?></td>
       <td style="width:40%;border:solid black 0.5px;">Bulan             </td>
     </tr>
     <tr>
       <td colspan=2 style="border:solid black 0.5px;">Luas Area Unit</td>
       <td style="width:3%;border:solid black 0.5px;text-align: center;">:</td>
-      <td style="border:solid black 0.5px;" colspan="2"></td>
+      <td style="border:solid black 0.5px;" colspan="2"><?=$reqLuasArea?></td>
     </tr>
     <tr>
       <td style="width:2%;border:solid black 0.5px;">-</td>
       <td style="width:35%;border:solid black 0.5px;">Indoor        </td>
       <td style="width:3%;border:solid black 0.5px;text-align: center;">:</td>
-      <td style="border:solid black 0.5px;" colspan="2"></td>
+      <td style="border:solid black 0.5px;" colspan="2"><?=$reqTotalLuasIndoor?></td>
     </tr>
     <tr>
       <td style="width:2%;border:solid black 0.5px;">-</td>
       <td style="width:35%;border:solid black 0.5px;">Outdoor       </td>
       <td style="width:3%;border:solid black 0.5px;text-align: center;">:</td>
-      <td style="border:solid black 0.5px;" colspan="2"></td>
+      <td style="border:solid black 0.5px;" colspan="2"><?=$reqTotalLuasOutdoor?></td>
     </tr>
     <tr>
       <td colspan=2 style="border:solid black 0.5px;">Harga Sewa          </td>
@@ -763,7 +864,7 @@ include_once("libraries/vendor/autoload.php");
     <tr>
       <td colspan=2 style="border:solid black 0.5px;">Fitting out Charge</td>
       <td style="width:3%;border:solid black 0.5px;text-align: center;">:</td>
-      <td style="border:solid black 0.5px;" colspan="2">Rp -</td>
+      <td style="border:solid black 0.5px;" colspan="2">Rp <?=$reqFittingOut?></td>
     </tr>
     <tr>
       <td colspan=2 style="border:solid black 0.5px;">Harga Service Charge</td>
@@ -819,17 +920,17 @@ include_once("libraries/vendor/autoload.php");
     <tr>
       <td colspan=2 style="border:solid black 0.5px;">Marketing Levy</td>
       <td style="width:3%;border:solid black 0.5px;text-align: center;">:</td>
-      <td style="border:solid black 0.5px;" colspan="2">Rp -</td>
+      <td style="border:solid black 0.5px;" colspan="2">Rp <?=$reqPromotionLevy?></td>
     </tr>
     <tr>
       <td colspan=2 style="border:solid black 0.5px;">DP</td>
       <td style="width:3%;border:solid black 0.5px;text-align: center;">:</td>
-      <td style="border:solid black 0.5px;" colspan="2">20</td>
+      <td style="border:solid black 0.5px;" colspan="2"><?=$reqDp?></td>
     </tr>
     <tr>
       <td colspan=2 style="border:solid black 0.5px;">TOP         </td>
       <td style="width:3%;border:solid black 0.5px;text-align: center;">:</td>
-      <td style="border:solid black 0.5px;" colspan="2">18</td>
+      <td style="border:solid black 0.5px;" colspan="2"><?=$reqTop?></td>
     </tr>
     <tr>
       <td colspan="5" style="border:solid black 0.5px;text-align: center;"><b>Cara Pembayaran</b></td>
@@ -837,13 +938,13 @@ include_once("libraries/vendor/autoload.php");
     <tr>
       <td style="border:solid black 0.5px;" colspan="2">Down Payment</td>
       <td style="width:3%;border:solid black 0.5px;text-align: center;">:</td>
-      <td style="border:solid black 0.5px;">Rp 71295033,6         </td>
+      <td style="border:solid black 0.5px;">Rp <?=numberToIna($reqDownPayment)?></td>
       <td style="border:solid black 0.5px;">(incl. PPN)     </td>
     </tr>
     <tr>
       <td style="border:solid black 0.5px;" colspan="2">Angsuran (sisa dikurang DP)</td>
       <td style="width:3%;border:solid black 0.5px;text-align: center;">:</td>
-      <td style="border:solid black 0.5px;">Rp -</td>
+      <td style="border:solid black 0.5px;">Rp <?=$reqAngsuranDp?></td>
       <td style="border:solid black 0.5px;">(incl. PPN)          </td>
     </tr>
     <tr>
@@ -855,13 +956,13 @@ include_once("libraries/vendor/autoload.php");
     <tr>
       <td style="border:solid black 0.5px;" colspan="2">Amotrisasi DP         </td>
       <td style="width:3%;border:solid black 0.5px;text-align: center;">:</td>
-      <td style="border:solid black 0.5px;">Rp -</td>
+      <td style="border:solid black 0.5px;">Rp <?=$reqMasaKerjaSama?></td>
       <td style="border:solid black 0.5px;">/ bulan     </td>
     </tr>
     <tr>
       <td style="border:solid black 0.5px;" colspan="2">Biaya Service Charge          t</td>
       <td style="width:3%;border:solid black 0.5px;text-align: center;">:</td>
-      <td style="border:solid black 0.5px;">Rp -</td>
+      <td style="border:solid black 0.5px;">Rp <?=$reqBayarSCBulanan?></td>
       <td style="border:solid black 0.5px;">/ bulan      </td>
     </tr>
     <tr>
@@ -896,19 +997,19 @@ include_once("libraries/vendor/autoload.php");
       <td style="border:solid black 0.5px; text-align: center;"> TOTAL SEWA <br> (Incl. PPN)</td>
       <td style="border:solid black 0.5px; text-align: center;"> SERVICE CHARGE <br> (Incl. PPN)</td>
     </tr>
-    <tr>
-      <td style="border:solid black 0.5px;" colspan="2"> SALDO AWAL          </td>
-      <td style="border:solid black 0.5px;"></td>
-      <td style="border:solid black 0.5px;"></td>
+    <?
+    foreach ($arrperhitungansewa as $k => $v)
+    {
+    ?>
+    <tr class="border">
+      <td class="border"><?=$v["NAMA_ANGSURAN"]?></td>
+      <td class="border rgt"><?=$v["SEWA_INC_PPN"]?></td>
+      <td class="border rgt"><?=$v["TOTAL_SEWA"]?></td>
+      <td class="border rgt"><?=$v["SERVICE_CHARGE_INC_PPN"]?></td>
     </tr>
-    <?for($i=1; $i<=48; $i++){?>
-      <tr>
-        <td style="border:solid black 0.5px;"> Angsuran #<?=$i?>  </td>
-        <td style="border:solid black 0.5px;"> </td>
-        <td style="border:solid black 0.5px;"> </td>
-        <td style="border:solid black 0.5px;"> </td>
-      </tr>
-    <?}?>
+    <?
+    }
+    ?>
     <tr>
       <td style="border:solid black 0.5px; text-align: center;" colspan="2"><b> TOTAL</b> </td>
       <td style="border:solid black 0.5px;"></td>

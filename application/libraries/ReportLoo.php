@@ -117,7 +117,7 @@ class ReportLoo
 			$setdetil->setField("TR_LOO_ID", $reqId);
 			if($setdetil->updateByField())
 			{
-				$arrtriger= array("reqId"=>$reqId, "mode"=>"updateparaf");
+				$arrtriger= array("reqId"=>$reqId, "vjenis"=>"loo", "mode"=>"updateparaf");
 				$this->trigerpaksa($arrtriger);
 			}
 		}
@@ -129,7 +129,47 @@ class ReportLoo
 			$setdetil->setField("TR_LOO_ID", $reqId);
 			if($setdetil->paraf())
 			{
-				$arrtriger= array("reqId"=>$reqId, "mode"=>"updateparaf");
+				$arrtriger= array("reqId"=>$reqId, "vjenis"=>"loo", "mode"=>"updateparaf");
+				$this->trigerpaksa($arrtriger);
+			}
+		}
+	}
+
+	function setloiterbaca($arrparam)
+	{
+		$CI = &get_instance();
+		$CI->load->model("TrLoi");
+		$CI->load->model("TrLoiParaf");
+		$arrgetsessionuser= $this->getsessionuser();
+		// print_r($arrgetsessionuser);exit;
+		$sessionloginid= $arrgetsessionuser["sessionloginid"];
+
+		$reqId= $arrparam["reqId"];
+		$reqStatusSurat= $arrparam["reqStatusSurat"];
+		// print_r($arrparam);exit;
+
+		if($reqStatusSurat == "VALIDASI")
+		{
+			$setdetil= new TrLoi();
+			$setdetil->setField("FIELD", "TERBACA_VALIDASI");
+			$setdetil->setField("FIELD_VALUE", "1");
+			$setdetil->setField("LAST_UPDATE_USER", $sessionloginid);
+			$setdetil->setField("TR_LOI_ID", $reqId);
+			if($setdetil->updateByField())
+			{
+				$arrtriger= array("reqId"=>$reqId, "vjenis"=>"loi", "mode"=>"updateparaf");
+				$this->trigerpaksa($arrtriger);
+			}
+		}
+		else if($reqStatusSurat == "PARAF")
+		{
+			$setdetil= new TrLoiParaf();
+			$setdetil->setField("LAST_UPDATE_USER", $sessionloginid);
+			$setdetil->setField("USER_ID", $sessionloginid);
+			$setdetil->setField("TR_LOI_ID", $reqId);
+			if($setdetil->paraf())
+			{
+				$arrtriger= array("reqId"=>$reqId, "vjenis"=>"loi", "mode"=>"updateparaf");
 				$this->trigerpaksa($arrtriger);
 			}
 		}
@@ -151,14 +191,31 @@ class ReportLoo
 	function trigerpaksa($arrparam)
 	{
 		$CI = &get_instance();
-		$CI->load->model("TrLoo");
-		$reqId= $arrparam["reqId"];
-		$mode= $arrparam["mode"];
 
-		$tgr= new TrLoo();
-		$tgr->setField("TR_LOO_ID", $reqId);
-		$tgr->setField("PAKSA_DB", $mode);
-		$tgr->updatetriger();
+		$vjenis= $arrparam["vjenis"];
+
+		if($vjenis == "loo")
+		{
+			$CI->load->model("TrLoo");
+			$reqId= $arrparam["reqId"];
+			$mode= $arrparam["mode"];
+
+			$tgr= new TrLoo();
+			$tgr->setField("TR_LOO_ID", $reqId);
+			$tgr->setField("PAKSA_DB", $mode);
+			$tgr->updatetriger();
+		}
+		else if($vjenis == "loi")
+		{
+			$CI->load->model("TrLoi");
+			$reqId= $arrparam["reqId"];
+			$mode= $arrparam["mode"];
+
+			$tgr= new TrLoi();
+			$tgr->setField("TR_LOI_ID", $reqId);
+			$tgr->setField("PAKSA_DB", $mode);
+			$tgr->updatetriger();
+		}
 	}
 	
 }

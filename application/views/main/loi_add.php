@@ -63,6 +63,10 @@ else
     $reqSecurityDeposit= $set->getField("SECURITY_DEPOSIT");
     $reqFittingOut= $set->getField("FITTING_OUT");
 
+    $reqTanggalAwal= dateToPageCheck($set->getField("INFO_TANGGAL_AWAL"));
+    $reqTanggalAkhir= dateToPageCheck($set->getField("INFO_TANGGAL_AKHIR"));
+    $reqPromotionLevy= $set->getField("PROMOTION_LEVY");
+
     $reqSatuanKerjaPengirimId= $set->getField("SATUAN_KERJA_PENGIRIM_ID");
     $reqUserPengirimId= $set->getField("USER_PENGIRIM_ID");
     $reqStatusData= $set->getField("STATUS_DATA");
@@ -1359,17 +1363,36 @@ $(function(){
                                 <table class="table">
                                     <thead>
                                         <tr>
+                                            <th colspan="6">JANGKA WAKTU</th>
+                                        </tr>
+                                        <tr>
                                             <td colspan="6">
                                                 <table class="table">
                                                     <thead>
                                                         <tr>
-                                                            <td style="width: 20%">Down Payment</td>
+                                                            <td style="width: 20%">Tanggal</td>
                                                             <td style="width: 2%">:</td>
+                                                            <td colspan="5">
+                                                                <input type="text" id="reqTanggalAwal" class="easyui-datebox textbox form-control" required name="reqTanggalAwal" value="<?=$reqTanggalAwal?>" data-options="required:true" style="width:100%; height:30px" />
+                                                                &nbsp;&nbsp;s/d&nbsp;&nbsp;
+                                                                <input type="text" id="reqTanggalAkhir" class="easyui-datebox textbox form-control" required name="reqTanggalAkhir" value="<?=$reqTanggalAkhir?>" data-options="required:true" style="width:100%; height:30px" />
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>Promotion Levy</td>
+                                                            <td>:</td>
+                                                            <td colspan="5">
+                                                                <input type="text" id="reqPromotionLevy" class="vlxuangclass easyui-validatebox textbox form-control" required name="reqPromotionLevy" value="<?=numberToIna($reqPromotionLevy)?>" data-options="required:true" style="width:60%; display: inline; text-align: right;" /> <label class="labelsumtotal">/ m2 / bulan</label>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>Down Payment</td>
+                                                            <td>:</td>
                                                             <td>
                                                                 <input type="text" id="reqDp" class="vlxuangclass easyui-validatebox textbox form-control" required name="reqDp" value="<?=numberToIna($reqDp)?>" data-options="required:true" style="width:60%; display: inline; text-align: right;" /> <label class="labeltotal">%</label>
                                                             </td>
-                                                            <td style="width: 20%">Periode Sewa</td>
-                                                            <td style="width: 2%">:</td>
+                                                            <td>Periode Sewa</td>
+                                                            <td>:</td>
                                                             <td>
                                                                 <input type="text" id="reqPeriodeSewa" class="vlxuangclass easyui-validatebox textbox form-control" required name="reqPeriodeSewa" value="<?=numberToIna($reqPeriodeSewa)?>" data-options="required:true" style="width:60%; display: inline; text-align: right;" /> <label class="labeltotal">bulan</label>
                                                             </td>
@@ -3341,7 +3364,7 @@ function notnullval(v)
 
 function submitPreview() 
 {
-    // parent.openAdd('app/loadUrl/report/loo_cetak/?reqId=<?=$reqId?>&templateSurat=loi');
+    parent.openAdd('app/loadUrl/report/loo_cetak/?reqId=<?=$reqId?>&templateSurat=loi');
 }
 
 function submitLampiran() 

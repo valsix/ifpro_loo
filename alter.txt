@@ -764,6 +764,9 @@ create table tr_loi
 	, satuan_kerja_pengirim_id character varying
 	, user_posisi_paraf_id character varying
 	, user_lihat_status character varying
+	, tanggal_awal date
+	, tanggal_akhir date
+	, promotion_levy numeric
 	, produk_id integer
 	, customer_id integer
 	, lokasi_loo_id integer
@@ -881,7 +884,7 @@ begin
 	if lower(new.paksa_db) = lower('updateparaf') then
 
 		select
-		info_loo_paraf(a.tr_loi_id) persetujuan_info, coalesce(a1.jumlah_step,0) + 1 jumlah_step
+		info_loi_paraf(a.tr_loi_id) persetujuan_info, coalesce(a1.jumlah_step,0) + 1 jumlah_step
 		into persetujuaninfo, jumlahstep
 		from tr_loi a
 		left join
@@ -1068,6 +1071,127 @@ on tr_loi
 for each row
 execute procedure tr_loi_p_hapus();
 
+create or replace function info_loi_paraf(vid numeric)
+  returns character varying as
+$body$
+declare
+inforeturn character varying;
+infodata character varying;
+
+rec_data record;
+x numeric := 1;
+totalparafstatus integer;
+totalparaf integer;
+
+begin
+    select count(1) into totalparafstatus from tr_loi_paraf where tr_loi_id = vid and status_paraf = '1';
+    select count(1) into totalparaf from tr_loi_paraf where tr_loi_id = vid;
+    
+    inforeturn:='';
+    for rec_data in (
+		select
+		urutdata, tr_loi_id, status_data, nama_satker, no_urut, next_urut, status_paraf, terbaca
+		from
+		(
+			select
+			1 urutdata, tr_loi_id, status_data, nama_satker, no_urut, coalesce(next_urut,1) next_urut, status_paraf, terbaca
+			from tr_loi_paraf a
+			inner join (select tr_loi_id sm_id, status_data from tr_loi) b on tr_loi_id = sm_id
+			where tr_loi_id = vid
+			union all
+			select
+			2 urutdata, a.tr_loi_id, a.status_data
+			--, case when a.status_pejabat_ganti = '1' then sf.jabatan else b.jabatan end nama_satker
+			, b.jabatan nama_satker
+			, coalesce(sp.no_urut,0) + 1 no_urut
+			, coalesce(sp.next_urut,1) next_urut
+			, case when a.status_data = upper('posting') then '1' else null end status_paraf
+			, case when a.terbaca_validasi = 0 then null else a.terbaca_validasi end terbaca
+			from tr_loi a
+			inner join pegawai b on a.user_pengirim_id = b.pegawai_id
+			inner join satuan_kerja_fix sf on a.satuan_kerja_pengirim_id = sf.satuan_kerja_id
+			left join
+			(
+				select tr_loi_id, max(no_urut) no_urut, coalesce(next_urut,1) next_urut
+				from tr_loi_paraf
+				where no_urut <= coalesce(next_urut,1)
+				and coalesce(nullif(kondisi_paraf, ''), null) is null
+				group by tr_loi_id, coalesce(next_urut,1)
+			) sp on a.tr_loi_id = sp.tr_loi_id
+			where a.tr_loi_id = vid
+			/*union all
+			select
+			3 urutdata, a.tr_loi_id, a.status_data
+			--, case when a.status_pejabat_ganti = '1' then sf.jabatan else b.jabatan end nama_satker
+			, b.jabatan nama_satker
+			, coalesce(sp.no_urut,0) + 1, coalesce(sp.next_urut,1) next_urut
+			, case when a.status_data = upper('posting') then '1' else null end status_paraf
+			, null terbaca
+			from tr_loi a
+			inner join pegawai b on a.user_id = b.pegawai_id
+			inner join satuan_kerja_fix sf on a.satuan_kerja_id_asal = sf.satuan_kerja_id
+			left join
+			(
+				select tr_loi_id, max(no_urut) no_urut, coalesce(next_urut,1) next_urut
+				from tr_loi_paraf
+				where no_urut <= coalesce(next_urut,1)
+				and coalesce(nullif(kondisi_paraf, ''), null) is null
+				group by tr_loi_id, coalesce(next_urut,1)
+			) sp on a.tr_loi_id = sp.tr_loi_id
+			where a.jenis_naskah_id in (8,17,18,19,20) and a.tr_loi_id = vid*/
+		) a
+		order by a.tr_loi_id, a.urutdata, a.no_urut, a.next_urut
+    )
+    loop
+
+	infodata:= '';
+
+	if rec_data.urutdata = 3 then
+		infodata:= rec_data.nama_satker;
+	else
+		if rec_data.terbaca is not null then infodata:= rec_data.nama_satker || ' <i class="fa fa-md fa-eye"></i>';
+		else infodata:= rec_data.nama_satker || ' <i class="fa fa-md fa-eye-slash"></i>';
+		end if;
+	end if;
+	
+	--select info_loi_paraf(183)
+	--raise notice '-,%', rec_data.nama_satker;
+	--raise notice '-,%', rec_data.no_urut || '-' || rec_data.next_urut || '-' || totalparafstatus || '-' || totalparaf;
+			
+	if (rec_data.no_urut = rec_data.next_urut) or (rec_data.urutdata = 2 and rec_data.status_data = upper('validasi'))
+	then 
+		if rec_data.urutdata = 3 then
+			if rec_data.status_data = upper('pembuat') then
+				infodata:= '<b>' || infodata || '</b> <i class="fa fa-md fa-pencil-square-o"></i>';
+			else
+				infodata:= infodata;
+			end if;
+		--elsif rec_data.urutdata = 2 and rec_data.status_data = upper('pembuat') then
+		--	infodata:= infodata;
+		else
+			if rec_data.status_paraf is not null then infodata:= '<b>' || infodata || '</b> <i class="fa fa-md fa-check-square-o"></i>';--fa-check fa-md
+			else infodata:= '<b>' || infodata || '</b> <i class="fa fa-md fa-pencil-square-o"></i>';--fa-close fa-md
+			--if rec_data.status_paraf is not null then infodata:= '#bawal#' || infodata || '#bakhir# <i class="fa fa-md fa-check-square-o"></i>';--fa-check fa-md
+			--else infodata:= '#bawal#' || infodata || '#bakhir# <i class="fa fa-md fa-pencil-square-o"></i>';--fa-close fa-md
+			end if;
+		end if;
+	else
+		infodata:= infodata;
+	end if;
+	
+	if x = 1 then
+		inforeturn := infodata;
+	else
+		inforeturn := inforeturn || '<br/>' || infodata;
+	end if;
+	x := x + 1;
+    end loop;
+   return inforeturn;
+end;
+$body$
+language plpgsql volatile cost 100;
+alter function info_loi_paraf(numeric) owner to postgres;
+
 drop table if exists tr_loi_detil;
 create table tr_loi_detil
 (
@@ -1232,6 +1356,50 @@ before insert or update
 on tr_loi_paraf
 for each row
 execute procedure p_tr_loi_paraf();
+
+create or replace function ambildetilloi(vparamid numeric, vparam character varying)
+  returns character varying as
+$body$
+declare
+vreturn character varying;
+rec_data record;
+x numeric := 1;
+begin
+    vreturn:='';
+
+    for rec_data in (
+	select *
+	from
+	(
+		select
+		a1.nama || ' - ' || case when upper(a.area) = upper('i') then 'Indoor' else 'Outdoor' end || ' - ' || a.nama
+		vinfo
+		, a.lokasi_loo_detil_id info_id
+		from lokasi_loo_detil a
+		inner join lantai_loo a1 on a.lantai_loo_id = a1.lantai_loo_id
+		where a.lokasi_loo_detil_id in
+		(
+			select vid from tr_loi_detil
+			where tr_loi_id = vparamid and vmode ilike '%luas_sewa_%'
+		)
+
+	) a
+	order by info_id asc
+    )
+    loop
+            if x = 1 then
+                vreturn := rec_data.vinfo;
+            else
+                vreturn := vreturn || vparam || rec_data.vinfo;
+            end if;
+	   x := x + 1;
+    end loop;
+    
+   return vreturn;
+end;
+$body$
+language plpgsql volatile cost 100;
+alter function ambildetilloi(numeric, character varying) owner to postgres;
 
 drop table if exists utility_charge;
 create table utility_charge
