@@ -292,110 +292,6 @@ on tr_loo
 for each row
 execute procedure p_tr_loo();
 
-create or replace function p_tr_loo_loi()
-  returns trigger as
-$body$
-declare
-vquery text;
-vnewid numeric;
-begin
-	
-	if coalesce(nullif(new.paksa_db , 'x'), 'x') != 'x' then
-		return new;
-	end if;
-
-	if new.status_loi = 1 and old.status_loi is null then
-		select (coalesce((select max(tr_loi_id) from tr_loi),0) + 1) into vnewid;
-		insert into tr_loi
-		(
-			tr_loi_id, tr_loo_id, status_data
-			, no_urut, tahun, bulan, user_pembuat_id, user_pengirim_id, user_pengirim_nama
-			, user_pengirim_jabatan, satuan_kerja_pengirim_id
-			, produk_id, customer_id, lokasi_loo_id, pph
-			, total_luas_indoor, total_luas_outdoor, total_luas, total_diskon_indoor_sewa
-			, total_diskon_outdoor_sewa, total_diskon_indoor_service, total_diskon_outdoor_service
-			, harga_indoor_sewa, harga_outdoor_sewa, harga_indoor_service
-			, harga_outdoor_service, dp, top, periode_sewa, sewa_biaya_satuan_unit
-			, sewa_biaya_satuan_service, sewa_total_biaya_unit, sewa_biaya_per_bulan_unit
-			, sewa_biaya_per_bulan_service, sewa_total_biaya_service, total_biaya_per_bulan_no_ppn
-			, total_biaya_per_bulan_ppn, total_biaya_no_ppn, total_biaya_ppn
-			, security_deposit, fitting_out
-		)
-		select
-			vnewid tr_loi_id, tr_loo_id, upper('draft') status_data
-			, no_urut, tahun, bulan, user_pembuat_id, user_pengirim_id, user_pengirim_nama
-			, user_pengirim_jabatan, satuan_kerja_pengirim_id
-			, produk_id, customer_id, lokasi_loo_id, pph
-			, total_luas_indoor, total_luas_outdoor, total_luas, total_diskon_indoor_sewa
-			, total_diskon_outdoor_sewa, total_diskon_indoor_service, total_diskon_outdoor_service
-			, harga_indoor_sewa, harga_outdoor_sewa, harga_indoor_service
-			, harga_outdoor_service, dp, top, periode_sewa, sewa_biaya_satuan_unit
-			, sewa_biaya_satuan_service, sewa_total_biaya_unit, sewa_biaya_per_bulan_unit
-			, sewa_biaya_per_bulan_service, sewa_total_biaya_service, total_biaya_per_bulan_no_ppn
-			, total_biaya_per_bulan_ppn, total_biaya_no_ppn, total_biaya_ppn
-			, security_deposit, fitting_out
-		from tr_loo
-		where tr_loo_id = new.tr_loo_id
-		and tr_loo_id not in (select tr_loo_id from tr_loi where tr_loo_id = new.tr_loo_id);
-
-		insert into tr_loi_paraf
-		(
-			tr_loi_paraf_id
-			, tr_loi_id, satuan_kerja_id_tujuan, user_id
-			, nama_user, nama_satker, no_urut, status_bantu, status_pejabat_ganti, kondisi_paraf
-			, paksa_db
-		)
-		select
-		tr_loi_paraf_id + coalesce((select max(tr_loi_paraf_id) from tr_loi_paraf),0) tr_loi_paraf_id
-		, tr_loi_id, satuan_kerja_id_tujuan, user_id
-		, nama_user, nama_satker, no_urut, status_bantu, status_pejabat_ganti, kondisi_paraf
-		, paksa_db
-		from
-		(
-			select
-			row_number () over (order by tr_loo_paraf_id) tr_loi_paraf_id
-			, vnewid tr_loi_id, satuan_kerja_id_tujuan, user_id
-			, nama_user, nama_satker, no_urut, status_bantu, status_pejabat_ganti, kondisi_paraf
-			, 'paksa' paksa_db
-			from tr_loo_paraf
-			where tr_loo_id = new.tr_loo_id
-			order by tr_loo_paraf_id
-		) a
-		;
-
-		insert into tr_loi_detil
-		(
-			tr_loi_detil_id, tr_loi_id, vmode, vid, nilai, keterangan
-		)
-		select
-		tr_loi_detil_id + coalesce((select max(tr_loi_detil_id) from tr_loi_detil),0) tr_loi_detil_id
-		, tr_loi_id, vmode, vid, nilai, keterangan
-		from
-		(
-			select
-			row_number () over (order by tr_loo_detil_id) tr_loi_detil_id
-			, vnewid tr_loi_id, vmode, vid, nilai, keterangan
-			from tr_loo_detil
-			where tr_loo_id = new.tr_loo_id
-			order by tr_loo_detil_id
-		) a
-		;
-
-	end if;
-
-	return new;
-end;
-$body$
-language plpgsql volatile cost 100;
-alter function p_tr_loo_loi() owner to postgres;
-
-drop trigger if exists trg_tr_loo_loi on tr_loo;
-create trigger trg_tr_loo_loi
-after update
-on tr_loo
-for each row
-execute procedure p_tr_loo_loi();
-
 create or replace function tr_loo_p_hapus()
   returns trigger as
 $body$
@@ -806,7 +702,7 @@ create table tr_loi
 	, last_user character varying
 	, paksa_db character varying
 	, last_create_date timestamp without time zone
-	, status_loi integer
+	, status_psm integer
 	, constraint pk_tr_loi primary key (tr_loi_id)
 );
 
@@ -851,7 +747,7 @@ begin
 
 	if lower(new.paksa_db) = lower('tnomor') then
 		new.paksa_db:= null;
-		infonomorsurat:= '/' || upper('ifpro') || '-' || upper('comm') || '/' || upper('loo') || '/' || (select upper(kode) from lokasi_loo where lokasi_loo_id = new.lokasi_loo_id) || '/' || (select ambil_bulan_romawi(to_char(now(), 'mm'))) || '/' || (select to_char(now(), 'yyyy'));
+		infonomorsurat:= '/' || upper('ifpro') || '-' || upper('comm') || '/' || upper('loi') || '/' || (select upper(kode) from lokasi_loo where lokasi_loo_id = new.lokasi_loo_id) || '/' || (select ambil_bulan_romawi(to_char(now(), 'mm'))) || '/' || (select to_char(now(), 'yyyy'));
 		--raise notice '%', infonomorsurat;
 
 		new.info_nomor_surat:= infonomorsurat;
@@ -964,7 +860,7 @@ begin
 					--raise notice '%', infonomorsurat;
 					new.nomor_surat:= infonomorsurat;
 					new.user_posisi_paraf_id:= null;
-					new.status_loi:= 1;
+					new.status_psm:= 1;
 
 				else
 					new.approval_qr_date:= null;
@@ -985,7 +881,7 @@ begin
 
 	--kalau sudah ada nomor surat maka lewati
 	if tg_op = upper('update') then
-		if coalesce(nullif(new.nomor_surat , 'x'), 'x') != 'x' and old.status_loi is null and new.status_loi = 1 then
+		if coalesce(nullif(new.nomor_surat , 'x'), 'x') != 'x' and old.status_psm is null and new.status_psm = 1 then
 			new.status_data:= upper('posting');
 			return new;
 		end if;
@@ -1400,6 +1296,874 @@ end;
 $body$
 language plpgsql volatile cost 100;
 alter function ambildetilloi(numeric, character varying) owner to postgres;
+
+drop table if exists tr_psm;
+create table tr_psm
+(
+	tr_psm_id numeric not null
+	, tr_loi_id numeric not null
+	, tr_loo_id numeric not null
+	, status_data character varying
+	, nomor_surat character varying
+	, info_nomor_surat character varying
+	, no_urut numeric
+	, tahun numeric
+	, bulan numeric
+	, user_pembuat_id character varying
+	, user_pengirim_id character varying
+	, user_pengirim_nama character varying
+	, user_pengirim_jabatan character varying
+	, satuan_kerja_pengirim_id character varying
+	, user_posisi_paraf_id character varying
+	, user_lihat_status character varying
+	, tanggal_awal date
+	, tanggal_akhir date
+	, promotion_levy numeric
+	, produk_id integer
+	, customer_id integer
+	, lokasi_loo_id integer
+	, pph numeric
+	, total_luas_indoor numeric
+	, total_luas_outdoor numeric
+	, total_luas numeric
+	, total_diskon_indoor_sewa numeric
+	, total_diskon_outdoor_sewa numeric
+	, total_diskon_indoor_service numeric
+	, total_diskon_outdoor_service numeric
+	, harga_indoor_sewa numeric
+	, harga_outdoor_sewa numeric
+	, harga_indoor_service numeric
+	, harga_outdoor_service numeric
+	, dp numeric
+	, top numeric
+	, periode_sewa numeric
+	, sewa_biaya_satuan_unit numeric
+	, sewa_biaya_satuan_service numeric
+	, sewa_total_biaya_unit numeric
+	, sewa_biaya_per_bulan_unit numeric
+	, sewa_biaya_per_bulan_service numeric
+	, sewa_total_biaya_service numeric
+	, total_biaya_per_bulan_no_ppn numeric
+	, total_biaya_per_bulan_ppn numeric
+	, total_biaya_no_ppn numeric
+	, total_biaya_ppn numeric
+	, security_deposit numeric
+	, fitting_out numeric
+	, terparaf numeric
+	, terbaca_validasi integer
+	, approval_qr_date timestamp without time zone
+	, ttd_kode character varying
+	, persetujuan_info character varying
+	, jumlah_step numeric
+	, last_user character varying
+	, paksa_db character varying
+	, last_create_date timestamp without time zone
+	, status_fix integer
+	, constraint pk_tr_psm primary key (tr_psm_id)
+);
+
+create or replace function p_tr_psm()
+  returns trigger as
+$body$
+declare
+
+pejabatnip character varying;
+pejabatnama character varying;
+pejabatjabatan character varying;
+statuspejabatganti character varying;
+ispemaraf integer := 0;
+adaparaf integer := 0;
+persetujuaninfo character varying;
+jumlahstep numeric := 0;
+infonomorsurat character varying;
+userlihatstatus character varying;
+vtahun numeric := 0;
+vbulan numeric := 0;
+vnourut numeric := 0;
+vquery text;
+
+begin
+
+	if lower(new.paksa_db) = lower('paksa') then
+		new.paksa_db:= null;
+		return new;
+	end if;
+
+	if lower(new.paksa_db) = lower('revisi') then
+		update tr_psm_paraf set
+			status_paraf = null
+			, kode_paraf = null
+			, terbaca = null
+			, next_urut= 1
+		where tr_psm_id= new.tr_psm_id;
+
+		new.paksa_db:= null;
+		return new;
+	end if;
+
+	if lower(new.paksa_db) = lower('tnomor') then
+		new.paksa_db:= null;
+		infonomorsurat:= '/' || upper('ifpro') || '-' || upper('comm') || '/' || upper('loo') || '/' || (select upper(kode) from lokasi_loo where lokasi_loo_id = new.lokasi_loo_id) || '/' || (select ambil_bulan_romawi(to_char(now(), 'mm'))) || '/' || (select to_char(now(), 'yyyy'));
+		--raise notice '%', infonomorsurat;
+
+		new.info_nomor_surat:= infonomorsurat;
+		return new;
+	end if;
+
+	--untuk update posisi surat
+	if lower(new.paksa_db) = lower('updateparaf') then
+		select string_agg(a.user_id, ',') into userlihatstatus
+		from
+		(
+			select
+			row_number () over ( partition by a.tr_psm_id order by a.no_urut) urut
+			, a.tr_psm_id, a.user_id
+			from tr_psm_paraf a
+			where coalesce(nullif(a.kondisi_paraf, ''), null) is null
+			and coalesce(nullif(a.status_paraf, ''), null) is null
+			union all
+			select 1 urut, a.tr_psm_id, a.user_pengirim_id user_id
+			from tr_psm a
+			where status_data = upper('validasi')
+		) a
+		where urut = 1
+		and a.tr_psm_id = new.tr_psm_id
+		group by a.tr_psm_id;
+
+		new.user_posisi_paraf_id:= userlihatstatus;
+	end if;
+
+	if lower(new.paksa_db) = lower('updateparaf') then
+
+		select
+		info_loi_paraf(a.tr_psm_id) persetujuan_info, coalesce(a1.jumlah_step,0) + 1 jumlah_step
+		into persetujuaninfo, jumlahstep
+		from tr_psm a
+		left join
+		(
+			select
+			tr_psm_id, count(1) jumlah_step
+			from tr_psm_paraf
+			where status_paraf is null
+			group by tr_psm_id
+		) a1 on a.tr_psm_id = a1.tr_psm_id
+		where a.tr_psm_id = new.tr_psm_id;
+
+		new.persetujuan_info:= persetujuaninfo;
+		new.jumlah_step:= jumlahstep;
+
+		new.paksa_db:= null;
+		return new;
+	end if;
+
+	if lower(new.paksa_db) = lower('updateuserlihatstatus') then
+		select string_agg(a.user_id, ',') into userlihatstatus
+		from
+		(
+			select distinct a.user_id
+			from
+			(
+				select a.user_id
+				from tr_psm_paraf a
+				inner join tr_psm a1 on a.tr_psm_id = a1.tr_psm_id
+				where 1=1 and a.tr_psm_id = new.tr_psm_id
+				union all
+				select a.user_pembuat_id  user_id
+				from tr_psm a
+				where 1=1 and a.tr_psm_id = new.tr_psm_id
+				union all
+				select a.user_pengirim_id user_id
+				from tr_psm a
+				where 1=1 and a.tr_psm_id = new.tr_psm_id
+			) a
+		) a;
+
+		new.user_lihat_status:= userlihatstatus;
+		new.paksa_db:= null;
+		return new;
+	end if;
+
+	select
+	nip, nama_pegawai, jabatan, status_pejabat_ganti
+	into pejabatnip, pejabatnama, pejabatjabatan, statuspejabatganti
+	from satuan_kerja_fix where satuan_kerja_id = new.satuan_kerja_pengirim_id;
+
+	if tg_op = upper('update') then
+		if old.status_data = upper('validasi') and new.status_data = upper('posting') then
+			select count(1) into adaparaf
+			from tr_psm_paraf a
+			where 1=1 and tr_psm_id = new.tr_psm_id 
+			and coalesce(nullif(status_paraf, 'x'), 'x') = 'x';
+
+			if adaparaf = 0 then
+				if new.terbaca_validasi = 1 then
+					new.approval_qr_date:= current_timestamp;
+					new.ttd_kode:= upper('ttd') || pejabatnip || lpad(new.tr_psm_id::varchar, 6, '0') || to_char(current_timestamp, 'ddmmyyyyhh24miss');
+					new.terparaf:= 1;
+
+					select to_char(current_timestamp, 'yyyy')::integer, to_char(current_timestamp, 'mm')::integer
+					into vtahun, vbulan;
+
+					new.tahun:= vtahun;
+					new.bulan:= vbulan;
+
+					select coalesce(max(no_urut),0) + 1 into vnourut
+					from tr_psm where tahun = vtahun;
+
+					new.no_urut:= vnourut;
+
+					infonomorsurat:= vnourut || '/' || upper('ifpro') || '-' || upper('comm') || '/' || upper('loo') || '/' || (select upper(kode) from lokasi_loo where lokasi_loo_id = new.lokasi_loo_id) || '/' || (select ambil_bulan_romawi(generatezero(vbulan::text,1))) || '/' || vtahun::text;
+					--raise notice '%', infonomorsurat;
+					new.nomor_surat:= infonomorsurat;
+					new.user_posisi_paraf_id:= null;
+					new.status_fix:= 1;
+
+				else
+					new.approval_qr_date:= null;
+					new.terparaf:= null;
+					new.terbaca_validasi:= 0;
+					new.ttd_kode:= null;
+					new.status_data:= upper('validasi');
+				end if;
+
+				return new;
+			end if;
+		end if;
+	end if;
+
+	if tg_op = upper('insert') then
+		new.last_create_date:= now();
+	end if;
+
+	--kalau sudah ada nomor surat maka lewati
+	if tg_op = upper('update') then
+		if coalesce(nullif(new.nomor_surat , 'x'), 'x') != 'x' and old.status_fix is null and new.status_fix = 1 then
+			new.status_data:= upper('posting');
+			return new;
+		end if;
+	end if;
+
+	--kalau sudah ada nomor, maka tidak ada proses lagi, untuk update pakai paksa status
+	if coalesce(nullif(new.nomor_surat , 'x'), 'x') != 'x' then
+		return new;
+	end if;
+
+	new.user_pengirim_id:= pejabatnip;
+	new.user_pengirim_nama:= pejabatnama;
+	new.user_pengirim_jabatan:= pejabatjabatan;
+
+	if new.status_data = upper('draft') then
+		return new;
+	elsif new.status_data = upper('revisi') then
+		return new;
+	else
+		--kalau simpan data, tidak sesuai pejabat pengirim
+		if new.last_user = pejabatnip then
+			--raise notice '%', ispemaraf;
+		else
+			select count(1) into ispemaraf
+			from tr_psm_paraf a
+			where 1=1 and tr_psm_id = new.tr_psm_id 
+			and coalesce(nullif(status_paraf, 'x'), 'x') = 'x';
+
+			if ispemaraf > 0 then
+				new.status_data:= upper('paraf');
+			else
+				new.status_data:= upper('validasi');
+			end if;
+			
+			new.terparaf:= null;
+			if new.terbaca_validasi > 0 then
+				--raise notice '%', ispemaraf;
+			else
+				new.terbaca_validasi:= 0;
+			end if;
+
+		end if;
+	end if;
+
+	return new;
+
+end;
+$body$
+language plpgsql volatile cost 100;
+alter function p_tr_psm() owner to postgres;
+
+drop trigger if exists trg_tr_psm on tr_psm;
+create trigger trg_tr_psm
+before insert or update
+on tr_psm
+for each row
+execute procedure p_tr_psm();
+
+create or replace function tr_psm_p_hapus()
+  returns trigger as
+$body$
+declare
+    var_id integer;
+    varcheck integer;
+begin
+	if tg_op = upper('delete') then
+		delete from tr_psm_detil where tr_psm_id = old.tr_psm_id;
+		delete from tr_psm_paraf where tr_psm_id = old.tr_psm_id;
+		delete from tr_psm_log where tr_psm_id = old.tr_psm_id;
+		delete from tr_psm_attachment where tr_psm_id = old.tr_psm_id;
+		return old;
+	end if;
+   
+end;
+$body$
+language plpgsql volatile cost 100;
+alter function tr_psm_p_hapus() owner to postgres;
+
+drop trigger if exists tr_psm_t_hapus on tr_psm;
+create trigger tr_psm_t_hapus
+before delete
+on tr_psm
+for each row
+execute procedure tr_psm_p_hapus();
+
+create or replace function info_loi_paraf(vid numeric)
+  returns character varying as
+$body$
+declare
+inforeturn character varying;
+infodata character varying;
+
+rec_data record;
+x numeric := 1;
+totalparafstatus integer;
+totalparaf integer;
+
+begin
+    select count(1) into totalparafstatus from tr_psm_paraf where tr_psm_id = vid and status_paraf = '1';
+    select count(1) into totalparaf from tr_psm_paraf where tr_psm_id = vid;
+    
+    inforeturn:='';
+    for rec_data in (
+		select
+		urutdata, tr_psm_id, status_data, nama_satker, no_urut, next_urut, status_paraf, terbaca
+		from
+		(
+			select
+			1 urutdata, tr_psm_id, status_data, nama_satker, no_urut, coalesce(next_urut,1) next_urut, status_paraf, terbaca
+			from tr_psm_paraf a
+			inner join (select tr_psm_id sm_id, status_data from tr_psm) b on tr_psm_id = sm_id
+			where tr_psm_id = vid
+			union all
+			select
+			2 urutdata, a.tr_psm_id, a.status_data
+			--, case when a.status_pejabat_ganti = '1' then sf.jabatan else b.jabatan end nama_satker
+			, b.jabatan nama_satker
+			, coalesce(sp.no_urut,0) + 1 no_urut
+			, coalesce(sp.next_urut,1) next_urut
+			, case when a.status_data = upper('posting') then '1' else null end status_paraf
+			, case when a.terbaca_validasi = 0 then null else a.terbaca_validasi end terbaca
+			from tr_psm a
+			inner join pegawai b on a.user_pengirim_id = b.pegawai_id
+			inner join satuan_kerja_fix sf on a.satuan_kerja_pengirim_id = sf.satuan_kerja_id
+			left join
+			(
+				select tr_psm_id, max(no_urut) no_urut, coalesce(next_urut,1) next_urut
+				from tr_psm_paraf
+				where no_urut <= coalesce(next_urut,1)
+				and coalesce(nullif(kondisi_paraf, ''), null) is null
+				group by tr_psm_id, coalesce(next_urut,1)
+			) sp on a.tr_psm_id = sp.tr_psm_id
+			where a.tr_psm_id = vid
+			/*union all
+			select
+			3 urutdata, a.tr_psm_id, a.status_data
+			--, case when a.status_pejabat_ganti = '1' then sf.jabatan else b.jabatan end nama_satker
+			, b.jabatan nama_satker
+			, coalesce(sp.no_urut,0) + 1, coalesce(sp.next_urut,1) next_urut
+			, case when a.status_data = upper('posting') then '1' else null end status_paraf
+			, null terbaca
+			from tr_psm a
+			inner join pegawai b on a.user_id = b.pegawai_id
+			inner join satuan_kerja_fix sf on a.satuan_kerja_id_asal = sf.satuan_kerja_id
+			left join
+			(
+				select tr_psm_id, max(no_urut) no_urut, coalesce(next_urut,1) next_urut
+				from tr_psm_paraf
+				where no_urut <= coalesce(next_urut,1)
+				and coalesce(nullif(kondisi_paraf, ''), null) is null
+				group by tr_psm_id, coalesce(next_urut,1)
+			) sp on a.tr_psm_id = sp.tr_psm_id
+			where a.jenis_naskah_id in (8,17,18,19,20) and a.tr_psm_id = vid*/
+		) a
+		order by a.tr_psm_id, a.urutdata, a.no_urut, a.next_urut
+    )
+    loop
+
+	infodata:= '';
+
+	if rec_data.urutdata = 3 then
+		infodata:= rec_data.nama_satker;
+	else
+		if rec_data.terbaca is not null then infodata:= rec_data.nama_satker || ' <i class="fa fa-md fa-eye"></i>';
+		else infodata:= rec_data.nama_satker || ' <i class="fa fa-md fa-eye-slash"></i>';
+		end if;
+	end if;
+	
+	--select info_loi_paraf(183)
+	--raise notice '-,%', rec_data.nama_satker;
+	--raise notice '-,%', rec_data.no_urut || '-' || rec_data.next_urut || '-' || totalparafstatus || '-' || totalparaf;
+			
+	if (rec_data.no_urut = rec_data.next_urut) or (rec_data.urutdata = 2 and rec_data.status_data = upper('validasi'))
+	then 
+		if rec_data.urutdata = 3 then
+			if rec_data.status_data = upper('pembuat') then
+				infodata:= '<b>' || infodata || '</b> <i class="fa fa-md fa-pencil-square-o"></i>';
+			else
+				infodata:= infodata;
+			end if;
+		--elsif rec_data.urutdata = 2 and rec_data.status_data = upper('pembuat') then
+		--	infodata:= infodata;
+		else
+			if rec_data.status_paraf is not null then infodata:= '<b>' || infodata || '</b> <i class="fa fa-md fa-check-square-o"></i>';--fa-check fa-md
+			else infodata:= '<b>' || infodata || '</b> <i class="fa fa-md fa-pencil-square-o"></i>';--fa-close fa-md
+			--if rec_data.status_paraf is not null then infodata:= '#bawal#' || infodata || '#bakhir# <i class="fa fa-md fa-check-square-o"></i>';--fa-check fa-md
+			--else infodata:= '#bawal#' || infodata || '#bakhir# <i class="fa fa-md fa-pencil-square-o"></i>';--fa-close fa-md
+			end if;
+		end if;
+	else
+		infodata:= infodata;
+	end if;
+	
+	if x = 1 then
+		inforeturn := infodata;
+	else
+		inforeturn := inforeturn || '<br/>' || infodata;
+	end if;
+	x := x + 1;
+    end loop;
+   return inforeturn;
+end;
+$body$
+language plpgsql volatile cost 100;
+alter function info_loi_paraf(numeric) owner to postgres;
+
+drop table if exists tr_psm_detil;
+create table tr_psm_detil
+(
+	tr_psm_detil_id numeric not null
+	, tr_psm_id numeric not null
+	, vmode character varying
+	, vid numeric
+	, nilai numeric
+	, keterangan character varying
+	, constraint pk_tr_psm_detil primary key (tr_psm_detil_id)
+);
+
+drop table if exists tr_psm_log;
+create table tr_psm_log
+(
+	tr_psm_log_id numeric not null
+	, tr_psm_id numeric
+	, tanggal timestamp without time zone
+	, status_surat character varying
+	, informasi character varying
+	, catatan text
+	, last_create_user character varying
+	, last_create_date date
+	, last_update_user character varying
+	, last_update_date date
+	, constraint pk_tr_psm_log primary key (tr_psm_log_id)
+);
+
+drop table if exists tr_psm_attachment;
+create table tr_psm_attachment
+(
+	tr_psm_attachment_id numeric not null
+	, tr_psm_id numeric
+	, attachment text
+	, catatan character varying
+	, ukuran numeric
+	, tipe character varying(50)
+	, nama character varying
+	, no_urut numeric
+	, last_create_user character varying
+	, last_create_date timestamp without time zone
+	, last_update_user character varying
+	, last_update_date timestamp without time zone
+	, constraint pk_tr_psm_attachment primary key (tr_psm_attachment_id)
+);
+
+drop table if exists tr_psm_paraf;
+create table tr_psm_paraf
+(
+	tr_psm_paraf_id numeric not null
+	, tr_psm_id numeric
+	, satuan_kerja_id_tujuan character varying
+	, user_id character varying
+	, nama_user character varying
+	, nama_satker character varying
+	, status_paraf character varying
+	, kode_paraf character varying
+	, terbaca numeric
+	, no_urut integer
+	, next_urut integer
+	, status_bantu integer
+	, status_pejabat_ganti character varying
+	, nip_mutasi character varying
+	, kondisi_paraf character varying
+	, last_create_user character varying
+	, last_create_date date
+	, last_update_user character varying
+	, last_update_date date
+	, paksa_db character varying
+	, constraint pk_tr_psm_paraf primary key (tr_psm_paraf_id)
+	, constraint u_psm_paraf unique (tr_psm_id, user_id)
+);
+
+create or replace function p_tr_psm_paraf()
+  returns trigger as
+$body$
+
+declare 
+psatkernip character varying;
+psatkernama character varying;
+psatkerpegawai character varying;
+statuspejabatganti character varying;
+kelompokjabatan character varying;
+ceknexturut integer;
+posisinexturut integer;
+totalparafstatus integer;
+totalparaf integer;
+batasawal integer;
+batasakhir integer;
+cekdatanexturut integer;
+
+begin
+
+	if lower(new.paksa_db) = lower('paksa') then
+		new.paksa_db:= null;
+		return new;
+	end if;
+
+	if new.status_bantu = 1 then
+		select
+			user_bantu, 'Sekretaris ' || nama, user_bantu_nama, status_pejabat_ganti, kelompok_jabatan
+			into psatkernip, psatkernama, psatkerpegawai, statuspejabatganti, kelompokjabatan
+		from satuan_kerja_fix 
+		where satuan_kerja_id = new.satuan_kerja_id_tujuan;
+	else
+		select
+			nip, jabatan, nama_pegawai, status_pejabat_ganti, kelompok_jabatan
+			into psatkernip, psatkernama, psatkerpegawai, statuspejabatganti, kelompokjabatan
+		from satuan_kerja_fix 
+		where satuan_kerja_id = new.satuan_kerja_id_tujuan;
+	end if;
+
+	if lower(tg_op) = lower('update') and coalesce(nullif(old.status_paraf, ''), null) is null and coalesce(nullif(new.status_paraf, ''), null) is not null 
+	then
+		select count(1) into totalparafstatus from tr_psm_paraf where tr_psm_id = new.tr_psm_id
+		and status_paraf = '1';
+		
+		select max(next_urut) posisinexturut into posisinexturut
+		from tr_psm_paraf where tr_psm_id = new.tr_psm_id;
+		
+		posisinexturut:= coalesce(posisinexturut,0) + 1;
+
+		if totalparafstatus > 0 then
+			if new.kondisi_paraf != 'paralel' then
+				--raise notice '-,%', 'x';
+				return new;
+			end if;
+		else
+			--kalau next urut lanjut tidak sama maka tidak update karena bukan saatnya
+			if posisinexturut != new.no_urut or old.next_urut is null then
+				if posisinexturut = new.no_urut then
+					--raise notice '-,%', 'a';
+					return new;
+				else
+					--raise notice '-,%', 'b';
+					return old;
+				end if;
+			end if;
+		end if;
+	end if;
+
+	if lower(tg_op) = lower('insert') then
+		select coalesce(max(no_urut),0) + 1 into ceknexturut
+		from tr_psm_paraf where tr_psm_id = new.tr_psm_id;
+		new.no_urut= ceknexturut;
+	end if;
+	
+	new.user_id := psatkernip;
+	new.status_pejabat_ganti:= statuspejabatganti;
+	new.nama_user := psatkerpegawai;
+	new.nama_satker := psatkernama;
+    return new;
+    
+end;
+$body$
+language plpgsql volatile cost 100;
+alter function p_tr_psm_paraf() owner to postgres;
+
+drop trigger if exists trg_tr_psm_paraf on tr_psm_paraf;
+create trigger trg_tr_psm_paraf
+before insert or update
+on tr_psm_paraf
+for each row
+execute procedure p_tr_psm_paraf();
+
+create or replace function ambildetilpsm(vparamid numeric, vparam character varying)
+  returns character varying as
+$body$
+declare
+vreturn character varying;
+rec_data record;
+x numeric := 1;
+begin
+    vreturn:='';
+
+    for rec_data in (
+	select *
+	from
+	(
+		select
+		a1.nama || ' - ' || case when upper(a.area) = upper('i') then 'Indoor' else 'Outdoor' end || ' - ' || a.nama
+		vinfo
+		, a.lokasi_loo_detil_id info_id
+		from lokasi_loo_detil a
+		inner join lantai_loo a1 on a.lantai_loo_id = a1.lantai_loo_id
+		where a.lokasi_loo_detil_id in
+		(
+			select vid from tr_psm_detil
+			where tr_psm_id = vparamid and vmode ilike '%luas_sewa_%'
+		)
+
+	) a
+	order by info_id asc
+    )
+    loop
+            if x = 1 then
+                vreturn := rec_data.vinfo;
+            else
+                vreturn := vreturn || vparam || rec_data.vinfo;
+            end if;
+	   x := x + 1;
+    end loop;
+    
+   return vreturn;
+end;
+$body$
+language plpgsql volatile cost 100;
+alter function ambildetilpsm(numeric, character varying) owner to postgres;
+
+--========================================================================================
+create or replace function p_tr_loo_loi()
+  returns trigger as
+$body$
+declare
+vquery text;
+vnewid numeric;
+begin
+	
+	if coalesce(nullif(new.paksa_db , 'x'), 'x') != 'x' then
+		return new;
+	end if;
+
+	if new.status_loi = 1 and old.status_loi is null then
+		select (coalesce((select max(tr_loi_id) from tr_loi),0) + 1) into vnewid;
+		insert into tr_loi
+		(
+			tr_loi_id, tr_loo_id, status_data
+			, user_pembuat_id, user_pengirim_id, user_pengirim_nama
+			, user_pengirim_jabatan, satuan_kerja_pengirim_id
+			, produk_id, customer_id, lokasi_loo_id, pph
+			, total_luas_indoor, total_luas_outdoor, total_luas, total_diskon_indoor_sewa
+			, total_diskon_outdoor_sewa, total_diskon_indoor_service, total_diskon_outdoor_service
+			, harga_indoor_sewa, harga_outdoor_sewa, harga_indoor_service
+			, harga_outdoor_service, dp, top, periode_sewa, sewa_biaya_satuan_unit
+			, sewa_biaya_satuan_service, sewa_total_biaya_unit, sewa_biaya_per_bulan_unit
+			, sewa_biaya_per_bulan_service, sewa_total_biaya_service, total_biaya_per_bulan_no_ppn
+			, total_biaya_per_bulan_ppn, total_biaya_no_ppn, total_biaya_ppn
+			, security_deposit, fitting_out
+		)
+		select
+			vnewid tr_loi_id, tr_loo_id, upper('draft') status_data
+			, user_pembuat_id, user_pengirim_id, user_pengirim_nama
+			, user_pengirim_jabatan, satuan_kerja_pengirim_id
+			, produk_id, customer_id, lokasi_loo_id, pph
+			, total_luas_indoor, total_luas_outdoor, total_luas, total_diskon_indoor_sewa
+			, total_diskon_outdoor_sewa, total_diskon_indoor_service, total_diskon_outdoor_service
+			, harga_indoor_sewa, harga_outdoor_sewa, harga_indoor_service
+			, harga_outdoor_service, dp, top, periode_sewa, sewa_biaya_satuan_unit
+			, sewa_biaya_satuan_service, sewa_total_biaya_unit, sewa_biaya_per_bulan_unit
+			, sewa_biaya_per_bulan_service, sewa_total_biaya_service, total_biaya_per_bulan_no_ppn
+			, total_biaya_per_bulan_ppn, total_biaya_no_ppn, total_biaya_ppn
+			, security_deposit, fitting_out
+		from tr_loo
+		where tr_loo_id = new.tr_loo_id
+		and tr_loo_id not in (select tr_loo_id from tr_loi where tr_loo_id = new.tr_loo_id);
+
+		insert into tr_loi_paraf
+		(
+			tr_loi_paraf_id
+			, tr_loi_id, satuan_kerja_id_tujuan, user_id
+			, nama_user, nama_satker, no_urut, status_bantu, status_pejabat_ganti, kondisi_paraf
+			, paksa_db
+		)
+		select
+		tr_loi_paraf_id + coalesce((select max(tr_loi_paraf_id) from tr_loi_paraf),0) tr_loi_paraf_id
+		, tr_loi_id, satuan_kerja_id_tujuan, user_id
+		, nama_user, nama_satker, no_urut, status_bantu, status_pejabat_ganti, kondisi_paraf
+		, paksa_db
+		from
+		(
+			select
+			row_number () over (order by tr_loo_paraf_id) tr_loi_paraf_id
+			, vnewid tr_loi_id, satuan_kerja_id_tujuan, user_id
+			, nama_user, nama_satker, no_urut, status_bantu, status_pejabat_ganti, kondisi_paraf
+			, 'paksa' paksa_db
+			from tr_loo_paraf
+			where tr_loo_id = new.tr_loo_id
+			order by tr_loo_paraf_id
+		) a
+		;
+
+		insert into tr_loi_detil
+		(
+			tr_loi_detil_id, tr_loi_id, vmode, vid, nilai, keterangan
+		)
+		select
+		tr_loi_detil_id + coalesce((select max(tr_loi_detil_id) from tr_loi_detil),0) tr_loi_detil_id
+		, tr_loi_id, vmode, vid, nilai, keterangan
+		from
+		(
+			select
+			row_number () over (order by tr_loo_detil_id) tr_loi_detil_id
+			, vnewid tr_loi_id, vmode, vid, nilai, keterangan
+			from tr_loo_detil
+			where tr_loo_id = new.tr_loo_id
+			order by tr_loo_detil_id
+		) a
+		;
+
+	end if;
+
+	return new;
+end;
+$body$
+language plpgsql volatile cost 100;
+alter function p_tr_loo_loi() owner to postgres;
+
+drop trigger if exists trg_tr_loo_loi on tr_loo;
+create trigger trg_tr_loo_loi
+after update
+on tr_loo
+for each row
+execute procedure p_tr_loo_loi();
+
+create or replace function p_tr_loi_psm()
+  returns trigger as
+$body$
+declare
+vquery text;
+vnewid numeric;
+begin
+	
+	if coalesce(nullif(new.paksa_db , 'x'), 'x') != 'x' then
+		return new;
+	end if;
+
+	if new.status_psm = 1 and old.status_psm is null then
+		select (coalesce((select max(tr_psm_id) from tr_psm),0) + 1) into vnewid;
+		insert into tr_psm
+		(
+			tr_psm_id, tr_loi_id, tr_loo_id, status_data
+			, user_pembuat_id, user_pengirim_id, user_pengirim_nama
+			, user_pengirim_jabatan, satuan_kerja_pengirim_id
+			, tanggal_awal, tanggal_akhir, promotion_levy
+			, produk_id, customer_id, lokasi_loo_id, pph
+			, total_luas_indoor, total_luas_outdoor, total_luas, total_diskon_indoor_sewa
+			, total_diskon_outdoor_sewa, total_diskon_indoor_service, total_diskon_outdoor_service
+			, harga_indoor_sewa, harga_outdoor_sewa, harga_indoor_service
+			, harga_outdoor_service, dp, top, periode_sewa, sewa_biaya_satuan_unit
+			, sewa_biaya_satuan_service, sewa_total_biaya_unit, sewa_biaya_per_bulan_unit
+			, sewa_biaya_per_bulan_service, sewa_total_biaya_service, total_biaya_per_bulan_no_ppn
+			, total_biaya_per_bulan_ppn, total_biaya_no_ppn, total_biaya_ppn
+			, security_deposit, fitting_out
+		)
+		select
+			vnewid tr_psm_id, tr_loi_id, tr_loo_id, upper('draft') status_data
+			, user_pembuat_id, user_pengirim_id, user_pengirim_nama
+			, user_pengirim_jabatan, satuan_kerja_pengirim_id
+			, tanggal_awal, tanggal_akhir, promotion_levy
+			, produk_id, customer_id, lokasi_loo_id, pph
+			, total_luas_indoor, total_luas_outdoor, total_luas, total_diskon_indoor_sewa
+			, total_diskon_outdoor_sewa, total_diskon_indoor_service, total_diskon_outdoor_service
+			, harga_indoor_sewa, harga_outdoor_sewa, harga_indoor_service
+			, harga_outdoor_service, dp, top, periode_sewa, sewa_biaya_satuan_unit
+			, sewa_biaya_satuan_service, sewa_total_biaya_unit, sewa_biaya_per_bulan_unit
+			, sewa_biaya_per_bulan_service, sewa_total_biaya_service, total_biaya_per_bulan_no_ppn
+			, total_biaya_per_bulan_ppn, total_biaya_no_ppn, total_biaya_ppn
+			, security_deposit, fitting_out
+		from tr_loi
+		where tr_loi_id = new.tr_loi_id
+		and tr_loi_id not in (select tr_loi_id from tr_psm where tr_loi_id = new.tr_loi_id);
+
+		insert into tr_psm_paraf
+		(
+			tr_psm_paraf_id
+			, tr_psm_id, satuan_kerja_id_tujuan, user_id
+			, nama_user, nama_satker, no_urut, status_bantu, status_pejabat_ganti, kondisi_paraf
+			, paksa_db
+		)
+		select
+		tr_psm_paraf_id + coalesce((select max(tr_psm_paraf_id) from tr_psm_paraf),0) tr_psm_paraf_id
+		, tr_psm_id, satuan_kerja_id_tujuan, user_id
+		, nama_user, nama_satker, no_urut, status_bantu, status_pejabat_ganti, kondisi_paraf
+		, paksa_db
+		from
+		(
+			select
+			row_number () over (order by tr_loi_paraf_id) tr_psm_paraf_id
+			, vnewid tr_psm_id, satuan_kerja_id_tujuan, user_id
+			, nama_user, nama_satker, no_urut, status_bantu, status_pejabat_ganti, kondisi_paraf
+			, 'paksa' paksa_db
+			from tr_loi_paraf
+			where tr_loi_id = new.tr_loi_id
+			order by tr_loi_paraf_id
+		) a
+		;
+
+		insert into tr_psm_detil
+		(
+			tr_psm_detil_id, tr_psm_id, vmode, vid, nilai, keterangan
+		)
+		select
+		tr_psm_detil_id + coalesce((select max(tr_psm_detil_id) from tr_psm_detil),0) tr_psm_detil_id
+		, tr_psm_id, vmode, vid, nilai, keterangan
+		from
+		(
+			select
+			row_number () over (order by tr_loi_detil_id) tr_psm_detil_id
+			, vnewid tr_psm_id, vmode, vid, nilai, keterangan
+			from tr_loi_detil
+			where tr_loi_id = new.tr_loi_id
+			order by tr_loi_detil_id
+		) a
+		;
+
+	end if;
+
+	return new;
+end;
+$body$
+language plpgsql volatile cost 100;
+alter function p_tr_loi_psm() owner to postgres;
+
+drop trigger if exists trg_tr_loi_psm on tr_loi;
+create trigger trg_tr_loi_psm
+after update
+on tr_loi
+for each row
+execute procedure p_tr_loi_psm();
+--========================================================================================
 
 drop table if exists utility_charge;
 create table utility_charge

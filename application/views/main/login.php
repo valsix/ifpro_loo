@@ -132,6 +132,27 @@ AND
 ";
 $set= new PermohonanStpd();
 $jumlahstp= $set->getCountByParamsPersetujuan(array(), $statement);
+
+$menulooloi= "";
+if($this->USER_GROUP == "LOOLOI" || in_array("LOOLOI", explode(",", $this->USER_GROUP)))
+{
+    $this->load->model("TrLoo");
+    $this->load->model("TrLoi");
+
+    $menulooloi= "1";
+
+    $sessid= $this->ID;
+    $statement= " AND A.STATUS_DATA IN ('PARAF', 'VALIDASI') AND A.USER_POSISI_PARAF_ID = '".$sessid."'";
+    $set= new TrLoo();
+    $jumlahloo= $set->getCountByParams(array(), $statement);
+
+    $statement= " AND A.STATUS_DATA IN ('PARAF', 'VALIDASI') AND A.USER_POSISI_PARAF_ID = '".$sessid."'";
+    $set= new TrLoi();
+    $jumlahloi= $set->getCountByParams(array(), $statement);
+    
+    $jumlahpsm= 0;
+}
+
 ?>
 <script>
     
@@ -243,6 +264,42 @@ body{
                         </div>
                     </div>
                 </div>
+
+                <?
+                if(!empty($menulooloi))
+                {
+                ?>
+                <div class="area-menu-dashboard col-md-4" style="cursor: pointer; width: calc(30% - 1px) !important;" onClick="window.location = 'main/index/loo_perlu_persetujuan';">
+                    <div class="ikon"><i class="fa fa-file-text fa-2x" style="color: #ef5702;"></i></div>
+                    <div class="data">
+                        <div class="judul">LOO</div>
+                        <div class="nilai">
+                            <span><?=$jumlahloo?></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="area-menu-dashboard col-md-4" style="cursor: pointer; width: calc(30% - 1px) !important;" onClick="window.location = 'main/index/loi_perlu_persetujuan';">
+                    <div class="ikon"><i class="fa fa-file-text fa-2x" style="color: #ef5702;"></i></div>
+                    <div class="data">
+                        <div class="judul">LOI</div>
+                        <div class="nilai">
+                            <span><?=$jumlahloi?></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="area-menu-dashboard col-md-4" style="cursor: pointer; width: calc(30% - 1px) !important;" onClick="window.location = 'main/index/psm_perlu_persetujuan';">
+                    <div class="ikon"><i class="fa fa-file-text fa-2x" style="color: #ef5702;"></i></div>
+                    <div class="data">
+                        <div class="judul">PSM</div>
+                        <div class="nilai">
+                            <span><?=$jumlahpsm?></span>
+                        </div>
+                    </div>
+                </div>
+                <?
+                }
+                ?>
+
                 <!-- <div class="area-menu-dashboard col-md-6">
                     <div class="ikon"><i class="fa fa-archive fa-2x" style="color: #7a7a7a;"></i></div>
                     <div class="data">

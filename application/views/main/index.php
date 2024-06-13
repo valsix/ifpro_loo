@@ -817,7 +817,7 @@ if($this->USER_GROUP == "LOOLOI" || in_array("LOOLOI", explode(",", $this->USER_
                                     $pg == "permohonan_stpd_status" ||
                                     $pg == "permohonan_stpd_persetujuan"
 
-                                    || ( ($pg == "loo_add" || $pg == "loo_draft" || $pg == "loo_perlu_persetujuan" || $pg == "loo_perlu_persetujuan_detil" || $pg == "loo_status" || $pg == "loo_status_detil" || $pg == "loi_add" || $pg == "loi_draft" || $pg == "loi_perlu_persetujuan" || $pg == "loi_perlu_persetujuan_detil" || $pg == "loi_status" || $pg == "loi_status_detil") && !empty($menulooloi))
+                                    || ( ($pg == "loo_add" || $pg == "loo_draft" || $pg == "loo_perlu_persetujuan" || $pg == "loo_perlu_persetujuan_detil" || $pg == "loo_status" || $pg == "loo_status_detil" || $pg == "loi_add" || $pg == "loi_draft" || $pg == "loi_perlu_persetujuan" || $pg == "loi_perlu_persetujuan_detil" || $pg == "loi_status" || $pg == "loi_status_detil" || $pg == "psm_add" || $pg == "psm_draft" || $pg == "psm_perlu_persetujuan" || $pg == "psm_perlu_persetujuan_detil" || $pg == "psm_status" || $pg == "psm_status_detil") && !empty($menulooloi))
                                 
                                 )
                             ){
@@ -887,6 +887,18 @@ if($this->USER_GROUP == "LOOLOI" || in_array("LOOLOI", explode(",", $this->USER_
                                 {
                                     $vcurrent["loi_draft"]= "current";
                                 }
+                                else if($pg == "psm_perlu_persetujuan_detil" || $reqMode == "psm_perlu_persetujuan_detil")
+                                {
+                                    $vcurrent["psm_perlu_persetujuan"]= "current";
+                                }
+                                else if($pg == "psm_status_detil")
+                                {
+                                    $vcurrent["psm_status"]= "current";
+                                }
+                                else if($reqMode == "psm_draft")
+                                {
+                                    $vcurrent["psm_draft"]= "current";
+                                }
                             ?>
                             <div>
                                 <span><i class="fa fa-pencil-square-o fa-lg" style="color: #29b7ea"></i> LOO</span>
@@ -901,6 +913,12 @@ if($this->USER_GROUP == "LOOLOI" || in_array("LOOLOI", explode(",", $this->USER_
                                 <a class="menu-utama <?=$vcurrent["loi_perlu_persetujuan"]?>" href="main/index/loi_perlu_persetujuan"><i class="fa fa-pencil"></i>Perlu Persetujuan</a>
                                 <a class="menu-utama <?=$vcurrent["loi_status"]?>" href="main/index/loi_status"><i class="fa fa-pencil"></i>Status</a>
                                 <a class="menu-utama <?=$vcurrent["loi_draft"]?>" href="main/index/loi_draft"><i class="fa fa-pencil"></i>Draft</a>
+                            </div>
+                            <div>
+                                <span><i class="fa fa-pencil-square-o fa-lg" style="color: #29b7ea"></i> PSM</span>
+                                <a class="menu-utama <?=$vcurrent["psm_perlu_persetujuan"]?>" href="main/index/psm_perlu_persetujuan"><i class="fa fa-pencil"></i>Perlu Persetujuan</a>
+                                <a class="menu-utama <?=$vcurrent["psm_status"]?>" href="main/index/psm_status"><i class="fa fa-pencil"></i>Status</a>
+                                <a class="menu-utama <?=$vcurrent["psm_draft"]?>" href="main/index/psm_draft"><i class="fa fa-pencil"></i>Draft</a>
                             </div>
                             <?
                             }

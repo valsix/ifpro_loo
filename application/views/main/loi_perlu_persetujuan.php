@@ -12,7 +12,7 @@ $arrtabledata= array(
     , array("label"=>"MENUNGGU PERSETUJUAN", "field"=> "PERSETUJUAN_INFO", "display"=>"",  "width"=>"25", "colspan"=>"", "rowspan"=>"")
     , array("label"=>"SISA STEP", "field"=> "JUMLAH_STEP", "display"=>"",  "width"=>"25", "colspan"=>"", "rowspan"=>"")
 
-    , array("label"=>"fieldid", "field"=> "TR_LOO_ID", "display"=>"1",  "width"=>"", "colspan"=>"", "rowspan"=>"")
+    , array("label"=>"fieldid", "field"=> "TR_LOI_ID", "display"=>"1",  "width"=>"", "colspan"=>"", "rowspan"=>"")
 );
 
 if(empty($reqStatusSurat))

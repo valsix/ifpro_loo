@@ -2,19 +2,32 @@
 include_once("functions/string.func.php");
 include_once("functions/date.func.php");
 
-$this->load->model("SuratMasuk");
+$this->load->model("TrLoi");
 
-$reqFilename = $this->uri->segment(3, "");
+$reqFilename= $this->uri->segment(3, "");
+$reqStatusSurat= $this->input->get("reqStatusSurat");
 
 $arrtabledata= array(
-    array("label"=>"Nomor", "field"=> "INFO_NOMOR_SURAT", "display"=>"",  "width"=>"20", "colspan"=>"", "rowspan"=>"")
-    , array("label"=>"Customer", "field"=> "NAMA_PEMILIK", "display"=>"",  "width"=>"20", "colspan"=>"", "rowspan"=>"")
-    , array("label"=>"Brand", "field"=> "NAMA_BRAND", "display"=>"",  "width"=>"", "colspan"=>"", "rowspan"=>"")
-    , array("label"=>"Lokasi", "field"=> "INFO_DETIL_NAMA", "display"=>"",  "width"=>"25", "colspan"=>"", "rowspan"=>"")
-    , array("label"=>"TANGGAL", "field"=> "INFO_LAST_CREATE_DATE", "display"=>"",  "width"=>"25", "colspan"=>"", "rowspan"=>"")
+    array("label"=>"NO. SURAT", "field"=> "INFO_NOMOR_SURAT", "display"=>"",  "width"=>"20", "colspan"=>"", "rowspan"=>"")
+    , array("label"=>"MENUNGGU PERSETUJUAN", "field"=> "PERSETUJUAN_INFO", "display"=>"",  "width"=>"25", "colspan"=>"", "rowspan"=>"")
+    , array("label"=>"SISA STEP", "field"=> "JUMLAH_STEP", "display"=>"",  "width"=>"25", "colspan"=>"", "rowspan"=>"")
 
-    , array("label"=>"fieldid", "field"=> "TR_LOI_ID", "display"=>"1",  "width"=>"", "colspan"=>"", "rowspan"=>"")
+    , array("label"=>"fieldid", "field"=> "TR_PSM_ID", "display"=>"1",  "width"=>"", "colspan"=>"", "rowspan"=>"")
 );
+
+if(empty($reqStatusSurat))
+	$reqStatusSurat= "PERLU_PERSETUJUAN";
+
+$sessid= $this->ID;
+$statementglobal= " AND A.STATUS_DATA IN ('PARAF', 'VALIDASI')";
+
+$statement= " AND A.USER_POSISI_PARAF_ID = '".$sessid."'".$statementglobal;
+$set= new TrLoi();
+$jumlahperlupersetujuan= $set->getCountByParams(array(), $statement);
+
+$statement= " AND A.USER_LIHAT_STATUS LIKE '%".$sessid."%'".$statementglobal;
+$set= new TrLoi();
+$jumlahakandisetujui= $set->getCountByParams(array(), $statement);
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
@@ -62,8 +75,14 @@ $arrtabledata= array(
         	<ul>
         		<a href="#" id="btnCari" style="display: none;" title="Cari"></a>
                 <li>
-                    <a id="btnEdit" title="Ubah"><img src="images/icon-edit.png" /> Ubah</a>
+                    <!-- <a id="btnEdit" title="Ubah"><img src="images/icon-edit.png" /> Ubah</a> -->
                 	<!-- <a id="btnCetak"><i class="fa fa-file-excel-o"></i> Export Excel</a> -->
+                </li>
+                <li class="pull-right">
+                	<select id="reqStatusSurat">
+                        <option value="PERLU_PERSETUJUAN" <? if($reqStatusSurat == "PERLU_PERSETUJUAN") echo "selected";?>>Perlu Persetujuan (<?=$jumlahperlupersetujuan?>)</option>
+                        <option value="AKAN_DISETUJUI" <? if($reqStatusSurat == "AKAN_DISETUJUI") echo "selected";?>>Akan Disetujui (<?=$jumlahakandisetujui?>)</option>
+                    </select>
                 </li>
 			</ul>
 		</div>
@@ -132,16 +151,18 @@ $arrtabledata= array(
 		newWindow.focus();
 	});
 
-	$("#reqTahun,#reqStatusSurat,#reqPilihan").change(function() {
+	$("#reqStatusSurat").change(function() {
 		setCariInfo();
 	});
 
 	$('#btnCari').on('click', function () {
 		var reqTahun= reqPencarian= reqStatusSurat= "";
-		reqPencarian= $('#example_filter input').val();
+		// reqPencarian= $('#example_filter input').val();
+		reqStatusSurat= $("#reqStatusSurat").val();
+		document.location.href = 'main/index/<?=$reqFilename?>?reqStatusSurat='+reqStatusSurat;
 
-        jsonurl= "json/tr_loo_json/jsonloidraft?reqPencarian="+reqPencarian;
-        datanewtable.DataTable().ajax.url(jsonurl).load();
+        /*jsonurl= "json/tr_loo_json/jsonperlupersetujuan?reqPencarian="+reqPencarian;
+        datanewtable.DataTable().ajax.url(jsonurl).load();*/
 	});
 
 	$("#triggercari").on("click", function () {
@@ -157,7 +178,7 @@ $arrtabledata= array(
     });
 
 	jQuery(document).ready(function() {
-		var jsonurl= "json/tr_loo_json/jsonloidraft";
+		var jsonurl= "json/tr_loo_json/jsonpsmperlupersetujuan?reqStatusSurat=<?=$reqStatusSurat?>";
 	    ajaxserverselectsingle.init(infotableid, jsonurl, arrdata);
 	});
 
@@ -204,7 +225,7 @@ $arrtabledata= array(
 			            reqPilihan= "";
 			        }
 
-					window.location = "main/index/loi_add/?reqMode=<?=$reqFilename?>&reqId="+valinfoid;
+					window.location = "main/index/loi_perlu_persetujuan_detil/?reqMode=<?=$reqFilename?>&reqId="+valinfoid;
                 }
             }
         } );

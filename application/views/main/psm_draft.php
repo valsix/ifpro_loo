@@ -13,7 +13,7 @@ $arrtabledata= array(
     , array("label"=>"Lokasi", "field"=> "INFO_DETIL_NAMA", "display"=>"",  "width"=>"25", "colspan"=>"", "rowspan"=>"")
     , array("label"=>"TANGGAL", "field"=> "INFO_LAST_CREATE_DATE", "display"=>"",  "width"=>"25", "colspan"=>"", "rowspan"=>"")
 
-    , array("label"=>"fieldid", "field"=> "TR_LOI_ID", "display"=>"1",  "width"=>"", "colspan"=>"", "rowspan"=>"")
+    , array("label"=>"fieldid", "field"=> "TR_PSM_ID", "display"=>"1",  "width"=>"", "colspan"=>"", "rowspan"=>"")
 );
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
@@ -140,7 +140,7 @@ $arrtabledata= array(
 		var reqTahun= reqPencarian= reqStatusSurat= "";
 		reqPencarian= $('#example_filter input').val();
 
-        jsonurl= "json/tr_loo_json/jsonloidraft?reqPencarian="+reqPencarian;
+        jsonurl= "json/tr_loo_json/jsonpsmdraft?reqPencarian="+reqPencarian;
         datanewtable.DataTable().ajax.url(jsonurl).load();
 	});
 
@@ -157,7 +157,7 @@ $arrtabledata= array(
     });
 
 	jQuery(document).ready(function() {
-		var jsonurl= "json/tr_loo_json/jsonloidraft";
+		var jsonurl= "json/tr_loo_json/jsonpsmdraft";
 	    ajaxserverselectsingle.init(infotableid, jsonurl, arrdata);
 	});
 
@@ -204,7 +204,7 @@ $arrtabledata= array(
 			            reqPilihan= "";
 			        }
 
-					window.location = "main/index/loi_add/?reqMode=<?=$reqFilename?>&reqId="+valinfoid;
+					window.location = "main/index/psm_add/?reqMode=<?=$reqFilename?>&reqId="+valinfoid;
                 }
             }
         } );

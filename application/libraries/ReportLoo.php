@@ -175,6 +175,46 @@ class ReportLoo
 		}
 	}
 
+	function setpsmterbaca($arrparam)
+	{
+		$CI = &get_instance();
+		$CI->load->model("TrPsm");
+		$CI->load->model("TrPsmParaf");
+		$arrgetsessionuser= $this->getsessionuser();
+		// print_r($arrgetsessionuser);exit;
+		$sessionloginid= $arrgetsessionuser["sessionloginid"];
+
+		$reqId= $arrparam["reqId"];
+		$reqStatusSurat= $arrparam["reqStatusSurat"];
+		// print_r($arrparam);exit;
+
+		if($reqStatusSurat == "VALIDASI")
+		{
+			$setdetil= new TrPsm();
+			$setdetil->setField("FIELD", "TERBACA_VALIDASI");
+			$setdetil->setField("FIELD_VALUE", "1");
+			$setdetil->setField("LAST_UPDATE_USER", $sessionloginid);
+			$setdetil->setField("TR_PSM_ID", $reqId);
+			if($setdetil->updateByField())
+			{
+				$arrtriger= array("reqId"=>$reqId, "vjenis"=>"psm", "mode"=>"updateparaf");
+				$this->trigerpaksa($arrtriger);
+			}
+		}
+		else if($reqStatusSurat == "PARAF")
+		{
+			$setdetil= new TrPsmParaf();
+			$setdetil->setField("LAST_UPDATE_USER", $sessionloginid);
+			$setdetil->setField("USER_ID", $sessionloginid);
+			$setdetil->setField("TR_PSM_ID", $reqId);
+			if($setdetil->paraf())
+			{
+				$arrtriger= array("reqId"=>$reqId, "vjenis"=>"psm", "mode"=>"updateparaf");
+				$this->trigerpaksa($arrtriger);
+			}
+		}
+	}
+
 	function getsessionuser()
 	{
 		$CI = &get_instance();
@@ -213,6 +253,17 @@ class ReportLoo
 
 			$tgr= new TrLoi();
 			$tgr->setField("TR_LOI_ID", $reqId);
+			$tgr->setField("PAKSA_DB", $mode);
+			$tgr->updatetriger();
+		}
+		else if($vjenis == "psm")
+		{
+			$CI->load->model("TrPsm");
+			$reqId= $arrparam["reqId"];
+			$mode= $arrparam["mode"];
+
+			$tgr= new TrPsm();
+			$tgr->setField("TR_PSM_ID", $reqId);
 			$tgr->setField("PAKSA_DB", $mode);
 			$tgr->updatetriger();
 		}
