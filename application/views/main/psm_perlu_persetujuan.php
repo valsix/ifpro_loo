@@ -225,7 +225,7 @@ $jumlahakandisetujui= $set->getCountByParams(array(), $statement);
 			            reqPilihan= "";
 			        }
 
-					window.location = "main/index/loi_perlu_persetujuan_detil/?reqMode=<?=$reqFilename?>&reqId="+valinfoid;
+					window.location = "main/index/psm_perlu_persetujuan_detil/?reqMode=<?=$reqFilename?>&reqId="+valinfoid;
                 }
             }
         } );

@@ -138,6 +138,7 @@ if($this->USER_GROUP == "LOOLOI" || in_array("LOOLOI", explode(",", $this->USER_
 {
     $this->load->model("TrLoo");
     $this->load->model("TrLoi");
+    $this->load->model("TrPsm");
 
     $menulooloi= "1";
 
@@ -150,7 +151,9 @@ if($this->USER_GROUP == "LOOLOI" || in_array("LOOLOI", explode(",", $this->USER_
     $set= new TrLoi();
     $jumlahloi= $set->getCountByParams(array(), $statement);
     
-    $jumlahpsm= 0;
+    $statement= " AND A.STATUS_DATA IN ('PARAF', 'VALIDASI') AND A.USER_POSISI_PARAF_ID = '".$sessid."'";
+    $set= new TrPsm();
+    $jumlahpsm= $set->getCountByParams(array(), $statement);
 }
 
 ?>

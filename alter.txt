@@ -1436,7 +1436,7 @@ begin
 	if lower(new.paksa_db) = lower('updateparaf') then
 
 		select
-		info_loi_paraf(a.tr_psm_id) persetujuan_info, coalesce(a1.jumlah_step,0) + 1 jumlah_step
+		info_psm_paraf(a.tr_psm_id) persetujuan_info, coalesce(a1.jumlah_step,0) + 1 jumlah_step
 		into persetujuaninfo, jumlahstep
 		from tr_psm a
 		left join
