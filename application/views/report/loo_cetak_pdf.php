@@ -10,6 +10,7 @@ $this->load->model("Combo");
 $this->load->model("LokasiLoo");
 
 $reqId= $this->input->get("reqId");
+$ttd= $this->input->get("ttd");
 
 if(empty($reqId)) $reqId= -1;
 
@@ -34,6 +35,22 @@ $reqDp= $set->getField("DP");
 $reqPeriodeSewa= $set->getField("PERIODE_SEWA");
 $reqSecurityDeposit= $set->getField("SECURITY_DEPOSIT");
 $reqFittingOut= $set->getField("FITTING_OUT");
+
+$reqNomorSurat= $set->getField("NOMOR_SURAT");
+$reqTanggalSurat= $set->getField("INFO_APPROVAL_QR_DATE");
+if(empty($reqNomorSurat))
+{
+  $reqNomorSurat= $set->getField("INFO_NOMOR_SURAT");
+  $reqTanggalSurat= $set->getField("INFO_LAST_CREATE_DATE");
+}
+$reqTanggalSurat= datetimeToPage($reqTanggalSurat, "date");
+
+$vttd= "";
+if($ttd == 2)
+{
+  $vttd= "uploadsloo/".$reqId."/".$set->getField("TTD_KODE").".png";
+}
+// echo $vttd;exit;
 
 $reqSewaBiayaSatuanUnit= $set->getField("SEWA_BIAYA_SATUAN_UNIT");
 $reqSewaBiayaSatuanService= $set->getField("SEWA_BIAYA_SATUAN_SERVICE");
@@ -152,7 +169,7 @@ $reqNamaCabang= $set->getField("NAMA_CABANG");
     <tr>
       <td style="width:10%">NO</td>
       <td style="width:1%">:</td>
-      <td style="width:19%"></td>
+      <td style="width:19%"><?=$reqNomorSurat?></td>
       <td style="width:45%"></td>
       <td style="width:10%">Lampiran  </td>
       <td style="width:1%">:</td>
@@ -161,7 +178,7 @@ $reqNamaCabang= $set->getField("NAMA_CABANG");
     <tr>
       <td>TANGGAL</td>
       <td>:</td>
-      <td></td>
+      <td><?=$reqTanggalSurat?></td>
       <td></td>
       </tr>
     <tr>
@@ -1269,7 +1286,7 @@ $reqNamaCabang= $set->getField("NAMA_CABANG");
   </table>
   <br>
   <br>
-  <table style="width:100%">
+  <table style="width:100%" border="0">
     <tr>
       <td style="width:30%;text-align: center;">
         Hormat kami,          
@@ -1288,18 +1305,30 @@ $reqNamaCabang= $set->getField("NAMA_CABANG");
         <b><?=$reqCustomerTempat?></b>
       </td>
     </tr>
+
+    <?
+    if(!empty($vttd))
+    {
+    ?>
     <tr>
-      <td><br></td>
+      <td style="text-align: center;">
+        <img src="<?=$vttd?>" height="100px">
+      </td>
+      <td colspan="2">
+      </td>
     </tr>
+    <?
+    }
+    else
+    {
+    ?>
     <tr>
-      <td><br></td>
+      <td colspan="3"><br><br><br><br><br></td>
     </tr>
-    <tr>
-      <td><br></td>
-    </tr>
-    <tr>
-      <td><br></td>
-    </tr>
+    <?
+    }
+    ?>
+
     <tr>
       <td style="width:30%;text-align: center;">
         <u><b>Fajar Saiful Bahri</b></u>                    

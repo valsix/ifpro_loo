@@ -376,7 +376,7 @@ class trpsm_json extends CI_Controller
 			/* UNTUK CEK DATA TERUPLOAD */
 			$arrDataAttach= array();
 			$data_attachement = new TrPsm();
-			$data_attachement->selectByParamsAttachment(array("TR_PSM_ID"=>$reqId));
+			$data_attachement->selectByParamsAttachment(array("TR_PSM_ID"=>$reqId), -1,-1, " AND COALESCE(NULLIF(A.VMODE, ''), NULL) IS NULL");
 			$z=0;
 			while ($data_attachement->nextRow()) 
 			{
@@ -390,7 +390,7 @@ class trpsm_json extends CI_Controller
 			// batas file WAJIB UNTUK UPLOAD FILE
 			$this->load->library("FileHandler");
 			$file = new FileHandler();
-			$FILE_DIR = "uploadsloo/".$reqId."/";
+			$FILE_DIR = "uploadspsm/".$reqId."/";
 			makedirs($FILE_DIR);
 
 			$reqLinkFile = $_FILES["reqLinkFile"];
@@ -463,7 +463,7 @@ class trpsm_json extends CI_Controller
 				$insertLinkNama =  $arrDataAttach[$i]['temp_nama'];
 
 				$cek_data_attach = new TrPsm();
-				$cek_data_attach->selectByParamsAttachment(array("ATTACHMENT"=>setQuote($insertLinkFile, ""), "TIPE"=>$insertLinkTipe, "NAMA"=>setQuote($insertLinkNama, "")));
+				$cek_data_attach->selectByParamsAttachment(array("ATTACHMENT"=>setQuote($insertLinkFile, ""), "TIPE"=>$insertLinkTipe, "NAMA"=>setQuote($insertLinkNama, "")), -1,-1, " AND COALESCE(NULLIF(A.VMODE, ''), NULL) IS NULL");
 				$cek_data_attach->firstRow();
 
 				if ($cek_data_attach->getField("ATTACHMENT")=="") {
@@ -530,7 +530,7 @@ class trpsm_json extends CI_Controller
 
 				// tambahan khusus
 				$userbantu= new SatuanKerja();
-				$userbantu->selectByParams(array(),-1,-1, " AND A.SATUAN_KERJA_ID = '".$reqSatuanKerjaId."'");
+				$userbantu->selectByParams(array(),-1,-1, " AND A.SATUAN_KERJA_ID = '".$reqSatuanKerjaPengirimId."'");
 				$userbantu->firstRow();
 				$userbantuuserid= $userbantu->getField("USER_BANTU");
 				unset($userbantu);
@@ -539,7 +539,7 @@ class trpsm_json extends CI_Controller
 				{
 					$setdetil = new TrPsmParaf();
 					$setdetil->setField("TR_PSM_ID", $reqId);
-					$setdetil->setField("SATUAN_KERJA_ID_TUJUAN", $reqSatuanKerjaId);
+					$setdetil->setField("SATUAN_KERJA_ID_TUJUAN", $reqSatuanKerjaPengirimId);
 					$setdetil->setField("LAST_CREATE_USER", $sesid);
 					$setdetil->insertbantu();
 					if($cekquery == "105")

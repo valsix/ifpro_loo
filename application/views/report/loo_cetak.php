@@ -10,14 +10,29 @@ include_once("libraries/phpqrcode/qrlib.php");
 $this->load->library('ReportLoo');
 
 $reqId = $this->input->get("reqId");
-$templateSurat= $this->input->get("templateSurat");
+$reqTemplate= $templateSurat= $this->input->get("templateSurat");
+$ttd= $this->input->get("ttd");
 $vlihat= $this->input->get("lihat");
 
-$arrparam= array("reqId"=>$reqId, "reqTemplate"=>$templateSurat, "lihat"=>$vlihat);
+$arrparam= array("reqId"=>$reqId, "reqTemplate"=>$templateSurat, "ttd"=>$ttd, "lihat"=>$vlihat);
 $report= new ReportLoo();
 $docPDF= $report->generate($arrparam);
 
-$url = 'uploadsloo/'.$reqId.'/'.$docPDF;
+$vfolder= "";
+if($reqTemplate == "loo_lampiran" || $reqTemplate == "loo")
+{
+	$vfolder= "uploadsloo";
+}
+else if($reqTemplate == "loi")
+{
+	$vfolder= "uploadsloi";
+}
+else if($reqTemplate == "psm")
+{
+	$vfolder= "uploadspsm";
+}
+
+$url= $vfolder.'/'.$reqId.'/'.$docPDF;
 // echo $url;exit;
 $content = file_get_contents('../css/cetaknew.css');
 $content = file_get_contents($url);

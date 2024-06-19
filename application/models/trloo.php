@@ -170,6 +170,7 @@ DESCRIPTION			:
 				AND A.SATUAN_KERJA_ID_TUJUAN = '".$this->getField("SATUAN_KERJA_ID_TUJUAN")."'
 			) ELSE '".$this->getField("SATUAN_KERJA_ID_TUJUAN")."' END
 		)
+		AND A.TERBACA = 1
 		";
 		/*AND EXISTS
 		(
@@ -188,7 +189,8 @@ DESCRIPTION			:
 		UPDATE tr_loo_paraf A SET
 		NEXT_URUT= 
 		(
-			SELECT NO_URUT + 1 
+			SELECT
+			COALESCE(MAX(NO_URUT),0) + 1
 			FROM tr_loo_paraf A
 			WHERE A.TR_LOO_ID = '".$this->getField("TR_LOO_ID")."'
 			AND SATUAN_KERJA_ID_TUJUAN IN 
@@ -268,12 +270,13 @@ DESCRIPTION			:
 		$str = "
 		INSERT INTO tr_loo_attachment
 		(
-			TR_LOO_ATTACHMENT_ID, TR_LOO_ID, ATTACHMENT, UKURAN, TIPE, NAMA, LAST_CREATE_USER, LAST_CREATE_DATE
+			TR_LOO_ATTACHMENT_ID, TR_LOO_ID, VMODE, ATTACHMENT, UKURAN, TIPE, NAMA, LAST_CREATE_USER, LAST_CREATE_DATE
 		)
 		VALUES 
 		(
 			'".$this->getField("TR_LOO_ATTACHMENT_ID")."'
 			, '".$this->getField("TR_LOO_ID")."'
+			, '".$this->getField("VMODE")."'
 			, '".$this->getField("ATTACHMENT")."'
 			, ".(int)$this->getField("UKURAN")."
 			, '".$this->getField("TIPE")."'
@@ -295,6 +298,17 @@ DESCRIPTION			:
 		DELETE FROM tr_loo_attachment
 		WHERE
 		TR_LOO_ID = '".$this->getField("TR_LOO_ID")."'";
+
+		$this->query = $str;
+		$this->execQuery($str);
+	}
+
+	function deleteModeAttachment()
+	{
+		$str= "
+		DELETE FROM tr_loo_attachment
+		WHERE VMODE = '".$this->getField("VMODE")."' AND TR_LOO_ID = '".$this->getField("TR_LOO_ID")."'
+		";
 
 		$this->query = $str;
 		$this->execQuery($str);
@@ -476,6 +490,8 @@ DESCRIPTION			:
 		SELECT 
 			A1.TELP, A1.EMAIL, A1.TEMPAT, A1.NAMA_PEMILIK, A1.NAMA_BRAND
 			, A2.NAMA PRODUK_NAMA, A3.NAMA LOKASI_NAMA
+			, TO_CHAR(A.APPROVAL_QR_DATE, 'YYYY-MM-DD HH24:MI:SS') INFO_APPROVAL_QR_DATE
+			, TO_CHAR(A.LAST_CREATE_DATE, 'YYYY-MM-DD HH24:MI:SS') INFO_LAST_CREATE_DATE
 			, A.*
 		FROM tr_loo A
 		INNER JOIN customer A1 ON A.CUSTOMER_ID = A1.CUSTOMER_ID

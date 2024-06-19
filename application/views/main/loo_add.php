@@ -481,7 +481,7 @@ $(function(){
                                             <input id ="reqFile" name="reqLinkFile[]" type="file" maxlength="10" class="multi maxsize-10240" value="" />
                                             <?
                                             $set_attachement = new TrLoo();
-                                            $set_attachement->selectByParamsAttachment(array("A.TR_LOO_ID" => (int)$reqId));
+                                            $set_attachement->selectByParamsAttachment(array("A.TR_LOO_ID" => (int)$reqId), -1,-1, " AND COALESCE(NULLIF(A.VMODE, ''), NULL) IS NULL");
                                             while ($set_attachement->nextRow()) {
                                                 $attach_id= $set_attachement->getField("TR_LOO_ATTACHMENT_ID");
                                             ?>
@@ -491,7 +491,7 @@ $(function(){
                                                     <input type="hidden" name="reqLinkFileTempNama[]" value="<?= $set_attachement->getField("NAMA") ?>" />
                                                     <input type="hidden" name="reqLinkFileTempTipe[]" value="<?= $set_attachement->getField("TIPE") ?>" />
                                                     <input type="hidden" name="reqLinkFileTempSize[]" value="<?= $set_attachement->getField("UKURAN") ?>" />
-                                                    <a class="MultiFile-remove"><i class="fa fa-times-circle" onclick="infolampiran('min'); $(this).parent().parent().remove();"></i></a>
+                                                    <a class="MultiFile-remove"><i class="fa fa-times-circle" onclick="$(this).parent().parent().remove();"></i></a>
     
                                                     <?
                                                     $arrexcept= array("xlsx", "xls", "doc", "docx", "ppt", "pptx", "txt");

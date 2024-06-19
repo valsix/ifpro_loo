@@ -280,12 +280,14 @@ class tr_loo_json extends CI_Controller
 		}
 
 		$sessid= $this->ID;
+		$sesssatuankerjaasalid= $this->SATUAN_KERJA_ID_ASAL_ASLI;
+		$sesssatuankerjaid= $this->SATUAN_KERJA_ID_ASAL;
 		$statement.= " AND A.STATUS_DATA IN ('PARAF', 'VALIDASI')";
 
 		if($reqStatusSurat == "PERLU_PERSETUJUAN")
-			$statement.= " AND A.USER_POSISI_PARAF_ID = '".$sessid."'";
+			$statement.= " AND (A.USER_POSISI_PARAF_ID IN ('".$sessid."', '".$sessid."-".$sesssatuankerjaid."') )";
 		else
-			$statement.= " AND A.USER_LIHAT_STATUS LIKE '%".$sessid."%'";
+			$statement.= " AND A.USER_LIHAT_STATUS LIKE '%".$sessid."%' AND (A.USER_POSISI_PARAF_ID NOT IN ('".$sessid."', '".$sessid."-".$sesssatuankerjaid."') )";
 
 		// untuk buat session
 		/*session_start();

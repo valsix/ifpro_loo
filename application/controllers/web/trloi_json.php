@@ -257,6 +257,7 @@ class trloi_json extends CI_Controller
 		$reqTanggalAwal= $this->input->post("reqTanggalAwal");
 		$reqTanggalAkhir= $this->input->post("reqTanggalAkhir");
 		$reqPromotionLevy= $this->input->post("reqPromotionLevy");
+		$reqPicPenandatangan= $this->input->post("reqPicPenandatangan");
 
 		if($reqStatusData == "UBAHDATAPARAF" || $reqStatusData == "UBAHDATAREVISI")
 		{
@@ -325,6 +326,7 @@ class trloi_json extends CI_Controller
 		$set->setField("TANGGAL_AWAL", dateToDbCheck($reqTanggalAwal));
 		$set->setField("TANGGAL_AKHIR", dateToDbCheck($reqTanggalAkhir));
 		$set->setField("PROMOTION_LEVY", ValToNullDB(dotToNo($reqPromotionLevy)));
+		$set->setField("PIC_PENANDATANGAN", $reqPicPenandatangan);
 
 		$set->setField("USER_PEMBUAT_ID", $sesid);
 		$set->setField("STATUS_DATA", $reqStatusData);
@@ -376,7 +378,7 @@ class trloi_json extends CI_Controller
 			/* UNTUK CEK DATA TERUPLOAD */
 			$arrDataAttach= array();
 			$data_attachement = new TrLoi();
-			$data_attachement->selectByParamsAttachment(array("TR_LOI_ID"=>$reqId));
+			$data_attachement->selectByParamsAttachment(array("TR_LOI_ID"=>$reqId), -1,-1, " AND COALESCE(NULLIF(A.VMODE, ''), NULL) IS NULL");
 			$z=0;
 			while ($data_attachement->nextRow()) 
 			{
@@ -390,7 +392,7 @@ class trloi_json extends CI_Controller
 			// batas file WAJIB UNTUK UPLOAD FILE
 			$this->load->library("FileHandler");
 			$file = new FileHandler();
-			$FILE_DIR = "uploadsloo/".$reqId."/";
+			$FILE_DIR = "uploadsloi/".$reqId."/";
 			makedirs($FILE_DIR);
 
 			$reqLinkFile = $_FILES["reqLinkFile"];
@@ -456,22 +458,6 @@ class trloi_json extends CI_Controller
 				}
 			}
 
-			// hapus file
-			for ($i=0; $i < count($arrDataAttach); $i++) { 
-				$insertLinkTipe =  $arrDataAttach[$i]['temp_tipe'];
-				$insertLinkFile =  $arrDataAttach[$i]['temp'];
-				$insertLinkNama =  $arrDataAttach[$i]['temp_nama'];
-
-				$cek_data_attach = new TrLoi();
-				$cek_data_attach->selectByParamsAttachment(array("ATTACHMENT"=>setQuote($insertLinkFile, ""), "TIPE"=>$insertLinkTipe, "NAMA"=>setQuote($insertLinkNama, "")));
-				$cek_data_attach->firstRow();
-
-				if ($cek_data_attach->getField("ATTACHMENT")=="") {
-					unlink($FILE_DIR.$insertLinkFile); // hapus file
-				}
-			}
-			// batas file
-
 			// untuk data pemaraf
 			$reqSatuanKerjaIdParaf= $this->input->post("reqSatuanKerjaIdParaf");
 			if ( ($reqStatusData == "DRAFT" && empty($reqKondisiStatusData)) || ($reqStatusData == "PARAF" && $reqKondisiStatusData == "UBAHDATADRAFTPARAF") || ($reqStatusData == "DRAFT" && $reqKondisiStatusData == "UBAHDATAREVISI") )
@@ -530,7 +516,7 @@ class trloi_json extends CI_Controller
 
 				// tambahan khusus
 				$userbantu= new SatuanKerja();
-				$userbantu->selectByParams(array(),-1,-1, " AND A.SATUAN_KERJA_ID = '".$reqSatuanKerjaId."'");
+				$userbantu->selectByParams(array(),-1,-1, " AND A.SATUAN_KERJA_ID = '".$reqSatuanKerjaPengirimId."'");
 				$userbantu->firstRow();
 				$userbantuuserid= $userbantu->getField("USER_BANTU");
 				unset($userbantu);
@@ -539,7 +525,7 @@ class trloi_json extends CI_Controller
 				{
 					$setdetil = new TrLoiParaf();
 					$setdetil->setField("TR_LOI_ID", $reqId);
-					$setdetil->setField("SATUAN_KERJA_ID_TUJUAN", $reqSatuanKerjaId);
+					$setdetil->setField("SATUAN_KERJA_ID_TUJUAN", $reqSatuanKerjaPengirimId);
 					$setdetil->setField("LAST_CREATE_USER", $sesid);
 					$setdetil->insertbantu();
 					if($cekquery == "105")
@@ -599,6 +585,96 @@ class trloi_json extends CI_Controller
 					$checkparaf->tukarurutanparalel();
 				}
 			}
+
+			// upload baru
+			$this->load->model("TrLoo");
+			$reqTrLooId= $this->input->post("reqTrLooId");
+			$file = new FileHandler();
+			$FILE_DIR = "uploadsloo/".$reqTrLooId."/";
+			makedirs($FILE_DIR);
+
+			$reqLinkModeFile = $_FILES["reqLinkModeFile"];
+			$reqLinkModeFileTempSize	=  $this->input->post("reqLinkModeFileTempSize");
+			$reqLinkModeFileTempTipe	=  $this->input->post("reqLinkModeFileTempTipe");
+			$reqLinkModeFileTemp		=  $this->input->post("reqLinkModeFileTemp");
+			$reqLinkModeFileTempNama	=  $this->input->post("reqLinkModeFileTempNama");
+			// print_r($reqLinkModeFile['name']); exit;
+			// echo count($reqLinkModeFile['name']);exit();
+			$reqJenisTujuan= "detil";
+			$set_attachement = new TrLoo();
+			$set_attachement->setField("TR_LOO_ID", $reqTrLooId);
+			$set_attachement->setField("VMODE", $reqJenisTujuan);
+			$set_attachement->deleteModeAttachment();
+			$reqJenis = $reqJenisTujuan.generateZero($reqTrLooId, 10);
+			for ($i = 0; $i < count($reqLinkModeFile['name']); $i++) {
+				$renameFile = $reqJenis.date("Ymdhis").rand().".".getExtension($reqLinkModeFile['name'][$i]);
+				
+				if ($file->uploadToDirArray('reqLinkModeFile', $FILE_DIR, $renameFile, $i)) {
+					$insertLinkSize = $file->uploadedSize;
+					$insertLinkTipe =  $file->uploadedExtension;
+					$insertLinkFile =  $renameFile;
+
+					if ($insertLinkFile == "") {
+					} else {
+						$set_attachement = new TrLoo();
+						$set_attachement->setField("TR_LOO_ID", $reqTrLooId);
+						$set_attachement->setField("VMODE", $reqJenisTujuan);
+						$set_attachement->setField("ATTACHMENT", setQuote($renameFile, ""));
+						$set_attachement->setField("UKURAN", $insertLinkSize);
+						$set_attachement->setField("TIPE", $insertLinkTipe);
+						$set_attachement->setField("NAMA", setQuote($reqLinkModeFile['name'][$i], ""));
+						$set_attachement->setField("LAST_CREATE_USER", $this->ID);
+						$set_attachement->insertAttachment();
+						// echo $set_attachement->query;exit;
+						// print_r($reqLinkModeFile['name'][$i]);
+
+						$arrDataAttach[$z]['temp_size'] = $insertLinkSize;
+						$arrDataAttach[$z]['temp_tipe'] = $insertLinkTipe;
+						$arrDataAttach[$z]['temp'] = $renameFile;
+						$arrDataAttach[$z]['temp_nama'] = $reqLinkModeFile['name'][$i];
+						$z++;
+					}
+				}
+			}
+
+			/* SIMPAN DATA UPLOAD*/
+			for ($i = 0; $i < count($reqLinkModeFileTemp); $i++) {
+				$insertLinkSize = $reqLinkModeFileTempSize[$i];
+				$insertLinkTipe =  $reqLinkModeFileTempTipe[$i];
+				$insertLinkFile =  $reqLinkModeFileTemp[$i];
+				$insertLinkNama =  $reqLinkModeFileTempNama[$i];
+						// echo $i."if";
+
+				if ($insertLinkFile == "") {
+				} else {
+					$set_attachement = new TrLoo();
+					$set_attachement->setField("TR_LOO_ID", $reqId);
+					$set_attachement->setField("VMODE", $reqJenisTujuan);
+					$set_attachement->setField("ATTACHMENT", setQuote($insertLinkFile, ""));
+					$set_attachement->setField("UKURAN", $insertLinkSize);
+					$set_attachement->setField("TIPE", $insertLinkTipe);
+					$set_attachement->setField("NAMA", setQuote($insertLinkNama, ""));
+					$set_attachement->setField("LAST_CREATE_USER", $this->ID);
+					$set_attachement->insertAttachment();
+					// print_r($reqLinkModeFile['name'][$i]);
+				}
+			}
+
+			// hapus file
+			for ($i=0; $i < count($arrDataAttach); $i++) { 
+				$insertLinkTipe =  $arrDataAttach[$i]['temp_tipe'];
+				$insertLinkFile =  $arrDataAttach[$i]['temp'];
+				$insertLinkNama =  $arrDataAttach[$i]['temp_nama'];
+
+				$cek_data_attach = new TrLoi();
+				$cek_data_attach->selectByParamsAttachment(array("ATTACHMENT"=>setQuote($insertLinkFile, ""), "TIPE"=>$insertLinkTipe, "NAMA"=>setQuote($insertLinkNama, "")), -1,-1, " AND A.VMODE = '".$reqJenisTujuan."'");
+				$cek_data_attach->firstRow();
+
+				if ($cek_data_attach->getField("ATTACHMENT")=="") {
+					unlink($FILE_DIR.$insertLinkFile); // hapus file
+				}
+			}
+			// batas file
 
 			$inforeturninfo= "";
 			if ($reqStatusData == "DRAFT" || $reqKondisiStatusData == "UBAHDATAVALIDASI") {

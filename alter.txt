@@ -113,7 +113,8 @@ begin
 		(
 			select
 			row_number () over ( partition by a.tr_loo_id order by a.no_urut) urut
-			, a.tr_loo_id, a.user_id
+			, a.tr_loo_id
+			, case when a.status_bantu = 1 then a.user_id || '-' || a.satuan_kerja_id_tujuan else a.user_id end user_id
 			from tr_loo_paraf a
 			where coalesce(nullif(a.kondisi_paraf, ''), null) is null
 			and coalesce(nullif(a.status_paraf, ''), null) is null
@@ -304,6 +305,9 @@ begin
 		delete from tr_loo_paraf where tr_loo_id = old.tr_loo_id;
 		delete from tr_loo_log where tr_loo_id = old.tr_loo_id;
 		delete from tr_loo_attachment where tr_loo_id = old.tr_loo_id;
+
+		delete from tr_loi where tr_loo_id = old.tr_loo_id;
+		delete from tr_psm where tr_loo_id = old.tr_loo_id;
 		return old;
 	end if;
    
@@ -473,6 +477,7 @@ create table tr_loo_attachment
 (
 	tr_loo_attachment_id numeric not null
 	, tr_loo_id numeric
+	, vmode character varying
 	, attachment text
 	, catatan character varying
 	, ukuran numeric
@@ -665,6 +670,7 @@ create table tr_loi
 	, promotion_levy numeric
 	, produk_id integer
 	, customer_id integer
+	, pic_penandatangan character varying
 	, lokasi_loo_id integer
 	, pph numeric
 	, total_luas_indoor numeric
@@ -1121,6 +1127,7 @@ create table tr_loi_attachment
 (
 	tr_loi_attachment_id numeric not null
 	, tr_loi_id numeric
+	, vmode character varying
 	, attachment text
 	, catatan character varying
 	, ukuran numeric
@@ -1777,6 +1784,7 @@ create table tr_psm_attachment
 (
 	tr_psm_attachment_id numeric not null
 	, tr_psm_id numeric
+	, vmode character varying
 	, attachment text
 	, catatan character varying
 	, ukuran numeric
@@ -1999,6 +2007,9 @@ begin
 		from tr_loo
 		where tr_loo_id = new.tr_loo_id
 		and tr_loo_id not in (select tr_loo_id from tr_loi where tr_loo_id = new.tr_loo_id);
+
+		--untuk update nomor
+		update tr_loi set paksa_db = lower('tnomor') where tr_loi_id = vnewid;
 
 		insert into tr_loi_paraf
 		(

@@ -32,12 +32,13 @@ DESCRIPTION			:
 		$str = "
 		INSERT INTO CUSTOMER 
 		(
-			PIC, TELP, EMAIL, TEMPAT, NAMA_PEMILIK, NAMA_BRAND, JENIS_PERUSAHAAN_ID
+			CUSTOMER_ID, PIC, TELP, EMAIL, TEMPAT, NAMA_PEMILIK, NAMA_BRAND, JENIS_PERUSAHAAN_ID
 			, NPWP, NPWP_ALAMAT, NOMOR_NIOR, ALAMAT_DOMISILI
 		) 
 		VALUES
 		(
-			'".$this->getField("PIC")."'
+			".$this->getField("CUSTOMER_ID")."
+			, '".$this->getField("PIC")."'
 			, '".$this->getField("TELP")."'
 			, '".$this->getField("EMAIL")."'
 			, '".$this->getField("TEMPAT")."'

@@ -18,16 +18,59 @@ class ReportLoo
 
 	function generate($arrparam)
 	{
+		$CI = &get_instance();
+
 		$reqId= $arrparam["reqId"];
 		$reqTemplate= $arrparam["reqTemplate"];
+		$ttd= $arrparam["ttd"];
 		$lihat= $arrparam["lihat"];
 		// print_r($arrparam);exit;
 
 		$this->reqId= $reqId;
 		$this->reqTemplate= $reqTemplate;
 		
+		$lewatifile= "";
+		$vfolder= "";
+		if($reqTemplate == "loo_lampiran" || $reqTemplate == "loo")
+		{
+			$vid= $reqId;
+			if(empty($vid)) $vid= -1;
+			$CI->load->model("TrLoo");
+			$set= new TrLoo();
+			$set->selectByParams(array(), -1,-1, " AND A.TR_LOO_ID = ".$vid);
+			$set->firstRow();
+			$vstatusdata= $set->getField("STATUS_DATA");
+			$vttdcode= $set->getField("TTD_KODE");
+			// echo $vstatusdata;exit;
+
+			$pesanQrCode = "ID: ".$set->getField("TTD_KODE")."\n";
+			$pesanQrCode.= "ApprovedBy: ".$set->getField("USER_PENGIRIM_NAMA")."\n";
+			$pesanQrCode.= "Nomor Surat: ".$set->getField("NOMOR_SURAT")."\n";
+			// echo $pesanQrCode;exit;
+
+			if($vstatusdata == "POSTING")
+			{
+				$lewatifile= "1";
+			}
+
+			$vfolder= "uploadsloo";
+		}
+		else if($reqTemplate == "loi")
+		{
+			$vfolder= "uploadsloi";
+		}
+		else if($reqTemplate == "psm")
+		{
+			$vfolder= "uploadspsm";
+		}
+
+		if(empty($vfolder))
+		{
+			exit;
+		}
+
 		$FILE_DIR_TEMPLATE= "uploadsloo/";
-		$FILE_DIR= "uploadsloo/".$this->reqId."/";
+		$FILE_DIR= $vfolder."/".$this->reqId."/";
 
 		if (!file_exists($FILE_DIR)) {
 			makedirs($FILE_DIR, 0777, true);
@@ -36,13 +79,38 @@ class ReportLoo
 
 		$CI = &get_instance();
 		$basereport= $CI->config->item('base_report');
-		$urllink= $basereport."report/loadUrl/report/".$reqTemplate."_cetak_pdf/?reqJenisSurat=INTERNAL&reqId=".$this->reqId;
+		$urllink= $basereport."report/loadUrl/report/".$reqTemplate."_cetak_pdf/?reqId=".$this->reqId;
+		if(!empty($ttd))
+		{
+			$urllink.= "&ttd=".$ttd;
+		}
 
 		if($lihat == "link")
 		{
 			echo $urllink;exit;
 		}
-		// echo $basereport."report/loadUrl/report/nota_dinas_bc"; exit;
+
+		$vgenerate= "_".generateZero($reqId, 6);
+		// kalau ttd 2 maka buat barcode
+		if($ttd == 2)
+		{
+			$vgenerate= "_".$vttdcode;
+			$vpngttd= $FILE_DIR.$vttdcode.".png";
+			if(!file_exists($vpngttd))
+			{
+				$errorCorrectionLevel = 'L';
+				$matrixPointSize = 5;
+				QRcode::png($pesanQrCode, $vpngttd, $errorCorrectionLevel, $matrixPointSize, 2);
+			}
+		}
+		$saveAs= $reqTemplate.$vgenerate.".pdf";
+		// echo $saveAs;exit;
+
+		$filelink= $FILE_DIR.$saveAs;
+		if(file_exists($filelink) && !empty($lewatifile))
+		{
+			return $saveAs;exit;
+		}
 
 		$arrContextOptions=array(
 			"ssl"=>array(
@@ -68,10 +136,7 @@ class ReportLoo
 		    )
 		);
 
-		$vgenerate= "_".generateZero($reqId, 6);
-		$saveAs= $reqTemplate.$vgenerate.".pdf";
-		$filelink= $FILE_DIR.$saveAs;
-		// echo $filelink;exit;
+		// kalau ada file hapus data
 		unlink($filelink);
 		// exit;
 		$wkhtmltopdf->saveAs($filelink);

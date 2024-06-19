@@ -143,15 +143,17 @@ if($this->USER_GROUP == "LOOLOI" || in_array("LOOLOI", explode(",", $this->USER_
     $menulooloi= "1";
 
     $sessid= $this->ID;
-    $statement= " AND A.STATUS_DATA IN ('PARAF', 'VALIDASI') AND A.USER_POSISI_PARAF_ID = '".$sessid."'";
+    $sesssatuankerjaasalid= $this->SATUAN_KERJA_ID_ASAL_ASLI;
+    $sesssatuankerjaid= $this->SATUAN_KERJA_ID_ASAL;
+    $statement= " AND A.STATUS_DATA IN ('PARAF', 'VALIDASI') AND (A.USER_POSISI_PARAF_ID = '".$sessid."' OR A.USER_POSISI_PARAF_ID = '".$sessid."-".$sesssatuankerjaid."')";
     $set= new TrLoo();
     $jumlahloo= $set->getCountByParams(array(), $statement);
 
-    $statement= " AND A.STATUS_DATA IN ('PARAF', 'VALIDASI') AND A.USER_POSISI_PARAF_ID = '".$sessid."'";
+    $statement= " AND A.STATUS_DATA IN ('PARAF', 'VALIDASI') AND (A.USER_POSISI_PARAF_ID = '".$sessid."' OR A.USER_POSISI_PARAF_ID = '".$sessid."-".$sesssatuankerjaid."')";
     $set= new TrLoi();
     $jumlahloi= $set->getCountByParams(array(), $statement);
     
-    $statement= " AND A.STATUS_DATA IN ('PARAF', 'VALIDASI') AND A.USER_POSISI_PARAF_ID = '".$sessid."'";
+    $statement= " AND A.STATUS_DATA IN ('PARAF', 'VALIDASI') AND (A.USER_POSISI_PARAF_ID = '".$sessid."' OR A.USER_POSISI_PARAF_ID = '".$sessid."-".$sesssatuankerjaid."')";
     $set= new TrPsm();
     $jumlahpsm= $set->getCountByParams(array(), $statement);
 }

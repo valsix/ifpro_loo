@@ -200,18 +200,18 @@ class TrPsmParaf extends Entity
 	function deleteuserbantu()
 	{
 		$str = "
-		delete from surat_masuk_paraf a
+		delete from tr_psm_paraf a
 		where 1=1
 		and exists
 		(
 			select 1
 			from
 			(
-				select surat_masuk_id, user_id, count(1)
-				from surat_masuk_paraf
-				where surat_masuk_id = ".$this->getField("TR_PSM_ID")."
-				group by surat_masuk_id, user_id having count(1) > 1
-			) xxx where a.surat_masuk_id = xxx.surat_masuk_id and a.user_id = xxx.user_id
+				select tr_psm_id, user_id, count(1)
+				from tr_psm_paraf
+				where tr_psm_id = ".$this->getField("TR_PSM_ID")."
+				group by tr_psm_id, user_id having count(1) > 1
+			) xxx where a.tr_psm_id = xxx.tr_psm_id and a.user_id = xxx.user_id
 		) and status_bantu is null
 		";
 

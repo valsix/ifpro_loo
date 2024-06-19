@@ -737,7 +737,7 @@ $(function(){
                                                             <input id ="reqFile" name="reqLinkFile[]" type="file" maxlength="10" class="multi maxsize-10240" value="" />
                                                             <?
                                                             $set_attachement = new TrPsm();
-                                                            $set_attachement->selectByParamsAttachment(array("A.TR_PSM_ID" => (int)$reqId));
+                                                            $set_attachement->selectByParamsAttachment(array("A.TR_PSM_ID" => (int)$reqId), -1,-1, " AND COALESCE(NULLIF(A.VMODE, ''), NULL) IS NULL");
                                                             while ($set_attachement->nextRow()) {
                                                                 $attach_id= $set_attachement->getField("TR_PSM_ATTACHMENT_ID");
                                                             ?>
@@ -747,7 +747,7 @@ $(function(){
                                                                     <input type="hidden" name="reqLinkFileTempNama[]" value="<?= $set_attachement->getField("NAMA") ?>" />
                                                                     <input type="hidden" name="reqLinkFileTempTipe[]" value="<?= $set_attachement->getField("TIPE") ?>" />
                                                                     <input type="hidden" name="reqLinkFileTempSize[]" value="<?= $set_attachement->getField("UKURAN") ?>" />
-                                                                    <a class="MultiFile-remove"><i class="fa fa-times-circle" onclick="infolampiran('min'); $(this).parent().parent().remove();"></i></a>
+                                                                    <a class="MultiFile-remove"><i class="fa fa-times-circle" onclick="$(this).parent().parent().remove();"></i></a>
                     
                                                                     <?
                                                                     $arrexcept= array("xlsx", "xls", "doc", "docx", "ppt", "pptx", "txt");
@@ -765,7 +765,7 @@ $(function(){
                                                                     {
                                                                     ?>
                                                                     <?= $set_attachement->getField("NAMA") ?>
-                                                                    <a onClick="parent.openAdd('<?= base_url()."uploadsloi/".$reqId."/".$set_attachement->getField("ATTACHMENT") ?>')" >
+                                                                    <a onClick="parent.openAdd('<?= base_url()."uploadspsm/".$reqId."/".$set_attachement->getField("ATTACHMENT") ?>')" >
                                                                         <i style="cursor: pointer;" class="fa fa-eye" ></i>
                                                                     </a>
                                                                     |
@@ -1773,7 +1773,7 @@ $(function(){
                                                     <div class="inner-lampiran">
                                                         <?
                                                         $set_attachement = new TrLoi();
-                                                        $set_attachement->selectByParamsAttachment(array("A.TR_LOI_ID" => (int)$reqTrLoiId));
+                                                        $set_attachement->selectByParamsAttachment(array("A.TR_LOI_ID" => (int)$reqTrLoiId), -1,-1, " AND COALESCE(NULLIF(A.VMODE, ''), NULL) IS NULL");
                                                         while ($set_attachement->nextRow()) {
                                                             $attach_id= $set_attachement->getField("TR_LOI_ATTACHMENT_ID");
                                                         ?>
@@ -2678,7 +2678,7 @@ $(function(){
                                                     <div class="inner-lampiran">
                                                         <?
                                                         $set_attachement = new TrLoo();
-                                                        $set_attachement->selectByParamsAttachment(array("A.TR_LOO_ID" => (int)$reqTrLooId));
+                                                        $set_attachement->selectByParamsAttachment(array("A.TR_LOO_ID" => (int)$reqTrLooId), -1,-1, " AND COALESCE(NULLIF(A.VMODE, ''), NULL) IS NULL");
                                                         while ($set_attachement->nextRow()) {
                                                             $attach_id= $set_attachement->getField("TR_LOO_ATTACHMENT_ID");
                                                         ?>

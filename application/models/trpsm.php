@@ -177,6 +177,7 @@ DESCRIPTION			:
 				AND A.SATUAN_KERJA_ID_TUJUAN = '".$this->getField("SATUAN_KERJA_ID_TUJUAN")."'
 			) ELSE '".$this->getField("SATUAN_KERJA_ID_TUJUAN")."' END
 		)
+		AND A.TERBACA = 1
 		";
 		/*AND EXISTS
 		(
@@ -195,7 +196,8 @@ DESCRIPTION			:
 		UPDATE tr_psm_paraf A SET
 		NEXT_URUT= 
 		(
-			SELECT NO_URUT + 1 
+			SELECT
+			COALESCE(MAX(NO_URUT),0) + 1
 			FROM tr_psm_paraf A
 			WHERE A.TR_PSM_ID = '".$this->getField("TR_PSM_ID")."'
 			AND SATUAN_KERJA_ID_TUJUAN IN 
