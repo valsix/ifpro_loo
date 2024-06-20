@@ -3,7 +3,7 @@ include_once("functions/string.func.php");
 include_once("functions/date.func.php");
 $this->load->library('ReportLoo');
 $this->load->library('suratmasukinfo');
-$this->load->model("TrLoo");
+$this->load->model("TrPsm");
 
 $rloo= new ReportLoo();
 $suratmasukinfo= new suratmasukinfo();
@@ -11,7 +11,7 @@ $suratmasukinfo= new suratmasukinfo();
 $reqId= $this->input->get("reqId");
 $reqMode= $this->input->get("reqMode");
 
-/*$set= new TrLoo();
+/*$set= new TrPsm();
 $statement= " 
 --AND SM_INFO NOT IN ('AKAN_DISETUJUI', 'NEXT_DISETUJUI')
 AND 
@@ -69,11 +69,11 @@ $satuankerjaganti= $this->SATUAN_KERJA_ID_ASAL;
 // 				$satuankerjaganti= "PST2000000";
 				
 $sOrder= "";
-// $set->selectByParamsPersetujuan(array("A.TR_LOO_ID"=>$reqId), -1, -1, $this->ID, $statement, $sOrder);
-$set->selectByParamsNewPersetujuan(array("A.TR_LOO_ID"=>$reqId), -1, -1, $this->ID, $this->USER_GROUP, $statement, $sOrder, $reqId, $satuankerjaganti);
+// $set->selectByParamsPersetujuan(array("A.TR_PSM_ID"=>$reqId), -1, -1, $this->ID, $statement, $sOrder);
+$set->selectByParamsNewPersetujuan(array("A.TR_PSM_ID"=>$reqId), -1, -1, $this->ID, $this->USER_GROUP, $statement, $sOrder, $reqId, $satuankerjaganti);
 $set->firstRow();
  // echo $set->query;exit;
-$checkid= $set->getField("TR_LOO_ID");
+$checkid= $set->getField("TR_PSM_ID");
 $checkstatusbantu= $set->getField("STATUS_BANTU");
 $checkstatussurat= $set->getField("STATUS_SURAT");
 $checkuserid= $set->getField("USER_ID");
@@ -85,11 +85,11 @@ $arrinfonomorsurat= explode("[...]", $checkinfonomorsurat);
 
 // untuk ambil data nomor berdasarkan tanggal entri
 $tanggalapproval= date("d-m-Y");
-// $setlast= new TrLoo();
-// $setlast->selectByParamsInfoLastNomorSurat(array("A.TR_LOO_ID"=>$reqId), -1, -1);
+// $setlast= new TrPsm();
+// $setlast->selectByParamsInfoLastNomorSurat(array("A.TR_PSM_ID"=>$reqId), -1, -1);
 // $setlast->firstRow();
 // $checkinfolastnomorsurat= $setlast->getField("INFO_NOMOR_SURAT");
-$setlast= new TrLoo();
+$setlast= new TrPsm();
 $setlast->selectByParamsCheckNomor("GETINFO", $reqId, "", dateToDbCheck($tanggalapproval));
 // echo $setlast->query;exit;
 $setlast->firstRow();
@@ -100,15 +100,15 @@ unset($setlast);
 $checkpernahsetujui= 0;
 if (empty($checkid))
 {
-	$set= new TrLoo();
+	$set= new TrPsm();
 	$statement= " AND SM_INFO IN ('AKAN_DISETUJUI', 'PEMBUAT') AND A.STATUS_SURAT IN ('PARAF', 'VALIDASI', 'PEMBUAT')";
-	$checkpernahsetujui= $set->getCountByParamsStatus(array("A.TR_LOO_ID"=>$reqId), $this->ID, $statement);
+	$checkpernahsetujui= $set->getCountByParamsStatus(array("A.TR_PSM_ID"=>$reqId), $this->ID, $statement);
 	// echo $set->query;exit;
 
 	if($checkpernahsetujui > 0)
 	{
-		$set= new TrLoo();
-        $set->selectByParams(array("A.TR_LOO_ID"=>$reqId));
+		$set= new TrPsm();
+        $set->selectByParams(array("A.TR_PSM_ID"=>$reqId));
         $set->firstRow();
         // echo $set->query;exit;
         $infojenisnaskahid= $set->getField("JENIS_NASKAH_ID");
@@ -126,8 +126,8 @@ if (empty($checkid))
 	}
 }*/
 
-$set= new TrLoo();
-$set->selectByParams(array("A.TR_LOO_ID"=>$reqId));
+$set= new TrPsm();
+$set->selectByParams(array("A.TR_PSM_ID"=>$reqId));
 $set->firstRow();
 // echo $set->query;exit;
 $infojenissurat= $set->getField("JENIS_SURAT");
@@ -144,12 +144,12 @@ $sessid= $this->ID;
 $checkparafid= "";
 if (!empty($reqId))
 {
-    /*$statement.= " AND A.USER_POSISI_PARAF_ID = '".$sessid."' AND A.TR_LOO_ID = ".$reqId;
-    $set= new TrLoo();
+    /*$statement.= " AND A.USER_POSISI_PARAF_ID = '".$sessid."' AND A.TR_PSM_ID = ".$reqId;
+    $set= new TrPsm();
     $set->selectdraft(array(), -1, -1, $statement);
     // echo $set->query;exit;
     $set->firstRow();
-    $checkparafid= $set->getField("TR_LOO_ID");
+    $checkparafid= $set->getField("TR_PSM_ID");
     $checknextpemaraf= $set->getField("NEXT_URUT");
     $checkstatusbantu= $set->getField("STATUS_BANTU");
     $chekvalidasi= "";
@@ -163,19 +163,19 @@ if (!empty($reqId))
     }
     else
     {
-        redirect("main/index/loo_perlu_persetujuan");
+        redirect("main/index/loi_perlu_persetujuan");
     }*/
 }
 // $arrparam= ["reqId"=>$reqId, "reqStatusSurat"=>$reqStatusSurat];
 // $rloo->setterbaca($arrparam);
 
 $infolinkdetil= $reqMode;
-$infolinkedit= "loo_add";
+$infolinkedit= "loi_add";
 
 $arrattachment= array();
 $index_data= 0;
-$set= new TrLoo();
-$set->selectByParamsAttachment(array("A.TR_LOO_ID" => (int)$reqId), -1,-1, " AND COALESCE(NULLIF(A.VMODE, ''), NULL) IS NULL");
+$set= new TrPsm();
+$set->selectByParamsAttachment(array("A.TR_PSM_ID" => (int)$reqId), -1,-1, " AND COALESCE(NULLIF(A.VMODE, ''), NULL) IS NULL");
 while($set->nextRow())
 {
     $arrattachment[$index_data]["NAMA"] = $set->getField("NAMA");
@@ -275,7 +275,7 @@ $jumlahattachment= $index_data;
         }
         ?>
         <div class="konten-pdf <?=$classlampiran?>">
-        	<iframe name="contentFrame" src="app/loadUrl/report/loo_cetak/?reqId=<?=$reqId?>&templateSurat=loo"></iframe>
+        	<iframe name="contentFrame" src="app/loadUrl/report/loo_cetak/?reqId=<?=$reqId?>&templateSurat=loi"></iframe>
         </div>
 
         <?

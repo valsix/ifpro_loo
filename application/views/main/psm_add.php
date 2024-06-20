@@ -2829,6 +2829,63 @@ $(function(){
                                         </td>
                                     </tr>
 
+                                    <tr>
+                                        <td>
+                                            Lampiran Bukti
+                                        </td>
+                                        <td>:</td>
+                                        <td>
+                                            <div class="kotak-dokumen">
+                                                <div class="kontak">
+                                                    <div class="inner-lampiran">
+                                                        <?
+                                                        $set_attachement = new TrLoo();
+                                                        $set_attachement->selectByParamsAttachment(array("A.TR_LOO_ID" => (int)$reqTrLoiId), -1,-1, " AND A.VMODE = 'detil'");
+                                                        while ($set_attachement->nextRow()) {
+                                                            $attach_id= $set_attachement->getField("TR_LOO_ATTACHMENT_ID");
+                                                        ?>
+                                                            
+                                                            <div class="MultiFile-label">
+                                                                <?
+                                                                $arrexcept= array("xlsx", "xls", "doc", "docx", "ppt", "pptx", "txt");
+                                                                //$arrexcept= array("xlsx", "xls", "doc", "docx", "txt");
+                                                                if(in_array(strtolower($set_attachement->getField("TIPE")), $arrexcept))
+                                                                {
+                                                                ?>
+                                                                <?= $set_attachement->getField("NAMA") ?>
+                                                                <a onClick="down('<?=$attach_id?>', 'loo')" >
+                                                                    <i style="cursor: pointer;" class="fa fa-download" ></i>
+                                                                </a>
+                                                                <?
+                                                                }
+                                                                else
+                                                                {
+                                                                ?>
+                                                                <?= $set_attachement->getField("NAMA") ?>
+                                                                <a onClick="parent.openAdd('<?= base_url()."uploadsloo/".$reqTrLooId."/".$set_attachement->getField("ATTACHMENT") ?>')" >
+                                                                    <i style="cursor: pointer;" class="fa fa-eye" ></i>
+                                                                </a>
+                                                                |
+                                                                <a onClick="down('<?=$attach_id?>', 'loo')" >
+                                                                    <i style="cursor: pointer;" class="fa fa-download" ></i>
+                                                                </a>
+                                                                <?
+                                                                }
+                                                                ?>
+                                                            </div>
+                                                        <?
+                                                        }
+                                                        ?>
+                                                        
+                                                        <div class="small">Ukuran file maksimum yang diizinkan adalah 10 MB & Jenis file diterima: world, excel, ppt, pdf, jpg, jpeg, png</div>
+                                                        
+                                                    </div>
+                                                </div>
+                
+                                            </div>
+                                        </td>
+                                    </tr>
+
                                 </thead>
                             </table>
 

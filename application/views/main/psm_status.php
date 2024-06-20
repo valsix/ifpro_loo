@@ -2,7 +2,7 @@
 include_once("functions/string.func.php");
 include_once("functions/date.func.php");
 
-$this->load->model("TrLoi");
+$this->load->model("TrPsm");
 
 $reqFilename= $this->uri->segment(3, "");
 $reqStatusSurat= $this->input->get("reqStatusSurat");
@@ -22,11 +22,11 @@ $sessid= $this->ID;
 $statementglobal= " AND A.USER_LIHAT_STATUS LIKE '%".$sessid."%'";
 
 $statement= " AND A.USER_POSISI_PARAF_ID != '".$sessid."' AND A.STATUS_DATA IN ('PARAF', 'VALIDASI')";
-$set= new TrLoi();
+$set= new TrPsm();
 $jumlahparaf= $set->getCountByParams(array(), $statement);
 
 $statement= " AND A.STATUS_DATA IN ('REVISI')";
-$set= new TrLoi();
+$set= new TrPsm();
 $jumlahrevisi= $set->getCountByParams(array(), $statement);
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
@@ -225,7 +225,7 @@ $jumlahrevisi= $set->getCountByParams(array(), $statement);
 			            reqPilihan= "";
 			        }
 
-					window.location = "main/index/loi_status_detil/?reqMode=<?=$reqFilename?>&reqId="+valinfoid;
+					window.location = "main/index/psm_status_detil/?reqMode=<?=$reqFilename?>&reqId="+valinfoid;
                 }
             }
         } );

@@ -166,8 +166,8 @@ if (!empty($reqId))
         redirect("main/index/loi_perlu_persetujuan");
     }*/
 }
-$arrparam= ["reqId"=>$reqId, "reqStatusSurat"=>$reqStatusSurat];
-$rloo->setterbaca($arrparam);
+// $arrparam= ["reqId"=>$reqId, "reqStatusSurat"=>$reqStatusSurat];
+// $rloo->setterbaca($arrparam);
 
 $infolinkdetil= $reqMode;
 $infolinkedit= "loi_add";
@@ -175,7 +175,7 @@ $infolinkedit= "loi_add";
 $arrattachment= array();
 $index_data= 0;
 $set= new TrLoi();
-$set->selectByParamsAttachment(array("A.TR_LOI_ID" => (int)$reqId));
+$set->selectByParamsAttachment(array("A.TR_LOI_ID" => (int)$reqId), -1,-1, " AND COALESCE(NULLIF(A.VMODE, ''), NULL) IS NULL");
 while($set->nextRow())
 {
     $arrattachment[$index_data]["NAMA"] = $set->getField("NAMA");
