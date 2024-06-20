@@ -51,7 +51,7 @@ else
         $setdetil->firstRow();
         $reqLokasiLooNama= $setdetil->getField("NAMA");
     }
-    
+
     $reqPph= $set->getField("PPH");
     $reqTotalLuasIndoor= $set->getField("TOTAL_LUAS_INDOOR");
     $reqTotalLuasOutdoor= $set->getField("TOTAL_LUAS_OUTDOOR");
@@ -85,7 +85,7 @@ else
     $reqUserPengirimId= $set->getField("USER_PENGIRIM_ID");
     $reqStatusData= $set->getField("STATUS_DATA");
     $reqUserId= $set->getField("USER_PEMBUAT_ID");
-    // $reqxxx= $set->getField("USER_POSISI_PARAF_ID");
+    $reqUserPosisiParafId= $set->getField("USER_POSISI_PARAF_ID");
 
     $satuan_kerja= new SatuanKerja();
     $satuan_kerja->selectByParams(array(), -1, -1, " AND SATUAN_KERJA_ID = '".$reqSatuanKerjaPengirimId."'", " ORDER BY KODE_SO ASC ");
@@ -350,6 +350,9 @@ $arrlog= [];
 $arrloilog= [];
 $arrloolog= [];
 $sessid= $this->ID;
+$sesssatuankerjaasalid= $this->SATUAN_KERJA_ID_ASAL_ASLI;
+$sesssatuankerjaid= $this->SATUAN_KERJA_ID_ASAL;
+$sessidsatuankerjaid= $sessid."-".$sesssatuankerjaid;
 $checkparafid= "";
 if (!empty($reqId))
 {
@@ -517,7 +520,7 @@ $(function(){
 
                 <?
                 // tambahan khusus, kalau paraf sesuai urutan
-                if ($reqStatusData == "PARAF" && !empty($checkparafid) && $reqUserId != $sessid) 
+                if ($reqStatusData == "PARAF" && !empty($checkparafid) && $reqUserId != $sessid || ($reqStatusData == "PARAF" && $reqUserPosisiParafId == $sessidsatuankerjaid)) 
                 {
                     $aksibutton= "1";
 
