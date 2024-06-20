@@ -19,13 +19,15 @@ if(empty($reqStatusSurat))
 	$reqStatusSurat= "PERLU_PERSETUJUAN";
 
 $sessid= $this->ID;
+$sesssatuankerjaasalid= $this->SATUAN_KERJA_ID_ASAL_ASLI;
+$sesssatuankerjaid= $this->SATUAN_KERJA_ID_ASAL;
 $statementglobal= " AND A.STATUS_DATA IN ('PARAF', 'VALIDASI')";
 
-$statement= " AND A.USER_POSISI_PARAF_ID = '".$sessid."'".$statementglobal;
+$statement= " AND (A.USER_POSISI_PARAF_ID IN ('".$sessid."', '".$sessid."-".$sesssatuankerjaid."') )".$statementglobal;
 $set= new TrLoi();
 $jumlahperlupersetujuan= $set->getCountByParams(array(), $statement);
 
-$statement= " AND A.USER_LIHAT_STATUS LIKE '%".$sessid."%'".$statementglobal;
+$statement= " AND (A.USER_POSISI_PARAF_ID NOT IN ('".$sessid."', '".$sessid."-".$sesssatuankerjaid."') ) AND A.USER_LIHAT_STATUS LIKE '%".$sessid."%'".$statementglobal;
 $set= new TrLoi();
 $jumlahakandisetujui= $set->getCountByParams(array(), $statement);
 ?>

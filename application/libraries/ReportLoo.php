@@ -57,6 +57,26 @@ class ReportLoo
 		}
 		else if($reqTemplate == "loi")
 		{
+			$vid= $reqId;
+			if(empty($vid)) $vid= -1;
+			$CI->load->model("TrLoi");
+			$set= new TrLoi();
+			$set->selectByParams(array(), -1,-1, " AND A.TR_LOO_ID = ".$vid);
+			$set->firstRow();
+			$vstatusdata= $set->getField("STATUS_DATA");
+			$vttdcode= $set->getField("TTD_KODE");
+			// echo $vstatusdata;exit;
+
+			$pesanQrCode = "ID: ".$set->getField("TTD_KODE")."\n";
+			$pesanQrCode.= "ApprovedBy: ".$set->getField("USER_PENGIRIM_NAMA")."\n";
+			$pesanQrCode.= "Nomor Surat: ".$set->getField("NOMOR_SURAT")."\n";
+			// echo $pesanQrCode;exit;
+
+			if($vstatusdata == "POSTING")
+			{
+				$lewatifile= "1";
+			}
+
 			$vfolder= "uploadsloi";
 		}
 		else if($reqTemplate == "psm")
@@ -90,27 +110,39 @@ class ReportLoo
 			echo $urllink;exit;
 		}
 
-		$vgenerate= "_".generateZero($reqId, 6);
+		$vpngttd= $FILE_DIR.$vttdcode.".png";
 		// kalau ttd 2 maka buat barcode
 		if($ttd == 2)
 		{
 			$vgenerate= "_".$vttdcode;
-			$vpngttd= $FILE_DIR.$vttdcode.".png";
+			$lewatifile= "1";
 			if(!file_exists($vpngttd))
 			{
+				$lewatifile= "";
 				$errorCorrectionLevel = 'L';
 				$matrixPointSize = 5;
 				QRcode::png($pesanQrCode, $vpngttd, $errorCorrectionLevel, $matrixPointSize, 2);
 			}
 		}
+		else
+		{
+			$vgenerate= "_".generateZero($reqId, 6);
+		}
+
+		if(!file_exists($vpngttd) && !empty($lewatifile))
+		{
+			$lewatifile= "";
+		}
+
 		$saveAs= $reqTemplate.$vgenerate.".pdf";
-		// echo $saveAs;exit;
 
 		$filelink= $FILE_DIR.$saveAs;
 		if(file_exists($filelink) && !empty($lewatifile))
 		{
 			return $saveAs;exit;
 		}
+		// echo $lewatifile."<br/>";
+		// echo $saveAs;exit;
 
 		$arrContextOptions=array(
 			"ssl"=>array(

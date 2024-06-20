@@ -43,6 +43,15 @@ else
     $reqProdukId= $set->getField("PRODUK_ID");
     $reqCustomerId= $set->getField("CUSTOMER_ID");
     $reqLokasiLooId= $set->getField("LOKASI_LOO_ID");
+
+    if(!empty($reqLokasiLooId))
+    {
+        $setdetil= new Combo();
+        $setdetil->selectByParamsLokasiLoo(array(), -1,-1, " AND LOKASI_LOO_ID = ".$reqLokasiLooId);
+        $setdetil->firstRow();
+        $reqLokasiLooNama= $setdetil->getField("NAMA");
+    }
+    
     $reqPph= $set->getField("PPH");
     $reqTotalLuasIndoor= $set->getField("TOTAL_LUAS_INDOOR");
     $reqTotalLuasOutdoor= $set->getField("TOTAL_LUAS_OUTDOOR");
@@ -431,6 +440,8 @@ if (!empty($reqId))
         array_push($arrloolog, $arrdata);
     }
 }
+
+$akseshakreadonly= "readonly";
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -597,6 +608,7 @@ $(function(){
                                 <input type="hidden" name="reqId" value="<?=$reqId?>" />
                                 <input type="hidden" name="reqMode" value="<?=$reqMode?>" />
                                 <input type="hidden" name="cekquery" value="<?=$cekquery?>" />
+                                <input type="hidden" name="reqTrLoiId" value="<?=$reqTrLoiId?>" />
 
                                 <table class="table">
                                     <thead>
@@ -604,6 +616,10 @@ $(function(){
                                             <td>Lokasi</td>
                                             <td>:</td>
                                             <td>
+                                                <?
+                                                if(empty($akseshakreadonly))
+                                                {
+                                                ?>
                                                 <input type="hidden" id="sebelumLokasiLooId" value="<?=$reqLokasiLooId?>"  />
                                                 <input type="text" name="reqLokasiLooId" class="easyui-combotree" id="reqLokasiLooId" 
                                                 data-options="
@@ -616,6 +632,18 @@ $(function(){
                                                 , editable:false
                                                 , url:'combo_json/comboLokasiLoo'
                                                 " required value="<?=$reqLokasiLooId?>" />
+                                                <?
+                                                }
+                                                else
+                                                {
+                                                ?>
+                                                <span style="display: none;">
+                                                    <input type="text" id="reqLokasiLooId" class="easyui-combotree" name="reqLokasiLooId" value="<?=$reqLokasiLooId?>" />
+                                                </span>
+                                                <?=$reqLokasiLooNama?>
+                                                <?
+                                                }
+                                                ?>
                                             </td>
                                         </tr>
                                         <tr>
@@ -756,7 +784,7 @@ $(function(){
                                                                     {
                                                                     ?>
                                                                     <?= $set_attachement->getField("NAMA") ?>
-                                                                    <a onClick="down('<?=$attach_id?>')" >
+                                                                    <a onClick="down('<?=$attach_id?>', 'psm')" >
                                                                         <i style="cursor: pointer;" class="fa fa-download" ></i>
                                                                     </a>
                                                                     <?
@@ -769,7 +797,7 @@ $(function(){
                                                                         <i style="cursor: pointer;" class="fa fa-eye" ></i>
                                                                     </a>
                                                                     |
-                                                                    <a onClick="down('<?=$attach_id?>')" >
+                                                                    <a onClick="down('<?=$attach_id?>', 'psm')" >
                                                                         <i style="cursor: pointer;" class="fa fa-download" ></i>
                                                                     </a>
                                                                     <?
@@ -811,7 +839,7 @@ $(function(){
                                                 <td class="tdcolor">
                                                     Indoor
                                                     <?
-                                                    if(empty($infodisplay))
+                                                    if(empty($akseshakreadonly))
                                                     {
                                                     ?>
                                                     <a onClick="openLookup('I')"><i class="fa fa-plus-square fa-lg" aria-hidden="true"></i></a>
@@ -822,7 +850,7 @@ $(function(){
                                                 <td class="tdcolor">
                                                     Outdoor
                                                     <?
-                                                    if(empty($infodisplay))
+                                                    if(empty($akseshakreadonly))
                                                     {
                                                     ?>
                                                     <a onClick="openLookup('O')"><i class="fa fa-plus-square fa-lg" aria-hidden="true"></i></a>
@@ -852,7 +880,7 @@ $(function(){
                                                                 <td>
                                                                     <?=$vlabel?>
                                                                     <?
-                                                                    if(empty($infodisplay))
+                                                                    if(empty($akseshakreadonly))
                                                                     {
                                                                     ?>
                                                                     <i style="cursor:pointer" class="fa fa-times-circle text-danger" aria-hidden="true" onclick="hapusgroupclass('<?=$vkeyid?>');"></i>
@@ -903,7 +931,7 @@ $(function(){
                                                                 <td>
                                                                     <?=$vlabel?>
                                                                     <?
-                                                                    if(empty($infodisplay))
+                                                                    if(empty($akseshakreadonly))
                                                                     {
                                                                     ?>
                                                                     <i style="cursor:pointer" class="fa fa-times-circle text-danger" aria-hidden="true" onclick="hapusgroupclass('<?=$vkeyid?>');"></i>
@@ -1018,7 +1046,7 @@ $(function(){
                                                                     <input type="hidden" name="vmode[]" value="<?=$valmode?>" />
                                                                     <input type="hidden" name="vid[]" class="valsetid" value="<?=$vkeyid?>" />
                                                                     <input type="hidden" name="vketerangan[]" />
-                                                                    <input type="text" class="vlxuangclass easyui-validatebox textbox form-control totalsewaunitindoordiskon" name="vnilai[]" placeholder="Isi %" data-options="required:true" style="width:65%; display: inline; text-align: right;" value="<?=numberToIna($valnilai)?>" /> <label class="labeltotal">%</label>
+                                                                    <input type="text" <?=$akseshakreadonly?> class="vlxuangclass easyui-validatebox textbox form-control totalsewaunitindoordiskon" name="vnilai[]" placeholder="Isi %" data-options="required:true" style="width:65%; display: inline; text-align: right;" value="<?=numberToIna($valnilai)?>" /> <label class="labeltotal">%</label>
                                                                 </td>
                                                                 <td>
                                                                     <?
@@ -1122,7 +1150,7 @@ $(function(){
                                                                     <input type="hidden" name="vmode[]" value="<?=$valmode?>" />
                                                                     <input type="hidden" name="vid[]" class="valsetid" value="<?=$vkeyid?>" />
                                                                     <input type="hidden" name="vketerangan[]" />
-                                                                    <input type="text" class="vlxuangclass easyui-validatebox textbox form-control totalsewaunitoutdoordiskon" name="vnilai[]" placeholder="Isi %" data-options="required:true" style="width:65%; display: inline; text-align: right;" value="<?=numberToIna($valnilai)?>" /> <label class="labeltotal">%</label>
+                                                                    <input type="text" <?=$akseshakreadonly?> class="vlxuangclass easyui-validatebox textbox form-control totalsewaunitoutdoordiskon" name="vnilai[]" placeholder="Isi %" data-options="required:true" style="width:65%; display: inline; text-align: right;" value="<?=numberToIna($valnilai)?>" /> <label class="labeltotal">%</label>
                                                                 </td>
                                                                 <td>
                                                                     <?
@@ -1244,7 +1272,7 @@ $(function(){
                                                                     <input type="hidden" name="vmode[]" value="<?=$valmode?>" />
                                                                     <input type="hidden" name="vid[]" class="valsetid" value="<?=$vkeyid?>" />
                                                                     <input type="hidden" name="vketerangan[]" />
-                                                                    <input type="text" class="vlxuangclass easyui-validatebox textbox form-control totalsewascindoordiskon" name="vnilai[]" placeholder="Isi %" data-options="required:true" style="width:65%; display: inline; text-align: right;" value="<?=numberToIna($valnilai)?>" /> <label class="labeltotal">%</label>
+                                                                    <input type="text" <?=$akseshakreadonly?> class="vlxuangclass easyui-validatebox textbox form-control totalsewascindoordiskon" name="vnilai[]" placeholder="Isi %" data-options="required:true" style="width:65%; display: inline; text-align: right;" value="<?=numberToIna($valnilai)?>" /> <label class="labeltotal">%</label>
 
                                                                     <?
                                                                     $valnilai= 0;
@@ -1359,7 +1387,7 @@ $(function(){
                                                                     <input type="hidden" name="vmode[]" value="<?=$valmode?>" />
                                                                     <input type="hidden" name="vid[]" class="valsetid" value="<?=$vkeyid?>" />
                                                                     <input type="hidden" name="vketerangan[]" />
-                                                                    <input type="text" class="vlxuangclass easyui-validatebox textbox form-control totalsewascoutdoordiskon" name="vnilai[]" placeholder="Isi %" data-options="required:true" style="width:65%; display: inline; text-align: right;" value="<?=numberToIna($valnilai)?>" /> <label class="labeltotal">%</label>
+                                                                    <input type="text" <?=$akseshakreadonly?> class="vlxuangclass easyui-validatebox textbox form-control totalsewascoutdoordiskon" name="vnilai[]" placeholder="Isi %" data-options="required:true" style="width:65%; display: inline; text-align: right;" value="<?=numberToIna($valnilai)?>" /> <label class="labeltotal">%</label>
 
                                                                     <?
                                                                     $valnilai= 0;
@@ -1469,7 +1497,7 @@ $(function(){
                                                             <input type="hidden" name="vmode[]" value="<?=$valmode?>" />
                                                             <input type="hidden" name="vid[]" class="valsetid" value="<?=$valid?>" />
                                                             <input type="hidden" name="vketerangan[]" value="<?=$valketerangan?>" />
-                                                            <input type="text" class="vlxuangclass easyui-validatebox textbox form-control" name="vnilai[]" placeholder="Isi (<?=$valketerangan?>)" data-options="required:true" style="width:85%; display: inline; text-align: right;" value="<?=numberToIna($valnilai)?>" /> <label class="labeltotal"><?=$valketerangan?></label>
+                                                            <input type="text" <?=$akseshakreadonly?> class="vlxuangclass easyui-validatebox textbox form-control" name="vnilai[]" placeholder="Isi (<?=$valketerangan?>)" data-options="required:true" style="width:85%; display: inline; text-align: right;" value="<?=numberToIna($valnilai)?>" /> <label class="labeltotal"><?=$valketerangan?></label>
                                                         </td>
                                                     </tr>
                                             <?
@@ -1494,33 +1522,37 @@ $(function(){
                                                             <td style="width: 20%">Tanggal</td>
                                                             <td style="width: 2%">:</td>
                                                             <td colspan="5">
-                                                                <input type="text" id="reqTanggalAwal" class="easyui-datebox textbox form-control" required name="reqTanggalAwal" value="<?=$reqTanggalAwal?>" data-options="required:true" style="width:100%; height:30px" />
+                                                                <!-- <input type="text" id="reqTanggalAwal" class="easyui-datebox textbox form-control" required name="reqTanggalAwal" value="<?=$reqTanggalAwal?>" data-options="required:true" style="width:100%; height:30px" /> -->
+                                                                <input type="hidden" id="reqTanggalAwal" name="reqTanggalAwal" value="<?=$reqTanggalAwal?>" />
+                                                                <input type="hidden" id="reqTanggalAkhir" name="reqTanggalAkhir" value="<?=$reqTanggalAkhir?>" />
+                                                                <?=$reqTanggalAwal?>
                                                                 &nbsp;&nbsp;s/d&nbsp;&nbsp;
-                                                                <input type="text" id="reqTanggalAkhir" class="easyui-datebox textbox form-control" required name="reqTanggalAkhir" value="<?=$reqTanggalAkhir?>" data-options="required:true" style="width:100%; height:30px" />
+                                                                <?=$reqTanggalAkhir?>
+                                                                <!-- <input type="text" id="reqTanggalAkhir" class="easyui-datebox textbox form-control" required name="reqTanggalAkhir" value="<?=$reqTanggalAkhir?>" data-options="required:true" style="width:100%; height:30px" /> -->
                                                             </td>
                                                         </tr>
                                                         <tr>
                                                             <td>Promotion Levy</td>
                                                             <td>:</td>
                                                             <td colspan="5">
-                                                                <input type="text" id="reqPromotionLevy" class="vlxuangclass easyui-validatebox textbox form-control" required name="reqPromotionLevy" value="<?=numberToIna($reqPromotionLevy)?>" data-options="required:true" style="width:60%; display: inline; text-align: right;" /> <label class="labelsumtotal">/ m2 / bulan</label>
+                                                                <input type="text" <?=$akseshakreadonly?> id="reqPromotionLevy" class="vlxuangclass easyui-validatebox textbox form-control" required name="reqPromotionLevy" value="<?=numberToIna($reqPromotionLevy)?>" data-options="required:true" style="width:60%; display: inline; text-align: right;" /> <label class="labelsumtotal">/ m2 / bulan</label>
                                                             </td>
                                                         </tr>
                                                         <tr>
                                                             <td>Down Payment</td>
                                                             <td>:</td>
                                                             <td>
-                                                                <input type="text" id="reqDp" class="vlxuangclass easyui-validatebox textbox form-control" required name="reqDp" value="<?=numberToIna($reqDp)?>" data-options="required:true" style="width:60%; display: inline; text-align: right;" /> <label class="labeltotal">%</label>
+                                                                <input type="text" <?=$akseshakreadonly?> id="reqDp" class="vlxuangclass easyui-validatebox textbox form-control" required name="reqDp" value="<?=numberToIna($reqDp)?>" data-options="required:true" style="width:60%; display: inline; text-align: right;" /> <label class="labeltotal">%</label>
                                                             </td>
                                                             <td>Periode Sewa</td>
                                                             <td>:</td>
                                                             <td>
-                                                                <input type="text" id="reqPeriodeSewa" class="vlxuangclass easyui-validatebox textbox form-control" required name="reqPeriodeSewa" value="<?=numberToIna($reqPeriodeSewa)?>" data-options="required:true" style="width:60%; display: inline; text-align: right;" /> <label class="labeltotal">bulan</label>
+                                                                <input type="text" <?=$akseshakreadonly?> id="reqPeriodeSewa" class="vlxuangclass easyui-validatebox textbox form-control" required name="reqPeriodeSewa" value="<?=numberToIna($reqPeriodeSewa)?>" data-options="required:true" style="width:60%; display: inline; text-align: right;" /> <label class="labeltotal">bulan</label>
                                                             </td>
                                                             <td style="width: 20%">TOP</td>
                                                             <td style="width: 2%">:</td>
                                                             <td>
-                                                                <input type="text" id="reqTop" class="vlxuangclass easyui-validatebox textbox form-control" required name="reqTop" value="<?=numberToIna($reqTop)?>" data-options="required:true" style="width:60%; display: inline; text-align: right;" /> <label class="labeltotal">bulan</label>
+                                                                <input type="text" <?=$akseshakreadonly?> id="reqTop" class="vlxuangclass easyui-validatebox textbox form-control" required name="reqTop" value="<?=numberToIna($reqTop)?>" data-options="required:true" style="width:60%; display: inline; text-align: right;" /> <label class="labeltotal">bulan</label>
                                                             </td>
                                                         </tr>
                                                     </thead>
@@ -1549,7 +1581,7 @@ $(function(){
                                                 <input type="hidden" name="vmode[]" value="<?=$valmode?>" />
                                                 <input type="hidden" name="vid[]" class="valsetid" value="<?=$vkeyid?>" />
                                                 <input type="hidden" name="vnilai[]" value="" />
-                                                <input type="text" class="easyui-validatebox textbox form-control" required name="vketerangan[]" value="<?=$valketerangan?>" data-options="required:true" style="width:90%; display: inline; text-align: right;" />
+                                                <input type="text" <?=$akseshakreadonly?> class="easyui-validatebox textbox form-control" required name="vketerangan[]" value="<?=$valketerangan?>" data-options="required:true" style="width:90%; display: inline; text-align: right;" />
                                             </td>
                                             <td style="width: 28%">Tenant</td>
                                             <td style="width: 2%">:</td>
@@ -1569,7 +1601,7 @@ $(function(){
                                                 <input type="hidden" name="vmode[]" value="<?=$valmode?>" />
                                                 <input type="hidden" name="vid[]" class="valsetid" value="<?=$vkeyid?>" />
                                                 <input type="hidden" name="vnilai[]" value="" />
-                                                <input type="text" class="easyui-validatebox textbox form-control" required name="vketerangan[]" value="<?=$valketerangan?>" data-options="required:true" style="width:90%; display: inline; text-align: right;" />
+                                                <input type="text" <?=$akseshakreadonly?> class="easyui-validatebox textbox form-control" required name="vketerangan[]" value="<?=$valketerangan?>" data-options="required:true" style="width:90%; display: inline; text-align: right;" />
                                             </td>
                                         </tr>
                                         <tr>
@@ -1644,7 +1676,7 @@ $(function(){
                                             <td>Fitting Out</td>
                                             <td>:</td>
                                             <td>
-                                                <input type="text" id="reqFittingOut" class="vlxuangclass easyui-validatebox textbox form-control" required name="reqFittingOut" value="<?=numberToIna($reqFittingOut)?>" data-options="required:true" style="display: inline; text-align: right;" />
+                                                <input type="text" <?=$akseshakreadonly?> id="reqFittingOut" class="vlxuangclass easyui-validatebox textbox form-control" required name="reqFittingOut" value="<?=numberToIna($reqFittingOut)?>" data-options="required:true" style="display: inline; text-align: right;" />
                                             </td>
                                         </tr>
                                     </thead>
@@ -1786,7 +1818,7 @@ $(function(){
                                                                 {
                                                                 ?>
                                                                 <?= $set_attachement->getField("NAMA") ?>
-                                                                <a onClick="down('<?=$attach_id?>')" >
+                                                                <a onClick="down('<?=$attach_id?>', 'loi')" >
                                                                     <i style="cursor: pointer;" class="fa fa-download" ></i>
                                                                 </a>
                                                                 <?
@@ -1795,11 +1827,81 @@ $(function(){
                                                                 {
                                                                 ?>
                                                                 <?= $set_attachement->getField("NAMA") ?>
-                                                                <a onClick="parent.openAdd('<?= base_url()."uploadsloo/".$reqTrLoiId."/".$set_attachement->getField("ATTACHMENT") ?>')" >
+                                                                <a onClick="parent.openAdd('<?= base_url()."uploadsloi/".$reqTrLoiId."/".$set_attachement->getField("ATTACHMENT") ?>')" >
                                                                     <i style="cursor: pointer;" class="fa fa-eye" ></i>
                                                                 </a>
                                                                 |
-                                                                <a onClick="down('<?=$attach_id?>')" >
+                                                                <a onClick="down('<?=$attach_id?>', 'loi')" >
+                                                                    <i style="cursor: pointer;" class="fa fa-download" ></i>
+                                                                </a>
+                                                                <?
+                                                                }
+                                                                ?>
+                                                            </div>
+                                                        <?
+                                                        }
+                                                        ?>
+                                                        
+                                                        <div class="small">Ukuran file maksimum yang diizinkan adalah 10 MB & Jenis file diterima: world, excel, ppt, pdf, jpg, jpeg, png</div>
+                                                        
+                                                    </div>
+                                                </div>
+                
+                                            </div>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td colspan="3">
+                                            <a class="btn btn-danger btn-sm pull-right" id="buttonpdf" onClick="submitDetil(1)" style="cursor: pointer;"><i class="fa fa-file-pdf-o"></i> PDF tanpa Barcode</a>
+                                            <a class="btn btn-danger btn-sm pull-right" id="buttonpdf" onClick="submitDetil(2)" style="cursor: pointer;"><i class="fa fa-file-pdf-o"></i> PDF dengan Barcode</a>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Lampiran Bukti
+                                        </td>
+                                        <td>:</td>
+                                        <td>
+                                            <div class="kotak-dokumen">
+                                                <div class="kontak">
+                                                    <div class="inner-lampiran">
+                                                        <input id ="reqModeFile" name="reqLinkModeFile[]" type="file" maxlength="10" class="multi maxsize-10240" value="" />
+                                                        <?
+                                                        $set_attachement = new TrLoi();
+                                                        $set_attachement->selectByParamsAttachment(array("A.TR_LOI_ID" => (int)$reqTrLoiId), -1,-1, " AND A.VMODE = 'detil'");
+                                                        while ($set_attachement->nextRow()) {
+                                                            $attach_id= $set_attachement->getField("TR_LOI_ATTACHMENT_ID");
+                                                        ?>
+                                                            
+                                                            <div class="MultiFile-label">
+                                                                <input type="hidden" name="reqLinkModeFileTemp[]" value="<?= $set_attachement->getField("ATTACHMENT") ?>" />
+                                                                <input type="hidden" name="reqLinkModeFileTempNama[]" value="<?= $set_attachement->getField("NAMA") ?>" />
+                                                                <input type="hidden" name="reqLinkModeFileTempTipe[]" value="<?= $set_attachement->getField("TIPE") ?>" />
+                                                                <input type="hidden" name="reqLinkModeFileTempSize[]" value="<?= $set_attachement->getField("UKURAN") ?>" />
+                                                                <a class="MultiFile-remove"><i class="fa fa-times-circle" onclick="$(this).parent().parent().remove();"></i></a>
+                
+                                                                <?
+                                                                $arrexcept= array("xlsx", "xls", "doc", "docx", "ppt", "pptx", "txt");
+                                                                //$arrexcept= array("xlsx", "xls", "doc", "docx", "txt");
+                                                                if(in_array(strtolower($set_attachement->getField("TIPE")), $arrexcept))
+                                                                {
+                                                                ?>
+                                                                <?= $set_attachement->getField("NAMA") ?>
+                                                                <a onClick="down('<?=$attach_id?>', 'loi')" >
+                                                                    <i style="cursor: pointer;" class="fa fa-download" ></i>
+                                                                </a>
+                                                                <?
+                                                                }
+                                                                else
+                                                                {
+                                                                ?>
+                                                                <?= $set_attachement->getField("NAMA") ?>
+                                                                <a onClick="parent.openAdd('<?= base_url()."uploadsloi/".$reqTrLooId."/".$set_attachement->getField("ATTACHMENT") ?>')" >
+                                                                    <i style="cursor: pointer;" class="fa fa-eye" ></i>
+                                                                </a>
+                                                                |
+                                                                <a onClick="down('<?=$attach_id?>', 'loi')" >
                                                                     <i style="cursor: pointer;" class="fa fa-download" ></i>
                                                                 </a>
                                                                 <?
@@ -2691,7 +2793,7 @@ $(function(){
                                                                 {
                                                                 ?>
                                                                 <?= $set_attachement->getField("NAMA") ?>
-                                                                <a onClick="down('<?=$attach_id?>')" >
+                                                                <a onClick="down('<?=$attach_id?>', 'loo')" >
                                                                     <i style="cursor: pointer;" class="fa fa-download" ></i>
                                                                 </a>
                                                                 <?
@@ -2704,7 +2806,7 @@ $(function(){
                                                                     <i style="cursor: pointer;" class="fa fa-eye" ></i>
                                                                 </a>
                                                                 |
-                                                                <a onClick="down('<?=$attach_id?>')" >
+                                                                <a onClick="down('<?=$attach_id?>', 'loo')" >
                                                                     <i style="cursor: pointer;" class="fa fa-download" ></i>
                                                                 </a>
                                                                 <?
@@ -4386,6 +4488,16 @@ function notnullval(v)
     v= v ? v : 0;
     v= parseFloat(v);
     return v;
+}
+
+function down(attach_id, vmode)
+{
+    window.open("downloi?reqMode="+vmode+"&reqAttachId="+attach_id, 'Cetak');
+}
+
+function submitDetil(vttd)
+{
+    parent.openAdd('app/loadUrl/report/loo_cetak/?reqId=<?=$reqTrLoiId?>&templateSurat=loi&ttd='+vttd);
 }
 
 function submitPreview() 

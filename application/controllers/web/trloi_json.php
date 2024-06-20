@@ -587,6 +587,7 @@ class trloi_json extends CI_Controller
 			}
 
 			// upload baru
+			$arrDataAttach= [];
 			$this->load->model("TrLoo");
 			$reqTrLooId= $this->input->post("reqTrLooId");
 			$file = new FileHandler();

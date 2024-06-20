@@ -60,7 +60,7 @@ else
     $reqUserPengirimId= $set->getField("USER_PENGIRIM_ID");
     $reqStatusData= $set->getField("STATUS_DATA");
     $reqUserId= $set->getField("USER_PEMBUAT_ID");
-    // $reqxxx= $set->getField("USER_POSISI_PARAF_ID");
+    $reqUserPosisiParafId= $set->getField("USER_POSISI_PARAF_ID");
 
     $satuan_kerja= new SatuanKerja();
     $satuan_kerja->selectByParams(array(), -1, -1, " AND SATUAN_KERJA_ID = '".$reqSatuanKerjaPengirimId."'", " ORDER BY KODE_SO ASC ");
@@ -134,6 +134,9 @@ while($set->nextRow())
 
 $arrlog= [];
 $sessid= $this->ID;
+$sesssatuankerjaasalid= $this->SATUAN_KERJA_ID_ASAL_ASLI;
+$sesssatuankerjaid= $this->SATUAN_KERJA_ID_ASAL;
+$sessidsatuankerjaid= $sessid."-".$sesssatuankerjaid;
 $checkparafid= "";
 if (!empty($reqId))
 {
@@ -273,7 +276,7 @@ $(function(){
 
                 <?
                 // tambahan khusus, kalau paraf sesuai urutan
-                if ($reqStatusData == "PARAF" && !empty($checkparafid) && $reqUserId != $sessid) 
+                if ($reqStatusData == "PARAF" && !empty($checkparafid) && $reqUserId != $sessid || ($reqStatusData == "PARAF" && $reqUserPosisiParafId == $sessidsatuankerjaid)) 
                 {
                     $aksibutton= "1";
 
@@ -500,7 +503,7 @@ $(function(){
                                                     {
                                                     ?>
                                                     <?= $set_attachement->getField("NAMA") ?>
-                                                    <a onClick="down('<?=$attach_id?>')" >
+                                                    <a onClick="down('<?=$attach_id?>', 'loo')" >
                                                         <i style="cursor: pointer;" class="fa fa-download" ></i>
                                                     </a>
                                                     <?
@@ -513,7 +516,7 @@ $(function(){
                                                         <i style="cursor: pointer;" class="fa fa-eye" ></i>
                                                     </a>
                                                     |
-                                                    <a onClick="down('<?=$attach_id?>')" >
+                                                    <a onClick="down('<?=$attach_id?>', 'loo')" >
                                                         <i style="cursor: pointer;" class="fa fa-download" ></i>
                                                     </a>
                                                     <?
@@ -2312,6 +2315,11 @@ function notnullval(v)
     v= v ? v : 0;
     v= parseFloat(v);
     return v;
+}
+
+function down(attach_id, vmode)
+{
+    window.open("downloi?reqMode="+vmode+"&reqAttachId="+attach_id, 'Cetak');
 }
 
 function submitPreview() 

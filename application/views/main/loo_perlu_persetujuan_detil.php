@@ -183,7 +183,7 @@ $infolinkedit= "loo_add";
 $arrattachment= array();
 $index_data= 0;
 $set= new TrLoo();
-$set->selectByParamsAttachment(array("A.TR_LOO_ID" => (int)$reqId));
+$set->selectByParamsAttachment(array("A.TR_LOO_ID" => (int)$reqId), -1,-1, " AND COALESCE(NULLIF(A.VMODE, ''), NULL) IS NULL");
 while($set->nextRow())
 {
     $arrattachment[$index_data]["NAMA"] = $set->getField("NAMA");

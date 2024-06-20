@@ -10,6 +10,7 @@ $this->load->model("TrLoiDetil");
 $this->load->model("LokasiLoo");
 
 $reqId= $this->input->get("reqId");
+$ttd= $this->input->get("ttd");
 
 if(empty($reqId)) $reqId= -1;
 
@@ -45,6 +46,13 @@ if(empty($reqNomorSurat))
   $reqTanggalSurat= $set->getField("INFO_LAST_CREATE_DATE");
 }
 $reqTanggalSurat= datetimeToPage($reqTanggalSurat, "date");
+
+$vttd= "";
+if($ttd == 2)
+{
+  $vttd= "uploadsloi/".$reqId."/".$set->getField("TTD_KODE").".png";
+}
+// echo $vttd;exit;
 
 $arrlokasi= [];
 $statement= " AND A.TR_LOI_ID = ".$reqId." AND VMODE ILIKE '%luas_sewa%'";
@@ -162,8 +170,9 @@ $reqRekeningBank= $set->getField("REKENING_BANK");
 $reqAtasNamaBank= $set->getField("ATAS_NAMA_BANK");
 $reqNamaCabang= $set->getField("NAMA_CABANG");
 ?>
-<link href="<?= base_url() ?>css/gaya-surat.css" rel="stylesheet" type="text/css">
-<link href="<?= base_url() ?>lib/froala_editor_2.9.8/css/froala_style.css" rel="stylesheet" type="text/css">
+<base href="<?=base_url();?>">
+<link href="css/gaya-surat.css" rel="stylesheet" type="text/css">
+<link href="lib/froala_editor_2.9.8/css/froala_style.css" rel="stylesheet" type="text/css">
 <style>
   body{
 /*      background-image:url('<?= base_url() ?>images/bg_cetak.jpg')  ;
@@ -1135,18 +1144,30 @@ $reqNamaCabang= $set->getField("NAMA_CABANG");
         <b>JABATAN</b>           
       </td>
     </tr>
+
+    <?
+    if(!empty($vttd))
+    {
+    ?>
     <tr>
-      <td><br></td>
+      <td style="text-align: center;">
+        <img src="<?=$vttd?>" height="100px">
+      </td>
+      <td colspan="2">
+      </td>
     </tr>
+    <?
+    }
+    else
+    {
+    ?>
     <tr>
-      <td><br></td>
+      <td colspan="3"><br><br><br><br><br></td>
     </tr>
-    <tr>
-      <td><br></td>
-    </tr>
-    <tr>
-      <td><br></td>
-    </tr>
+    <?
+    }
+    ?>
+
     <tr>
       <td style="width:30%;text-align: center;">
         <u><b>Fajar Saiful Bahri</b></u>                    

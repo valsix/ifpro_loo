@@ -569,11 +569,12 @@ cekdatanexturut integer;
 		else
 			--kalau next urut lanjut tidak sama maka tidak update karena bukan saatnya
 			if posisinexturut != new.no_urut or old.next_urut is null then
-				if posisinexturut = new.no_urut then
-					--raise notice '-,%', 'a';
+				--if posisinexturut = new.no_urut then
+				if posisinexturut = new.no_urut or new.no_urut = 1 then
+					raise notice '-,%', 'a';
 					return new;
 				else
-					--raise notice '-,%', 'b';
+					raise notice '-,%', 'b';
 					return old;
 				end if;
 			end if;
@@ -767,7 +768,8 @@ begin
 		(
 			select
 			row_number () over ( partition by a.tr_loi_id order by a.no_urut) urut
-			, a.tr_loi_id, a.user_id
+			, a.tr_loi_id
+			, case when a.status_bantu = 1 then a.user_id || '-' || a.satuan_kerja_id_tujuan else a.user_id end user_id
 			from tr_loi_paraf a
 			where coalesce(nullif(a.kondisi_paraf, ''), null) is null
 			and coalesce(nullif(a.status_paraf, ''), null) is null
@@ -1225,7 +1227,8 @@ begin
 		else
 			--kalau next urut lanjut tidak sama maka tidak update karena bukan saatnya
 			if posisinexturut != new.no_urut or old.next_urut is null then
-				if posisinexturut = new.no_urut then
+				--if posisinexturut = new.no_urut then
+				if posisinexturut = new.no_urut or new.no_urut = 1 then
 					--raise notice '-,%', 'a';
 					return new;
 				else
@@ -1410,7 +1413,7 @@ begin
 
 	if lower(new.paksa_db) = lower('tnomor') then
 		new.paksa_db:= null;
-		infonomorsurat:= '/' || upper('ifpro') || '-' || upper('comm') || '/' || upper('loo') || '/' || (select upper(kode) from lokasi_loo where lokasi_loo_id = new.lokasi_loo_id) || '/' || (select ambil_bulan_romawi(to_char(now(), 'mm'))) || '/' || (select to_char(now(), 'yyyy'));
+		infonomorsurat:= '/' || upper('ifpro') || '-' || upper('comm') || '/' || upper('psm') || '/' || (select upper(kode) from lokasi_loo where lokasi_loo_id = new.lokasi_loo_id) || '/' || (select ambil_bulan_romawi(to_char(now(), 'mm'))) || '/' || (select to_char(now(), 'yyyy'));
 		--raise notice '%', infonomorsurat;
 
 		new.info_nomor_surat:= infonomorsurat;
@@ -1424,7 +1427,8 @@ begin
 		(
 			select
 			row_number () over ( partition by a.tr_psm_id order by a.no_urut) urut
-			, a.tr_psm_id, a.user_id
+			, a.tr_psm_id
+			, case when a.status_bantu = 1 then a.user_id || '-' || a.satuan_kerja_id_tujuan else a.user_id end user_id
 			from tr_psm_paraf a
 			where coalesce(nullif(a.kondisi_paraf, ''), null) is null
 			and coalesce(nullif(a.status_paraf, ''), null) is null
@@ -1882,7 +1886,8 @@ begin
 		else
 			--kalau next urut lanjut tidak sama maka tidak update karena bukan saatnya
 			if posisinexturut != new.no_urut or old.next_urut is null then
-				if posisinexturut = new.no_urut then
+				--if posisinexturut = new.no_urut then
+				if posisinexturut = new.no_urut or new.no_urut = 1 then
 					--raise notice '-,%', 'a';
 					return new;
 				else
@@ -2116,6 +2121,9 @@ begin
 		from tr_loi
 		where tr_loi_id = new.tr_loi_id
 		and tr_loi_id not in (select tr_loi_id from tr_psm where tr_loi_id = new.tr_loi_id);
+
+		--untuk update nomor
+		update tr_psm set paksa_db = lower('tnomor') where tr_psm_id = vnewid;
 
 		insert into tr_psm_paraf
 		(

@@ -279,12 +279,13 @@ DESCRIPTION			:
 		$str = "
 		INSERT INTO tr_loi_attachment
 		(
-			TR_LOI_ATTACHMENT_ID, TR_LOI_ID, ATTACHMENT, UKURAN, TIPE, NAMA, LAST_CREATE_USER, LAST_CREATE_DATE
+			TR_LOI_ATTACHMENT_ID, TR_LOI_ID, VMODE, ATTACHMENT, UKURAN, TIPE, NAMA, LAST_CREATE_USER, LAST_CREATE_DATE
 		)
 		VALUES 
 		(
 			'".$this->getField("TR_LOI_ATTACHMENT_ID")."'
 			, '".$this->getField("TR_LOI_ID")."'
+			, '".$this->getField("VMODE")."'
 			, '".$this->getField("ATTACHMENT")."'
 			, ".(int)$this->getField("UKURAN")."
 			, '".$this->getField("TIPE")."'
@@ -306,6 +307,17 @@ DESCRIPTION			:
 		DELETE FROM tr_loi_attachment
 		WHERE
 		TR_LOI_ID = '".$this->getField("TR_LOI_ID")."'";
+
+		$this->query = $str;
+		$this->execQuery($str);
+	}
+
+	function deleteModeAttachment()
+	{
+		$str= "
+		DELETE FROM tr_loi_attachment
+		WHERE VMODE = '".$this->getField("VMODE")."' AND TR_LOI_ID = '".$this->getField("TR_LOI_ID")."'
+		";
 
 		$this->query = $str;
 		$this->execQuery($str);

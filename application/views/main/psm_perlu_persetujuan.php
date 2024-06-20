@@ -2,7 +2,7 @@
 include_once("functions/string.func.php");
 include_once("functions/date.func.php");
 
-$this->load->model("TrLoi");
+$this->load->model("TrPsm");
 
 $reqFilename= $this->uri->segment(3, "");
 $reqStatusSurat= $this->input->get("reqStatusSurat");
@@ -19,14 +19,16 @@ if(empty($reqStatusSurat))
 	$reqStatusSurat= "PERLU_PERSETUJUAN";
 
 $sessid= $this->ID;
+$sesssatuankerjaasalid= $this->SATUAN_KERJA_ID_ASAL_ASLI;
+$sesssatuankerjaid= $this->SATUAN_KERJA_ID_ASAL;
 $statementglobal= " AND A.STATUS_DATA IN ('PARAF', 'VALIDASI')";
 
-$statement= " AND A.USER_POSISI_PARAF_ID = '".$sessid."'".$statementglobal;
-$set= new TrLoi();
+$statement= " AND (A.USER_POSISI_PARAF_ID IN ('".$sessid."', '".$sessid."-".$sesssatuankerjaid."') )".$statementglobal;
+$set= new TrPsm();
 $jumlahperlupersetujuan= $set->getCountByParams(array(), $statement);
 
-$statement= " AND A.USER_LIHAT_STATUS LIKE '%".$sessid."%'".$statementglobal;
-$set= new TrLoi();
+$statement= " AND (A.USER_POSISI_PARAF_ID NOT IN ('".$sessid."', '".$sessid."-".$sesssatuankerjaid."') ) AND A.USER_LIHAT_STATUS LIKE '%".$sessid."%'".$statementglobal;
+$set= new TrPsm();
 $jumlahakandisetujui= $set->getCountByParams(array(), $statement);
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">

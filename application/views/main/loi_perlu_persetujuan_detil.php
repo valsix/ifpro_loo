@@ -142,6 +142,8 @@ $reqStatusSurat= $set->getField("STATUS_DATA");
 unset($set);
 
 $sessid= $this->ID;
+$sesssatuankerjaasalid= $this->SATUAN_KERJA_ID_ASAL_ASLI;
+$sesssatuankerjaid= $this->SATUAN_KERJA_ID_ASAL;
 $checkparafid= "";
 if (!empty($reqId))
 {
@@ -158,7 +160,9 @@ if (!empty($reqId))
         $chekvalidasi= "validasi";
     // echo $chekvalidasi."-".$checknextpemaraf."--".$infonextpemaraf;exit;
 	*/
-	if($userposisiparaf !== $sessid)
+    $userposisibantuparaf= $sessid."-".$sesssatuankerjaid;
+    if($userposisiparaf == $sessid || $userposisiparaf == $userposisibantuparaf){}
+    else
 	{
 	    if(!empty($reqMode))
 	    {
@@ -179,7 +183,7 @@ $infolinkedit= "loi_add";
 $arrattachment= array();
 $index_data= 0;
 $set= new TrLoi();
-$set->selectByParamsAttachment(array("A.TR_LOI_ID" => (int)$reqId));
+$set->selectByParamsAttachment(array("A.TR_LOI_ID" => (int)$reqId), -1,-1, " AND COALESCE(NULLIF(A.VMODE, ''), NULL) IS NULL");
 while($set->nextRow())
 {
     $arrattachment[$index_data]["NAMA"] = $set->getField("NAMA");
