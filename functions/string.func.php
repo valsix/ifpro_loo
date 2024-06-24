@@ -1011,8 +1011,8 @@ function infonomor($nomorpasal, $reqJenisNaskah)
 {
 	if($reqJenisNaskah == "17" || $reqJenisNaskah == "19" || $reqJenisNaskah == "20")
 		$arrdata= array("", "Pertama", "Kedua", "Ketiga", "Keempat", "Kelima", "Keenam", "Ketujuh", "Kedelapan", "Kesembilan", "Kesepuluh", "Kesebelas", "Keduabelas", "Ketigabelas", "Keempatbelas", "Kelimabelas", "Keenambelas", "Ketujuhbelas", "Kedelapanbelas", "Kesembilanbelas", "Keduapuluh", "Keduapuluhsatu", "Keduapuluhdua", "Keduapuluhtiga", "Keduapuluhempat", "Keduapuluhlima");
-	// else if($reqJenisNaskah == "8")
-	// 	$arrdata= array("", "Pasal 1", "Pasal 2", "Pasal 3", "Pasal 4", "Pasal 5", "Pasal 6", "Pasal 7", "Pasal 8", "Pasal 9", "Pasal 10", "Pasal 11", "Pasal 12", "Pasal 13", "Pasal 14", "Pasal 15", "Pasal 16", "Pasal 17", "Pasal 18", "Pasal 19", "Pasal 20", "Pasal 21", "Pasal 22", "Pasal 23", "Pasal 24", "Pasal 25");
+	else if($reqJenisNaskah == "8x")
+		$arrdata= array("", "Pasal 1", "Pasal 2", "Pasal 3", "Pasal 4", "Pasal 5", "Pasal 6", "Pasal 7", "Pasal 8", "Pasal 9", "Pasal 10", "Pasal 11", "Pasal 12", "Pasal 13", "Pasal 14", "Pasal 15", "Pasal 16", "Pasal 17", "Pasal 18", "Pasal 19", "Pasal 20", "Pasal 21", "Pasal 22", "Pasal 23", "Pasal 24", "Pasal 25");
 	else if($reqJenisNaskah == "8")
 		$arrdata= array("", "BAB I", "BAB II", "BAB III", "BAB IV", "BAB V", "BAB VI", "BAB VII", "BAB VIII", "BAB IX", "BAB X", "BAB XI", "BAB XII", "BAB XIII", "BAB XIV", "BAB XV", "BAB XVI", "BAB XVII", "BAB XVIII", "BAB XIX", "BAB XX", "BAB XXI", "BAB XXII", "BAB XXIII", "BAB XXIV", "BAB XXV");
 	else if($reqJenisNaskah == "9")

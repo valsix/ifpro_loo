@@ -1205,7 +1205,7 @@ $nomorpasal= $totalpasal;
                                 $idrand= rand();
                                 for($ipasal=0; $ipasal < count($arrpasal); $ipasal++)
                                 {
-                                    $infonomorpasal= infonomor($infonomor,$reqJenisNaskah);
+                                    $infonomorpasal= infonomor($infonomor,$reqJenisNaskah."x");
                                     $infonomorbap= infonomor($infonomor, $reqJenisNaskah);
                             ?>
                             <tr>
