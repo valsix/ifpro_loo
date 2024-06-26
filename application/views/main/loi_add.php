@@ -26,7 +26,8 @@ if(empty($reqId))
 {
     $reqId= -1;
     $reqMode= "insert";
-    $reqPph= "1.11";
+    // $reqPph= "1.11";
+    $reqPph= "11";
 }
 else
 {
@@ -39,6 +40,11 @@ else
     $reqProdukId= $set->getField("PRODUK_ID");
     $reqCustomerId= $set->getField("CUSTOMER_ID");
     $reqLokasiLooId= $set->getField("LOKASI_LOO_ID");
+
+    $combo = new Combo();
+    $combo->selectByParamsCustomer(array(), -1, -1, " AND CUSTOMER_ID = ".$reqCustomerId);
+    $combo->firstRow();
+    $reqCustomerNama= $combo->getField("NAMA_BRAND")." (".$combo->getField("NAMA_PEMILIK").")";
 
     if(!empty($reqLokasiLooId))
     {
@@ -78,6 +84,7 @@ else
     $reqPromotionLevy= $set->getField("PROMOTION_LEVY");
 
     $reqPicPenandatangan= $set->getField("PIC_PENANDATANGAN");
+    $reqJabatanPenandatangan= $set->getField("JABATAN_PENANDATANGAN");
     if(empty($reqPicPenandatangan))
     {
         $cust= new Customer();
@@ -149,6 +156,7 @@ else
     $set->selectByParams(array("A.TR_LOO_ID" => $reqTrLooId));
     $set->firstRow();
     
+    $reqLooNomorSurat= $set->getField("NOMOR_SURAT");
     $reqLooProdukId= $set->getField("PRODUK_ID");
     $reqLooCustomerId= $set->getField("CUSTOMER_ID");
     $reqLooLokasiLooId= $set->getField("LOKASI_LOO_ID");
@@ -403,13 +411,6 @@ $(function(){
                     <a class="btn btn-danger btn-sm pull-right" id="buttonpdf" onClick="submitPreview()" style="cursor: pointer;"><i class="fa fa-file-pdf-o"></i> View as PDF</a>
                 <?
                 }
-
-                if(!empty($reqId)) 
-                {
-                ?>
-                    <!-- <a class="btn btn-danger btn-sm pull-right" id="buttonpdf" onClick="submitLampiran()" style="cursor: pointer;"><i class="fa fa-file-pdf-o"></i> Lampiran II</a> -->
-                <?
-                }
                 ?>
 
                 <?
@@ -542,14 +543,18 @@ $(function(){
                                             <td>Customer</td>
                                             <td>:</td>
                                             <td>
-                                                <input type="text" name="reqCustomerId" class="easyui-combobox" id="reqCustomerId" data-options="width:'350', valueField:'id', textField:'text', editable:false, url:'combo_json/comboCustomer?cek=pemilik'" required value="<?=$reqCustomerId?>" />
+                                                <input type="hidden" name="reqCustomerId" id="reqCustomerId" value="<?=$reqCustomerId?>" />
+                                                <!-- <input type="text" name="reqCustomerId" class="easyui-combobox" id="reqCustomerId" data-options="width:'350', valueField:'id', textField:'text', editable:false, url:'combo_json/comboCustomer?cek=pemilik'" required value="<?=$reqCustomerId?>" /> -->
+                                                <?=$reqCustomerNama?>
                                             </td>
                                         </tr>
                                         <tr>
-                                            <td>PIC penanda tangan</td>
+                                            <td>Customer Penanda tangan</td>
                                             <td>:</td>
                                             <td>
-                                                <input type="text" id="reqPicPenandatangan" class="easyui-validatebox textbox form-control" required name="reqPicPenandatangan" value="<?=$reqPicPenandatangan?>" data-options="required:true" />
+                                                <input style="width: 45%; padding: initial; display: inline;" type="text" id="reqPicPenandatangan" class="easyui-validatebox textbox form-control" required name="reqPicPenandatangan" value="<?=$reqPicPenandatangan?>" data-options="required:true" />
+                                                &nbsp;&nbsp;&nbsp;Jabatan :
+                                                <input style="width: 40%; padding: initial; display: inline; " type="text" id="reqJabatanPenandatangan" class="easyui-validatebox textbox form-control" required name="reqJabatanPenandatangan" value="<?=$reqJabatanPenandatangan?>" data-options="required:true" />
                                             </td>
                                         </tr>
                                         <tr>
@@ -1628,6 +1633,13 @@ $(function(){
                             <table class="table">
                                 <thead>
                                     <tr>           
+                                        <td>Nomor Surat</td>
+                                        <td>:</td>
+                                        <td>
+                                            <?=$reqLooNomorSurat?>
+                                        </td>
+                                    </tr>
+                                    <tr>           
                                         <td>Lokasi</td>
                                         <td>:</td>
                                         <td>
@@ -1752,8 +1764,9 @@ $(function(){
 
                                     <tr>
                                         <td colspan="3">
-                                            <a class="btn btn-danger btn-sm pull-right" id="buttonpdf" onClick="submitDetil(1)" style="cursor: pointer;"><i class="fa fa-file-pdf-o"></i> PDF tanpa Barcode</a>
-                                            <a class="btn btn-danger btn-sm pull-right" id="buttonpdf" onClick="submitDetil(2)" style="cursor: pointer;"><i class="fa fa-file-pdf-o"></i> PDF dengan Barcode</a>
+                                            <a class="btn btn-danger btn-sm pull-right" onClick="submitLampiran()" style="cursor: pointer;"><i class="fa fa-file-pdf-o"></i> Lampiran II</a>
+                                            <a class="btn btn-danger btn-sm pull-right" onClick="submitDetil(1)" style="cursor: pointer;"><i class="fa fa-file-pdf-o"></i> PDF tanpa Barcode</a>
+                                            <a class="btn btn-danger btn-sm pull-right" onClick="submitDetil(2)" style="cursor: pointer;"><i class="fa fa-file-pdf-o"></i> PDF dengan Barcode</a>
                                         </td>
                                     </tr>
                                     <tr>
@@ -2882,7 +2895,7 @@ function appenddata(vtipe, vdetilparam)
         vafterpph= vsebelumpph;
         if(reqPph > 0)
         {
-            vafterpph= Math.round(parseFloat(vsebelumpph) * parseFloat(reqPph));
+            vafterpph= Math.round(parseFloat(vsebelumpph) * (parseFloat(reqPph) / 100));
         }
 
         vtable= ''
@@ -2987,7 +3000,7 @@ function appenddata(vtipe, vdetilparam)
         vafterpph= vsebelumpph;
         if(reqPph > 0)
         {
-            vafterpph= Math.round(parseFloat(vsebelumpph) * parseFloat(reqPph));
+            vafterpph= Math.round(parseFloat(vsebelumpph) * (parseFloat(reqPph) / 100));
         }
 
         vtable= ''
@@ -3196,7 +3209,7 @@ function hitunghargasewa(vmode)
             vafterppndiskon= vafterdiskon;
             if(reqPph > 0)
             {
-                vafterppndiskon= Math.round(parseFloat(vafterdiskon) * parseFloat(reqPph));
+                vafterppndiskon= Math.round(parseFloat(vafterdiskon) * (parseFloat(reqPph) / 100));
             }
             $(this).closest('tr').find('.totalsewascindoorafterppndiskon').val(setformat(vafterppndiskon));
         }
@@ -3206,7 +3219,7 @@ function hitunghargasewa(vmode)
             vafterppndiskon= vafterdiskon;
             if(reqPph > 0)
             {
-                vafterppndiskon= Math.round(parseFloat(vafterdiskon) * parseFloat(reqPph));
+                vafterppndiskon= Math.round(parseFloat(vafterdiskon) * (parseFloat(reqPph) / 100));
             }
             $(this).closest('tr').find('.totalsewascoutdoorafterppndiskon').val(setformat(vafterppndiskon));
         }
@@ -3397,10 +3410,10 @@ function hitungtotalharga(vmode)
     if(reqPph > 0)
     {
         reqTotalBiayaPerBulanPpn= getvalnumber($("#reqTotalBiayaPerBulanNoPpn").val());
-        reqTotalBiayaPerBulanPpn= parseFloat(reqTotalBiayaPerBulanPpn) * parseFloat(reqPph);
+        reqTotalBiayaPerBulanPpn= parseFloat(reqTotalBiayaPerBulanPpn) * (parseFloat(reqPph) / 100);
 
         reqTotalBiayaPpn= getvalnumber($("#reqTotalBiayaNoPpn").val());
-        reqTotalBiayaPpn= parseFloat(reqTotalBiayaPpn) * parseFloat(reqPph);
+        reqTotalBiayaPpn= parseFloat(reqTotalBiayaPpn) * (parseFloat(reqPph) / 100);
     }
     $("#reqTotalBiayaPerBulanPpn").val(setformat(reqTotalBiayaPerBulanPpn));
     $("#reqTotalBiayaPpn").val(setformat(reqTotalBiayaPpn));
@@ -3501,7 +3514,7 @@ function submitPreview()
 
 function submitLampiran() 
 {
-    // parent.openAdd('app/loadUrl/report/loo_cetak/?reqId=<?=$reqId?>&templateSurat=loi_lampiran');
+    parent.openAdd('app/loadUrl/report/loo_cetak/?reqId=<?=$reqTrLooId?>&templateSurat=loo_lampiran');
 }
 
 function submitForm(reqStatusData){

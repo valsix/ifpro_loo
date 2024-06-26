@@ -25,21 +25,26 @@ $reqLineBusines= $set->getField("LINE_BUSINES");
 $reqPolaBisnis= "Sewa";
 $reqTahunSewa= $set->getField("TAHUN_SEWA");
 $reqMasaKerjaSama= $set->getField("MASA_KERJA_SAMA");
+$reqTotalLuasIndoor= $set->getField("TOTAL_LUAS_INDOOR");
+$reqTotalLuasOutdoor= $set->getField("TOTAL_LUAS_OUTDOOR");
 $reqLuasArea= $set->getField("LUAS_AREA");
+$reqHargaSewaUnitIndoor= numberToIna($set->getField("HARGA_SEWA_UNIT_INDOOR"));
+$reqHargaSewaUnitOutdoor= numberToIna($set->getField("HARGA_SEWA_UNIT_OUTDOOR"));
 $reqHargaSewaUnit= numberToIna($set->getField("HARGA_SEWA_UNIT"));
-$reqHargaSewaPerBulan= numberToIna($set->getField("TOTAL_SEWA_PERBULAN"));
-$reqHargaSewaExPpn= numberToIna($set->getField("TOTAL_SEWA_TAHUN_EX_PPN"));
-$reqHargaSewaIncPpn= numberToIna($set->getField("TOTAL_SEWA_TAHUN_INC_PPN"));
+$reqHargaSewaPerBulan= numberToIna(round($set->getField("TOTAL_SEWA_PERBULAN")));
+$reqHargaSewaExPpn= numberToIna(round($set->getField("TOTAL_SEWA_TAHUN_EX_PPN")));
+$reqHargaSewaIncPpn= numberToIna(round($set->getField("TOTAL_SEWA_TAHUN_INC_PPN")));
 $reqFittingOut= numberToIna($set->getField("FITTING_OUT"));
 $reqServiceCharge= numberToIna($set->getField("SERVICE_CHARGE"));
-$reqSecurityDeposit= numberToIna($set->getField("SECURITY_DEPOSIT"));
+$reqSecurityDeposit= numberToIna(round($set->getField("SECURITY_DEPOSIT")));
 $reqDp= $set->getField("DP");
 $reqTop= $set->getField("TOP");
+$reqAmortasiDp= 0;
 
-$reqDownPayment= numberToIna($set->getField("DOWN_PAYMENT"));
-$reqAngsuranDp= numberToIna($set->getField("ANGSURAN_SISA_DIKURANG_DP"));
-$reqAngsuranBulanan= numberToIna($set->getField("ANGSURAN_SEWA_BULANAN"));
-$reqBayarSCBulanan= numberToIna($set->getField("BAYAR_SC_BULANAN"));
+$reqDownPayment= numberToIna(round($set->getField("DOWN_PAYMENT")));
+$reqAngsuranDp= numberToIna(round($set->getField("ANGSURAN_SISA_DIKURANG_DP")));
+$reqAngsuranBulanan= numberToIna(round($set->getField("ANGSURAN_SEWA_BULANAN")));
+$reqBayarSCBulanan= numberToIna(round($set->getField("BAYAR_SC_BULANAN")));
 
 $arrperhitungansewa= [];
 $statement= " AND A.TR_LOO_ID = ".$reqId;
@@ -51,8 +56,8 @@ while($set->nextRow())
   $arrdata= [];
   $arrdata["NAMA_ANGSURAN"]= $set->getField("NAMA_ANGSURAN");
   $arrdata["VBULAN"]= $set->getField("VBULAN");
-  $arrdata["SEWA_INC_PPN"]= numberToIna($set->getField("SEWA_INC_PPN"));
-  $arrdata["TOTAL_SEWA"]= numberToIna($set->getField("TOTAL_SEWA"));
+  $arrdata["SEWA_INC_PPN"]= numberToIna(round($set->getField("SEWA_INC_PPN")));
+  $arrdata["TOTAL_SEWA"]= numberToIna(round($set->getField("TOTAL_SEWA")));
 
   $vdetil= $set->getField("SERVICE_CHARGE");
   if($vdetil !== "TBA") $vdetil= numberToIna($vdetil);
@@ -149,9 +154,29 @@ while($set->nextRow())
       <td>bulan</td>
     </tr>
     <tr>
+      <td>Luas Area Indoor</td>
+      <td class="rgt"><?=$reqTotalLuasIndoor?></td>
+      <td>m2</td>
+    </tr>
+    <tr>
+      <td>Luas Area Outdoor</td>
+      <td class="rgt"><?=$reqTotalLuasOutdoor?></td>
+      <td>m2</td>
+    </tr>
+    <tr>
       <td>Luas Area</td>
       <td class="rgt"><?=$reqLuasArea?></td>
       <td>m2</td>
+    </tr>
+    <tr>
+      <td>Harga Sewa Unit Indoor</td>
+      <td class="rgt"><?=$reqHargaSewaUnitIndoor?></td>
+      <td>Rp/m2/bulan (Excl. PPn)</td>
+    </tr>
+    <tr>
+      <td>Harga Sewa Unit Outdoor</td>
+      <td class="rgt"><?=$reqHargaSewaUnitOutdoor?></td>
+      <td>Rp/m2/bulan (Excl. PPn)</td>
     </tr>
     <tr>
       <td>Harga Sewa Unit</td>
@@ -223,7 +248,7 @@ while($set->nextRow())
     </tr>
     <tr>
       <td>Amortisasi DP</td>
-      <td class="rgt"><?=$reqMasaKerjaSama?></td>
+      <td class="rgt"><?=$reqAmortasiDp?></td>
       <td>Rp/bulan</td>
     </tr>
     <tr>

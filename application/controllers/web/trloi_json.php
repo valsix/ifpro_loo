@@ -258,6 +258,7 @@ class trloi_json extends CI_Controller
 		$reqTanggalAkhir= $this->input->post("reqTanggalAkhir");
 		$reqPromotionLevy= $this->input->post("reqPromotionLevy");
 		$reqPicPenandatangan= $this->input->post("reqPicPenandatangan");
+		$reqJabatanPenandatangan= $this->input->post("reqJabatanPenandatangan");
 
 		if($reqStatusData == "UBAHDATAPARAF" || $reqStatusData == "UBAHDATAREVISI")
 		{
@@ -326,7 +327,9 @@ class trloi_json extends CI_Controller
 		$set->setField("TANGGAL_AWAL", dateToDbCheck($reqTanggalAwal));
 		$set->setField("TANGGAL_AKHIR", dateToDbCheck($reqTanggalAkhir));
 		$set->setField("PROMOTION_LEVY", ValToNullDB(dotToNo($reqPromotionLevy)));
-		$set->setField("PIC_PENANDATANGAN", $reqPicPenandatangan);
+		
+		$set->setField("PIC_PENANDATANGAN", setQuote($reqPicPenandatangan));
+		$set->setField("JABATAN_PENANDATANGAN", setQuote($reqJabatanPenandatangan));
 
 		$set->setField("USER_PEMBUAT_ID", $sesid);
 		$set->setField("STATUS_DATA", $reqStatusData);

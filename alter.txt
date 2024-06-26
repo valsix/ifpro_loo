@@ -17,6 +17,8 @@ create table tr_loo
 	, user_lihat_status character varying
 	, produk_id integer
 	, customer_id integer
+	, pic_penandatangan character varying
+	, jabatan_penandatangan character varying
 	, lokasi_loo_id integer
 	, pph numeric
 	, total_luas_indoor numeric
@@ -672,6 +674,7 @@ create table tr_loi
 	, produk_id integer
 	, customer_id integer
 	, pic_penandatangan character varying
+	, jabatan_penandatangan character varying
 	, lokasi_loo_id integer
 	, pph numeric
 	, total_luas_indoor numeric
@@ -1331,6 +1334,8 @@ create table tr_psm
 	, promotion_levy numeric
 	, produk_id integer
 	, customer_id integer
+	, pic_penandatangan character varying
+	, jabatan_penandatangan character varying
 	, lokasi_loo_id integer
 	, pph numeric
 	, total_luas_indoor numeric
@@ -1986,7 +1991,8 @@ begin
 			tr_loi_id, tr_loo_id, status_data
 			, user_pembuat_id, user_pengirim_id, user_pengirim_nama
 			, user_pengirim_jabatan, satuan_kerja_pengirim_id
-			, produk_id, customer_id, lokasi_loo_id, pph
+			, produk_id, customer_id, pic_penandatangan, jabatan_penandatangan
+			, lokasi_loo_id, pph
 			, total_luas_indoor, total_luas_outdoor, total_luas, total_diskon_indoor_sewa
 			, total_diskon_outdoor_sewa, total_diskon_indoor_service, total_diskon_outdoor_service
 			, harga_indoor_sewa, harga_outdoor_sewa, harga_indoor_service
@@ -2000,7 +2006,8 @@ begin
 			vnewid tr_loi_id, tr_loo_id, upper('draft') status_data
 			, user_pembuat_id, user_pengirim_id, user_pengirim_nama
 			, user_pengirim_jabatan, satuan_kerja_pengirim_id
-			, produk_id, customer_id, lokasi_loo_id, pph
+			, produk_id, customer_id, pic_penandatangan, jabatan_penandatangan
+			, lokasi_loo_id, pph
 			, total_luas_indoor, total_luas_outdoor, total_luas, total_diskon_indoor_sewa
 			, total_diskon_outdoor_sewa, total_diskon_indoor_service, total_diskon_outdoor_service
 			, harga_indoor_sewa, harga_outdoor_sewa, harga_indoor_service
@@ -2094,7 +2101,8 @@ begin
 			, user_pembuat_id, user_pengirim_id, user_pengirim_nama
 			, user_pengirim_jabatan, satuan_kerja_pengirim_id
 			, tanggal_awal, tanggal_akhir, promotion_levy
-			, produk_id, customer_id, lokasi_loo_id, pph
+			, produk_id, customer_id, pic_penandatangan, jabatan_penandatangan
+			, lokasi_loo_id, pph
 			, total_luas_indoor, total_luas_outdoor, total_luas, total_diskon_indoor_sewa
 			, total_diskon_outdoor_sewa, total_diskon_indoor_service, total_diskon_outdoor_service
 			, harga_indoor_sewa, harga_outdoor_sewa, harga_indoor_service
@@ -2109,7 +2117,8 @@ begin
 			, user_pembuat_id, user_pengirim_id, user_pengirim_nama
 			, user_pengirim_jabatan, satuan_kerja_pengirim_id
 			, tanggal_awal, tanggal_akhir, promotion_levy
-			, produk_id, customer_id, lokasi_loo_id, pph
+			, produk_id, customer_id, pic_penandatangan, jabatan_penandatangan
+			, lokasi_loo_id, pph
 			, total_luas_indoor, total_luas_outdoor, total_luas, total_diskon_indoor_sewa
 			, total_diskon_outdoor_sewa, total_diskon_indoor_service, total_diskon_outdoor_service
 			, harga_indoor_sewa, harga_outdoor_sewa, harga_indoor_service

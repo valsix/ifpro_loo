@@ -21,6 +21,8 @@ $set->firstRow();
 $reqLokasiLooId= $set->getField("LOKASI_LOO_ID");
 $reqLokasiNama= $set->getField("LOKASI_NAMA");
 $reqCustomerNama= $set->getField("NAMA_PEMILIK");
+$reqCustomerPenandatanganNama= $set->getField("PIC_PENANDATANGAN");
+$reqCustomerPenandatanganJabatan= $set->getField("JABATAN_PENANDATANGAN");
 $reqCustomerTempat= $set->getField("TEMPAT");
 $reqCustomerTlp= $set->getField("TELP");
 $reqCustomerEmail= $set->getField("EMAIL");
@@ -35,6 +37,8 @@ $reqDp= $set->getField("DP");
 $reqPeriodeSewa= $set->getField("PERIODE_SEWA");
 $reqSecurityDeposit= $set->getField("SECURITY_DEPOSIT");
 $reqFittingOut= $set->getField("FITTING_OUT");
+$reqPenandaTanganNama= $set->getField("USER_PENGIRIM_NAMA");
+$reqPenandaTanganJabatan= $set->getField("USER_PENGIRIM_JABATAN");
 
 $reqNomorSurat= $set->getField("NOMOR_SURAT");
 $reqTanggalSurat= $set->getField("INFO_APPROVAL_QR_DATE");
@@ -1331,20 +1335,18 @@ $reqNamaCabang= $set->getField("NAMA_CABANG");
 
     <tr>
       <td style="width:30%;text-align: center;">
-        <u><b>Fajar Saiful Bahri</b></u>                    
+        <u><b><?=$reqPenandaTanganNama?></b></u>
       </td>
       <td style="width:40%"></td>
       <td style="width:30%;text-align: center;">
-        <u><b><?=$reqCustomerNama?></b></u>                       
+        <u><b><?=$reqCustomerPenandatanganNama?></b></u>
       </td>
     </tr>
     <tr>
-      <td style="width:30%;text-align: center;">
-        Direktur          
-      </td>
+      <td style="width:30%;text-align: center;"><?=$reqPenandaTanganJabatan?></td>
       <td style="width:40%"></td>
       <td style="width:30%;text-align: center;">
-        Corporate Senior Manager                
+        <?=$reqCustomerPenandatanganJabatan?>
       </td>
     </tr>
   </table>

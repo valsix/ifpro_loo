@@ -21,6 +21,8 @@ $set->firstRow();
 $reqLokasiNama= $set->getField("LOKASI_NAMA");
 $reqCustomerTempat= $set->getField("TEMPAT");
 $reqCustomerNama= $set->getField("NAMA_PEMILIK");
+$reqCustomerPenandatanganNama= $set->getField("PIC_PENANDATANGAN");
+$reqCustomerPenandatanganJabatan= $set->getField("JABATAN_PENANDATANGAN");
 $reqCustomerTlp= $set->getField("TELP");
 $reqCustomerNpwp= $set->getField("NPWP");
 $reqCustomerNpwpAlamat= $set->getField("NPWP_ALAMAT");
@@ -37,6 +39,8 @@ $reqAwalFittingOut= $set->getField("FITTING_OUT");
 $reqTotalLuasIndoor= $set->getField("TOTAL_LUAS_INDOOR");
 $reqTotalLuasOutdoor= $set->getField("TOTAL_LUAS_OUTDOOR");
 $reqTotalLuas= $set->getField("TOTAL_LUAS");
+$reqPenandaTanganNama= $set->getField("USER_PENGIRIM_NAMA");
+$reqPenandaTanganJabatan= $set->getField("USER_PENGIRIM_JABATAN");
 
 $reqNomorSurat= $set->getField("NOMOR_SURAT");
 $reqTanggalSurat= $set->getField("INFO_APPROVAL_QR_DATE");
@@ -127,9 +131,10 @@ $reqServiceCharge= numberToIna($set->getField("SERVICE_CHARGE"));
 $reqSecurityDeposit= numberToIna($set->getField("SECURITY_DEPOSIT"));
 $reqDp= $set->getField("DP");
 $reqTop= $set->getField("TOP");
+$reqAmortasiDp= 0;
 
-$reqDownPayment= numberToIna($set->getField("DOWN_PAYMENT"));
-$reqAngsuranDp= numberToIna($set->getField("ANGSURAN_SISA_DIKURANG_DP"));
+$reqDownPayment= numberToIna(round($set->getField("DOWN_PAYMENT")));
+$reqAngsuranDp= numberToIna(round($set->getField("ANGSURAN_SISA_DIKURANG_DP")));
 $reqAngsuranBulanan= numberToIna($set->getField("ANGSURAN_SEWA_BULANAN"));
 $reqBayarSCBulanan= numberToIna($set->getField("BAYAR_SC_BULANAN"));
 
@@ -143,8 +148,8 @@ while($set->nextRow())
   $arrdata= [];
   $arrdata["NAMA_ANGSURAN"]= $set->getField("NAMA_ANGSURAN");
   $arrdata["VBULAN"]= $set->getField("VBULAN");
-  $arrdata["SEWA_INC_PPN"]= numberToIna($set->getField("SEWA_INC_PPN"));
-  $arrdata["TOTAL_SEWA"]= numberToIna($set->getField("TOTAL_SEWA"));
+  $arrdata["SEWA_INC_PPN"]= numberToIna(round($set->getField("SEWA_INC_PPN")));
+  $arrdata["TOTAL_SEWA"]= numberToIna(round($set->getField("TOTAL_SEWA")));
 
   $vdetil= $set->getField("SERVICE_CHARGE");
   if($vdetil !== "TBA") $vdetil= numberToIna($vdetil);
@@ -1141,7 +1146,7 @@ $reqNamaCabang= $set->getField("NAMA_CABANG");
       </td>
       <td style="width:40%"></td>
       <td style="width:30%;text-align: center;">
-        <b>JABATAN</b>           
+        <b><?=$reqCustomerTempat?></b>           
       </td>
     </tr>
 
@@ -1170,20 +1175,18 @@ $reqNamaCabang= $set->getField("NAMA_CABANG");
 
     <tr>
       <td style="width:30%;text-align: center;">
-        <u><b>Fajar Saiful Bahri</b></u>                    
+        <u><b><?=$reqPenandaTanganNama?></b></u>
       </td>
       <td style="width:40%"></td>
       <td style="width:30%;text-align: center;">
-        <u><b>S. Hannie Krisdianta</b></u>                       
+        <u><b><?=$reqCustomerPenandatanganNama?></b></u>
       </td>
     </tr>
     <tr>
-      <td style="width:30%;text-align: center;">
-        Direktur          
-      </td>
+      <td style="width:30%;text-align: center;"><?=$reqPenandaTanganJabatan?></td>
       <td style="width:40%"></td>
       <td style="width:30%;text-align: center;">
-        Corporate Senior Manager                
+        <?=$reqCustomerPenandatanganJabatan?>
       </td>
     </tr>
   </table>
@@ -1450,7 +1453,7 @@ $reqNamaCabang= $set->getField("NAMA_CABANG");
     <tr>
       <td style="border:solid black 0.5px;" colspan="2">Amotrisasi DP         </td>
       <td style="width:3%;border:solid black 0.5px;text-align: center;">:</td>
-      <td style="border:solid black 0.5px;">Rp <?=$reqMasaKerjaSama?></td>
+      <td style="border:solid black 0.5px;">Rp <?=$reqAmortasiDp?></td>
       <td style="border:solid black 0.5px;">/ bulan     </td>
     </tr>
     <tr>

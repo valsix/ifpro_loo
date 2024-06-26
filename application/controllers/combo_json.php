@@ -409,8 +409,10 @@ class combo_json extends CI_Controller {
 		if ($cek=='pemilik') 
 		{
 			while($combo->nextRow()){
+				$vnamapemilik= $combo->getField("NAMA_PEMILIK");
 				$arr_json[$i]['id']= $combo->getField("CUSTOMER_ID");
-				$arr_json[$i]['text']= $combo->getField("NAMA_BRAND")." (".$combo->getField("NAMA_PEMILIK").")";
+				$arr_json[$i]['text']= $combo->getField("NAMA_BRAND")." (".$vnamapemilik.")";
+				$arr_json[$i]['pemilik']= $vnamapemilik;
 				$i++;
 			}
 		}

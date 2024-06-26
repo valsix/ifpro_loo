@@ -29,7 +29,7 @@ if(empty($reqId))
 {
     $reqId= -1;
     $reqMode= "insert";
-    $reqPph= "1.11";
+    $reqPph= "11";
 }
 else
 {
@@ -1856,8 +1856,8 @@ $(function(){
 
                                     <tr>
                                         <td colspan="3">
-                                            <a class="btn btn-danger btn-sm pull-right" id="buttonpdf" onClick="submitDetil(1)" style="cursor: pointer;"><i class="fa fa-file-pdf-o"></i> PDF tanpa Barcode</a>
-                                            <a class="btn btn-danger btn-sm pull-right" id="buttonpdf" onClick="submitDetil(2)" style="cursor: pointer;"><i class="fa fa-file-pdf-o"></i> PDF dengan Barcode</a>
+                                            <a class="btn btn-danger btn-sm pull-right" id="buttonpdf" onClick="submitDetil(1, 'loi')" style="cursor: pointer;"><i class="fa fa-file-pdf-o"></i> PDF tanpa Barcode</a>
+                                            <a class="btn btn-danger btn-sm pull-right" id="buttonpdf" onClick="submitDetil(2, 'loi')" style="cursor: pointer;"><i class="fa fa-file-pdf-o"></i> PDF dengan Barcode</a>
                                         </td>
                                     </tr>
                                     <tr>
@@ -2826,6 +2826,13 @@ $(function(){
                                                 </div>
                 
                                             </div>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td colspan="3">
+                                            <a class="btn btn-danger btn-sm pull-right" id="buttonpdf" onClick="submitDetil(1, 'loo')" style="cursor: pointer;"><i class="fa fa-file-pdf-o"></i> PDF tanpa Barcode</a>
+                                            <a class="btn btn-danger btn-sm pull-right" id="buttonpdf" onClick="submitDetil(2, 'loo')" style="cursor: pointer;"><i class="fa fa-file-pdf-o"></i> PDF dengan Barcode</a>
                                         </td>
                                     </tr>
 
@@ -3948,7 +3955,7 @@ function appenddata(vtipe, vdetilparam)
         vafterpph= vsebelumpph;
         if(reqPph > 0)
         {
-            vafterpph= Math.round(parseFloat(vsebelumpph) * parseFloat(reqPph));
+            vafterpph= Math.round(parseFloat(vsebelumpph) * (parseFloat(reqPph) / 100));
         }
 
         vtable= ''
@@ -4053,7 +4060,7 @@ function appenddata(vtipe, vdetilparam)
         vafterpph= vsebelumpph;
         if(reqPph > 0)
         {
-            vafterpph= Math.round(parseFloat(vsebelumpph) * parseFloat(reqPph));
+            vafterpph= Math.round(parseFloat(vsebelumpph) * (parseFloat(reqPph) / 100));
         }
 
         vtable= ''
@@ -4262,7 +4269,7 @@ function hitunghargasewa(vmode)
             vafterppndiskon= vafterdiskon;
             if(reqPph > 0)
             {
-                vafterppndiskon= Math.round(parseFloat(vafterdiskon) * parseFloat(reqPph));
+                vafterppndiskon= Math.round(parseFloat(vafterdiskon) * (parseFloat(reqPph) / 100));
             }
             $(this).closest('tr').find('.totalsewascindoorafterppndiskon').val(setformat(vafterppndiskon));
         }
@@ -4272,7 +4279,7 @@ function hitunghargasewa(vmode)
             vafterppndiskon= vafterdiskon;
             if(reqPph > 0)
             {
-                vafterppndiskon= Math.round(parseFloat(vafterdiskon) * parseFloat(reqPph));
+                vafterppndiskon= Math.round(parseFloat(vafterdiskon) * (parseFloat(reqPph) / 100));
             }
             $(this).closest('tr').find('.totalsewascoutdoorafterppndiskon').val(setformat(vafterppndiskon));
         }
@@ -4463,10 +4470,10 @@ function hitungtotalharga(vmode)
     if(reqPph > 0)
     {
         reqTotalBiayaPerBulanPpn= getvalnumber($("#reqTotalBiayaPerBulanNoPpn").val());
-        reqTotalBiayaPerBulanPpn= parseFloat(reqTotalBiayaPerBulanPpn) * parseFloat(reqPph);
+        reqTotalBiayaPerBulanPpn= parseFloat(reqTotalBiayaPerBulanPpn) * (parseFloat(reqPph) / 100);
 
         reqTotalBiayaPpn= getvalnumber($("#reqTotalBiayaNoPpn").val());
-        reqTotalBiayaPpn= parseFloat(reqTotalBiayaPpn) * parseFloat(reqPph);
+        reqTotalBiayaPpn= parseFloat(reqTotalBiayaPpn) * (parseFloat(reqPph) / 100);
     }
     $("#reqTotalBiayaPerBulanPpn").val(setformat(reqTotalBiayaPerBulanPpn));
     $("#reqTotalBiayaPpn").val(setformat(reqTotalBiayaPpn));
@@ -4555,9 +4562,12 @@ function down(attach_id, vmode)
     window.open("downloi?reqMode="+vmode+"&reqAttachId="+attach_id, 'Cetak');
 }
 
-function submitDetil(vttd)
+function submitDetil(vttd, vtipe)
 {
-    parent.openAdd('app/loadUrl/report/loo_cetak/?reqId=<?=$reqTrLoiId?>&templateSurat=loi&ttd='+vttd);
+    vinfoid= "";
+    if(vtipe == "loo") vinfoid= "<?=$reqTrLooId?>";
+    else if(vtipe == "loi") vinfoid= "<?=$reqTrLoiId?>";
+    parent.openAdd('app/loadUrl/report/loo_cetak/?reqId='+vinfoid+'&templateSurat='+vtipe+'&ttd='+vttd);
 }
 
 function submitPreview() 

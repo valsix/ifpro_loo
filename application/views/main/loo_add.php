@@ -7,6 +7,8 @@ $this->load->model("TrLoo");
 $this->load->model("TrLooDetil");
 $this->load->model("Combo");
 $this->load->model("TrLooParaf");
+$this->load->model("Customer");
+
 $this->load->model("SatuanKerja");
 
 $reqId= $this->input->get("reqId");
@@ -19,7 +21,8 @@ $arrdetil= $arrlokasi= [];
 if(empty($reqId))
 {
     $reqMode= "insert";
-    $reqPph= "1.11";
+    // $reqPph= "1.11";
+    $reqPph= "11";
 }
 else
 {
@@ -55,6 +58,9 @@ else
 
     $reqSecurityDeposit= $set->getField("SECURITY_DEPOSIT");
     $reqFittingOut= $set->getField("FITTING_OUT");
+
+    $reqPicPenandatangan= $set->getField("PIC_PENANDATANGAN");
+    $reqJabatanPenandatangan= $set->getField("JABATAN_PENANDATANGAN");
 
     $reqSatuanKerjaPengirimId= $set->getField("SATUAN_KERJA_PENGIRIM_ID");
     $reqUserPengirimId= $set->getField("USER_PENGIRIM_ID");
@@ -360,7 +366,7 @@ $(function(){
                                 , width:'350'
                                 , valueField:'id'
                                 , textField:'text'
-                                , editable:false
+                                , editable:true
                                 , url:'combo_json/comboLokasiLoo'
                                 " required value="<?=$reqLokasiLooId?>" />
                             </td>
@@ -369,14 +375,28 @@ $(function(){
                             <td>Customer</td>
                             <td>:</td>
                             <td>
-                                <input type="text" name="reqCustomerId" class="easyui-combobox" id="reqCustomerId" data-options="width:'350', valueField:'id', textField:'text', editable:false, url:'combo_json/comboCustomer?cek=pemilik'" required value="<?=$reqCustomerId?>" />
+                                <input type="text" name="reqCustomerId" class="easyui-combotree" id="reqCustomerId"
+                                data-options="
+                                onClick: function(node){
+                                    setcustomer(node);
+                                }
+                                , width:'350', valueField:'id', textField:'text', editable:true, url:'combo_json/comboCustomer?cek=pemilik'" required value="<?=$reqCustomerId?>" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Customer Penanda tangan</td>
+                            <td>:</td>
+                            <td>
+                                <input style="width: 45%; padding: initial; display: inline;" type="text" id="reqPicPenandatangan" class="easyui-validatebox textbox form-control" required name="reqPicPenandatangan" value="<?=$reqPicPenandatangan?>" data-options="required:true" />
+                                &nbsp;&nbsp;&nbsp;Jabatan :
+                                <input style="width: 40%; padding: initial; display: inline; " type="text" id="reqJabatanPenandatangan" class="easyui-validatebox textbox form-control" required name="reqJabatanPenandatangan" value="<?=$reqJabatanPenandatangan?>" data-options="required:true" />
                             </td>
                         </tr>
                         <tr>
                             <td>Produk</td>
                             <td>:</td>
                             <td>
-                                <input type="text" name="reqProdukId" class="easyui-combobox" id="reqProdukId" data-options="width:'350', valueField:'id', textField:'text', editable:false, url:'combo_json/comboProduk'" required value="<?=$reqProdukId?>" />
+                                <input type="text" name="reqProdukId" class="easyui-combobox" id="reqProdukId" data-options="width:'350', valueField:'id', textField:'text', editable:true, url:'combo_json/comboProduk'" required value="<?=$reqProdukId?>" />
                                 &nbsp;&nbsp;PPN
                                 <input type="text" class="vlxuangclass easyui-validatebox textbox form-control" name="reqPph" id="reqPph" style="width:5%; padding: initial; display: inline; text-align: right;" value="<?=numberToIna($reqPph)?>" />           
                             </td>
@@ -409,7 +429,13 @@ $(function(){
                                     // tambahan khusus
                                     if(rec.NIP == '')
                                     {
-                                        $.messager.alert('Info', 'Pengirim belum di tentukan di master.', 'info');
+                                        $.messager.alert('Info', 'Penanda tangan belum di tentukan di master.', 'info');
+                                        $('#reqSatuanKerjaPengirimId').combotree('setValue', '');
+                                    }
+
+                                    if(rec.NIP == '<?=$sessid?>')
+                                    {
+                                        $.messager.alert('Info', 'Penanda tangan tidak boleh sama dengan pembuat.', 'info');
                                         $('#reqSatuanKerjaPengirimId').combotree('setValue', '');
                                     }
                                 }
@@ -1510,6 +1536,12 @@ function setinfovalidasi()
 
 }
 
+function setcustomer(node)
+{
+    // console.log(node)
+    $("#reqPicPenandatangan").val(node.pemilik);
+}
+
 arrutilitycharge= JSON.parse('<?=JSON_encode($arrutilitycharge, JSON_HEX_APOS)?>');
 function sethargautilitycharge(node)
 {
@@ -1715,7 +1747,8 @@ function appenddata(vtipe, vdetilparam)
         vafterpph= vsebelumpph;
         if(reqPph > 0)
         {
-            vafterpph= Math.round(parseFloat(vsebelumpph) * parseFloat(reqPph));
+            // vafterpph= Math.round(parseFloat(vsebelumpph) * (parseFloat(reqPph) / 100) );
+            vafterpph= vsebelumpph;
         }
 
         vtable= ''
@@ -1820,8 +1853,16 @@ function appenddata(vtipe, vdetilparam)
         vafterpph= vsebelumpph;
         if(reqPph > 0)
         {
-            vafterpph= Math.round(parseFloat(vsebelumpph) * parseFloat(reqPph));
+            // vafterpph= Math.round(parseFloat(vsebelumpph) * (parseFloat(reqPph) / 100) );
+            vafterpph= vsebelumpph;
         }
+
+        vpotongsetengah= 0;
+        if(vsebelumpph > 0)
+        {
+            vpotongsetengah= vsebelumpph / 2;
+        }
+        vpotongsetengah= setformat(vpotongsetengah);
 
         vtable= ''
         +'<tr class="grouplokasiclass'+reqLokasiLooId+' groupclass'+id+'">'
@@ -1834,12 +1875,12 @@ function appenddata(vtipe, vdetilparam)
         +       '<input type="hidden" name="vmode[]" value="tarif_sewa_sc_outdoor" />'
         +       '<input type="hidden" name="vid[]" class="valsetid" value="'+id+'" />'
         +       '<input type="hidden" name="vketerangan[]" />'
-        +       '<input type="hidden" class="totalsewascoutdoor" name="vnilai[]" value="'+vtarifsc+'" />'
+        +       '<input type="hidden" class="totalsewascoutdoor" name="vnilai[]" value="'+vpotongsetengah+'" />'
 
         +       '<input type="hidden" name="vmode[]" value="tarif_sewa_sc_outdoor_after_ppn" />'
         +       '<input type="hidden" name="vid[]" class="valsetid" value="'+id+'" />'
         +       '<input type="hidden" name="vketerangan[]" />'
-        +       '<input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control totalsewascoutdoorafterppn" name="vnilai[]" placeholder="Isi Rp/m2" data-options="required:true" style="width:65%; display: inline; text-align: right;" value="'+vafterpph+'" /> <label class="labeltotal">Rp/m2</label>'
+        +       '<input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control totalsewascoutdoorafterppn" name="vnilai[]" placeholder="Isi Rp/m2" data-options="required:true" style="width:65%; display: inline; text-align: right;" value="'+vpotongsetengah+'" /> <label class="labeltotal">Rp/m2</label>'
         +   '</td>'
         +   '<td>'
         +       '<input type="hidden" name="vmode[]" value="tarif_sewa_sc_outdoor_diskon" />'
@@ -1850,13 +1891,13 @@ function appenddata(vtipe, vdetilparam)
         +       '<input type="hidden" name="vmode[]" value="tarif_sewa_sc_outdoor_after_diskon" />'
         +       '<input type="hidden" name="vid[]" class="valsetid" value="'+id+'" />'
         +       '<input type="hidden" name="vketerangan[]" />'
-        +       '<input type="hidden" class="totalsewascoutdoorafterdiskon" name="vnilai[]" value="'+vtarifsc+'" />'
+        +       '<input type="hidden" class="totalsewascoutdoorafterdiskon" name="vnilai[]" value="'+vpotongsetengah+'" />'
         +   '</td>'
         +   '<td>'
         +       '<input type="hidden" name="vmode[]" value="tarif_sewa_sc_outdoor_after_ppn_diskon" />'
         +       '<input type="hidden" name="vid[]" class="valsetid" value="'+id+'" />'
         +       '<input type="hidden" name="vketerangan[]" />'
-        +       '<input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control totalsewascoutdoorafterppndiskon" name="vnilai[]" placeholder="Isi Rp/m2" data-options="required:true" style="width:65%; display: inline; text-align: right;" value="'+vtarifsc+'" /> <label class="labeltotal">Rp/m2</label>'
+        +       '<input type="text" readonly class="vlxuangclass easyui-validatebox textbox form-control totalsewascoutdoorafterppndiskon" name="vnilai[]" placeholder="Isi Rp/m2" data-options="required:true" style="width:65%; display: inline; text-align: right;" value="'+vpotongsetengah+'" /> <label class="labeltotal">Rp/m2</label>'
         +   '</td>'
         +'</tr>'
         ;
@@ -2007,6 +2048,7 @@ function hitunghargasewa(vmode)
         else if(vmode == "totalsewascoutdoordiskon")
         {
             vawalharga= $(this).closest('tr').find('.totalsewascoutdoor').val();
+            console.log(vawalharga);
             // vawalharga= $(this).closest('tr').find('.totalsewascoutdoorafterpph').val();
         }
 
@@ -2029,7 +2071,8 @@ function hitunghargasewa(vmode)
             vafterppndiskon= vafterdiskon;
             if(reqPph > 0)
             {
-                vafterppndiskon= Math.round(parseFloat(vafterdiskon) * parseFloat(reqPph));
+                // vafterppndiskon= Math.round(parseFloat(vafterdiskon) * (parseFloat(reqPph) / 100) );
+                // vafterppndiskon= Math.round(parseFloat(vafterdiskon) * parseFloat(reqPph) );
             }
             $(this).closest('tr').find('.totalsewascindoorafterppndiskon').val(setformat(vafterppndiskon));
         }
@@ -2039,7 +2082,8 @@ function hitunghargasewa(vmode)
             vafterppndiskon= vafterdiskon;
             if(reqPph > 0)
             {
-                vafterppndiskon= Math.round(parseFloat(vafterdiskon) * parseFloat(reqPph));
+                // vafterppndiskon= Math.round(parseFloat(vafterdiskon) * (parseFloat(reqPph) / 100) );
+                // vafterppndiskon= Math.round(parseFloat(vafterdiskon) * parseFloat(reqPph) );
             }
             $(this).closest('tr').find('.totalsewascoutdoorafterppndiskon').val(setformat(vafterppndiskon));
         }
@@ -2230,10 +2274,10 @@ function hitungtotalharga(vmode)
     if(reqPph > 0)
     {
         reqTotalBiayaPerBulanPpn= getvalnumber($("#reqTotalBiayaPerBulanNoPpn").val());
-        reqTotalBiayaPerBulanPpn= parseFloat(reqTotalBiayaPerBulanPpn) * parseFloat(reqPph);
+        reqTotalBiayaPerBulanPpn= parseFloat(reqTotalBiayaPerBulanPpn) * (parseFloat(reqPph) / 100);
 
         reqTotalBiayaPpn= getvalnumber($("#reqTotalBiayaNoPpn").val());
-        reqTotalBiayaPpn= parseFloat(reqTotalBiayaPpn) * parseFloat(reqPph);
+        reqTotalBiayaPpn= parseFloat(reqTotalBiayaPpn) * (parseFloat(reqPph) / 100);
     }
     $("#reqTotalBiayaPerBulanPpn").val(setformat(reqTotalBiayaPerBulanPpn));
     $("#reqTotalBiayaPpn").val(setformat(reqTotalBiayaPpn));
