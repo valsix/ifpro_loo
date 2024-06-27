@@ -95,6 +95,9 @@ begin
 			, next_urut= 1
 		where tr_loo_id= new.tr_loo_id;
 
+		new.terparaf:= null;
+		new.terbaca_validasi:= null;
+
 		new.paksa_db:= null;
 		return new;
 	end if;
@@ -751,6 +754,9 @@ begin
 			, next_urut= 1
 		where tr_loi_id= new.tr_loi_id;
 
+		new.terparaf:= null;
+		new.terbaca_validasi:= null;
+
 		new.paksa_db:= null;
 		return new;
 	end if;
@@ -867,7 +873,7 @@ begin
 
 					new.no_urut:= vnourut;
 
-					infonomorsurat:= vnourut || '/' || upper('ifpro') || '-' || upper('comm') || '/' || upper('loo') || '/' || (select upper(kode) from lokasi_loo where lokasi_loo_id = new.lokasi_loo_id) || '/' || (select ambil_bulan_romawi(generatezero(vbulan::text,1))) || '/' || vtahun::text;
+					infonomorsurat:= vnourut || '/' || upper('ifpro') || '-' || upper('comm') || '/' || upper('loi') || '/' || (select upper(kode) from lokasi_loo where lokasi_loo_id = new.lokasi_loo_id) || '/' || (select ambil_bulan_romawi(generatezero(vbulan::text,1))) || '/' || vtahun::text;
 					--raise notice '%', infonomorsurat;
 					new.nomor_surat:= infonomorsurat;
 					new.user_posisi_paraf_id:= null;
@@ -1412,6 +1418,9 @@ begin
 			, next_urut= 1
 		where tr_psm_id= new.tr_psm_id;
 
+		new.terparaf:= null;
+		new.terbaca_validasi:= null;
+
 		new.paksa_db:= null;
 		return new;
 	end if;
@@ -1528,7 +1537,7 @@ begin
 
 					new.no_urut:= vnourut;
 
-					infonomorsurat:= vnourut || '/' || upper('ifpro') || '-' || upper('comm') || '/' || upper('loo') || '/' || (select upper(kode) from lokasi_loo where lokasi_loo_id = new.lokasi_loo_id) || '/' || (select ambil_bulan_romawi(generatezero(vbulan::text,1))) || '/' || vtahun::text;
+					infonomorsurat:= vnourut || '/' || upper('ifpro') || '-' || upper('comm') || '/' || upper('psm') || '/' || (select upper(kode) from lokasi_loo where lokasi_loo_id = new.lokasi_loo_id) || '/' || (select ambil_bulan_romawi(generatezero(vbulan::text,1))) || '/' || vtahun::text;
 					--raise notice '%', infonomorsurat;
 					new.nomor_surat:= infonomorsurat;
 					new.user_posisi_paraf_id:= null;

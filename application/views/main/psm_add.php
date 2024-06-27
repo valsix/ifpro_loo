@@ -1,4 +1,3 @@
-
 <?
 include_once("functions/string.func.php");
 include_once("functions/date.func.php");
@@ -7,6 +6,7 @@ $this->load->model("TrPsm");
 $this->load->model("TrPsmDetil");
 $this->load->model("Combo");
 $this->load->model("TrPsmParaf");
+$this->load->model("Customer");
 $this->load->model("SatuanKerja");
 
 $this->load->model("TrLoi");
@@ -44,6 +44,11 @@ else
     $reqCustomerId= $set->getField("CUSTOMER_ID");
     $reqLokasiLooId= $set->getField("LOKASI_LOO_ID");
 
+    $combo = new Combo();
+    $combo->selectByParamsCustomer(array(), -1, -1, " AND CUSTOMER_ID = ".$reqCustomerId);
+    $combo->firstRow();
+    $reqCustomerNama= $combo->getField("NAMA_BRAND")." (".$combo->getField("NAMA_PEMILIK").")";
+
     if(!empty($reqLokasiLooId))
     {
         $setdetil= new Combo();
@@ -80,6 +85,16 @@ else
     $reqTanggalAwal= dateToPageCheck($set->getField("INFO_TANGGAL_AWAL"));
     $reqTanggalAkhir= dateToPageCheck($set->getField("INFO_TANGGAL_AKHIR"));
     $reqPromotionLevy= $set->getField("PROMOTION_LEVY");
+
+    $reqPicPenandatangan= $set->getField("PIC_PENANDATANGAN");
+    $reqJabatanPenandatangan= $set->getField("JABATAN_PENANDATANGAN");
+    if(empty($reqPicPenandatangan))
+    {
+        $cust= new Customer();
+        $cust->selectByParams(array(), -1,-1, " AND A.CUSTOMER_ID = ".$reqCustomerId);
+        $cust->firstRow();
+        $reqPicPenandatangan= $cust->getField("NAMA_PEMILIK");
+    }
 
     $reqSatuanKerjaPengirimId= $set->getField("SATUAN_KERJA_PENGIRIM_ID");
     $reqUserPengirimId= $set->getField("USER_PENGIRIM_ID");
@@ -145,6 +160,7 @@ else
     $set->selectByParams(array("A.TR_LOI_ID" => $reqTrLoiId));
     $set->firstRow();
     
+    $reqLoiNomorSurat= $set->getField("NOMOR_SURAT");
     $reqLoiProdukId= $set->getField("PRODUK_ID");
     $reqLoiCustomerId= $set->getField("CUSTOMER_ID");
     $reqLoiLokasiLooId= $set->getField("LOKASI_LOO_ID");
@@ -241,6 +257,7 @@ else
     $set->selectByParams(array("A.TR_LOO_ID" => $reqTrLooId));
     $set->firstRow();
     
+    $reqLooNomorSurat= $set->getField("NOMOR_SURAT");
     $reqLooProdukId= $set->getField("PRODUK_ID");
     $reqLooCustomerId= $set->getField("CUSTOMER_ID");
     $reqLooLokasiLooId= $set->getField("LOKASI_LOO_ID");
@@ -509,13 +526,6 @@ $(function(){
                     <a class="btn btn-danger btn-sm pull-right" id="buttonpdf" onClick="submitPreview()" style="cursor: pointer;"><i class="fa fa-file-pdf-o"></i> View as PDF</a>
                 <?
                 }
-
-                if(!empty($reqId)) 
-                {
-                ?>
-                    <!-- <a class="btn btn-danger btn-sm pull-right" id="buttonpdf" onClick="submitLampiran()" style="cursor: pointer;"><i class="fa fa-file-pdf-o"></i> Lampiran II</a> -->
-                <?
-                }
                 ?>
 
                 <?
@@ -538,7 +548,7 @@ $(function(){
                 {
                     $aksibutton= "1";
                 ?>
-                    <button class="btn btn-primary btn-sm pull-right" type="button" onClick="submitForm('UBAHDATAREVISI')"><i class="fa fa-save"></i> Simpan</button>
+                    <button class="btn btn-primary btn-sm pull-right" type="button" onClick="submitForm('UBAHDATAREVISI')"><i class="fa fa-save"></i> Draft</button>
                     <button class="btn btn-primary btn-sm pull-right" type="button" onClick="submitForm('UBAHDATAPOSTING')"><i class="fa fa-paper-plane"></i> Kirim</button>
                     <!-- <button class="btn btn-warning btn-sm pull-right" type="button" onClick="setagenda()"><i class="fa fa-list"></i> Agenda Surat</button> -->
                 <?
@@ -653,7 +663,18 @@ $(function(){
                                             <td>Customer</td>
                                             <td>:</td>
                                             <td>
-                                                <input type="text" name="reqCustomerId" class="easyui-combobox" id="reqCustomerId" data-options="width:'350', valueField:'id', textField:'text', editable:false, url:'combo_json/comboCustomer?cek=pemilik'" required value="<?=$reqCustomerId?>" />
+                                                <input type="hidden" name="reqCustomerId" id="reqCustomerId" value="<?=$reqCustomerId?>" />
+                                                <!-- <input type="text" name="reqCustomerId" class="easyui-combobox" id="reqCustomerId" data-options="width:'350', valueField:'id', textField:'text', editable:false, url:'combo_json/comboCustomer?cek=pemilik'" required value="<?=$reqCustomerId?>" /> -->
+                                                <?=$reqCustomerNama?>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Customer Penanda tangan</td>
+                                            <td>:</td>
+                                            <td>
+                                                <input style="width: 45%; padding: initial; display: inline;" type="text" id="reqPicPenandatangan" class="easyui-validatebox textbox form-control" required name="reqPicPenandatangan" value="<?=$reqPicPenandatangan?>" data-options="required:true" />
+                                                &nbsp;&nbsp;&nbsp;Jabatan :
+                                                <input style="width: 40%; padding: initial; display: inline; " type="text" id="reqJabatanPenandatangan" class="easyui-validatebox textbox form-control" required name="reqJabatanPenandatangan" value="<?=$reqJabatanPenandatangan?>" data-options="required:true" />
                                             </td>
                                         </tr>
                                         <tr>
@@ -1732,6 +1753,13 @@ $(function(){
                             <table class="table">
                                 <thead>
                                     <tr>           
+                                        <td>Nomor Surat</td>
+                                        <td>:</td>
+                                        <td>
+                                            <?=$reqLoiNomorSurat?>
+                                        </td>
+                                    </tr>
+                                    <tr>           
                                         <td>Lokasi</td>
                                         <td>:</td>
                                         <td>
@@ -1858,6 +1886,21 @@ $(function(){
                                         <td colspan="3">
                                             <a class="btn btn-danger btn-sm pull-right" id="buttonpdf" onClick="submitDetil(1, 'loi')" style="cursor: pointer;"><i class="fa fa-file-pdf-o"></i> PDF tanpa Barcode</a>
                                             <a class="btn btn-danger btn-sm pull-right" id="buttonpdf" onClick="submitDetil(2, 'loi')" style="cursor: pointer;"><i class="fa fa-file-pdf-o"></i> PDF dengan Barcode</a>
+
+                                            <?
+                                            $buttonlampiranupload= "";
+                                            if($sessid == $reqUserId)
+                                            {
+                                                $buttonlampiranupload= "1";
+                                            ?>
+                                            <button id="btnLampiran" class="btn btn-default btn-sm pull-right" type="button" onClick="submitForm('LAMPIRAN')">
+                                                <span style="display: none;" class="buttonspiner ic2-fa-spin-blue"></span>
+                                                <i class="fa fa-file-o"></i> Simpan Lampiran
+                                            </button>
+                                            <?
+                                            }
+                                            ?>
+                                            <input type="hidden" name="buttonlampiranupload" value="<?=$buttonlampiranupload?>" />
                                         </td>
                                     </tr>
                                     <tr>
@@ -1866,6 +1909,10 @@ $(function(){
                                         </td>
                                         <td>:</td>
                                         <td>
+                                            <?
+                                            if(!empty($buttonlampiranupload))
+                                            {
+                                            ?>
                                             <div class="kotak-dokumen">
                                                 <div class="kontak">
                                                     <div class="inner-lampiran">
@@ -1900,7 +1947,7 @@ $(function(){
                                                                 {
                                                                 ?>
                                                                 <?= $set_attachement->getField("NAMA") ?>
-                                                                <a onClick="parent.openAdd('<?= base_url()."uploadsloi/".$reqTrLooId."/".$set_attachement->getField("ATTACHMENT") ?>')" >
+                                                                <a onClick="parent.openAdd('<?= base_url()."uploadsloi/".$reqTrLoiId."/".$set_attachement->getField("ATTACHMENT") ?>')" >
                                                                     <i style="cursor: pointer;" class="fa fa-eye" ></i>
                                                                 </a>
                                                                 |
@@ -1921,6 +1968,62 @@ $(function(){
                                                 </div>
                 
                                             </div>
+                                            <?
+                                            }
+                                            else
+                                            {
+                                            ?>
+                                            <div class="kotak-dokumen">
+                                                <div class="kontak">
+                                                    <div class="inner-lampiran">
+                                                        <?
+                                                        $set_attachement = new TrLoi();
+                                                        $set_attachement->selectByParamsAttachment(array("A.TR_LOI_ID" => (int)$reqTrLoiId), -1,-1, " AND A.VMODE = 'detil'");
+                                                        while ($set_attachement->nextRow()) {
+                                                            $attach_id= $set_attachement->getField("TR_LOI_ATTACHMENT_ID");
+                                                        ?>
+                                                            
+                                                            <div class="MultiFile-label">
+                                                                <?
+                                                                $arrexcept= array("xlsx", "xls", "doc", "docx", "ppt", "pptx", "txt");
+                                                                //$arrexcept= array("xlsx", "xls", "doc", "docx", "txt");
+                                                                if(in_array(strtolower($set_attachement->getField("TIPE")), $arrexcept))
+                                                                {
+                                                                ?>
+                                                                <?= $set_attachement->getField("NAMA") ?>
+                                                                <a onClick="down('<?=$attach_id?>', 'loi')" >
+                                                                    <i style="cursor: pointer;" class="fa fa-download" ></i>
+                                                                </a>
+                                                                <?
+                                                                }
+                                                                else
+                                                                {
+                                                                ?>
+                                                                <?= $set_attachement->getField("NAMA") ?>
+                                                                <a onClick="parent.openAdd('<?= base_url()."uploadsloi/".$reqTrLoiId."/".$set_attachement->getField("ATTACHMENT") ?>')" >
+                                                                    <i style="cursor: pointer;" class="fa fa-eye" ></i>
+                                                                </a>
+                                                                |
+                                                                <a onClick="down('<?=$attach_id?>', 'loi')" >
+                                                                    <i style="cursor: pointer;" class="fa fa-download" ></i>
+                                                                </a>
+                                                                <?
+                                                                }
+                                                                ?>
+                                                            </div>
+                                                        <?
+                                                        }
+                                                        ?>
+                                                        
+                                                        <div class="small">Ukuran file maksimum yang diizinkan adalah 10 MB & Jenis file diterima: world, excel, ppt, pdf, jpg, jpeg, png</div>
+                                                        
+                                                    </div>
+                                                </div>
+                
+                                            </div>
+                                            <?
+                                            }
+                                            ?>
                                         </td>
                                     </tr>
 
@@ -2707,6 +2810,13 @@ $(function(){
                             <table class="table">
                                 <thead>
                                     <tr>           
+                                        <td>Nomor Surat</td>
+                                        <td>:</td>
+                                        <td>
+                                            <?=$reqLooNomorSurat?>
+                                        </td>
+                                    </tr>
+                                    <tr>           
                                         <td>Lokasi</td>
                                         <td>:</td>
                                         <td>
@@ -2831,6 +2941,8 @@ $(function(){
 
                                     <tr>
                                         <td colspan="3">
+                                            <a class="btn btn-danger btn-sm pull-right" onClick="submitLampiran()" style="cursor: pointer;"><i class="fa fa-file-pdf-o"></i> Lampiran II</a>
+
                                             <a class="btn btn-danger btn-sm pull-right" id="buttonpdf" onClick="submitDetil(1, 'loo')" style="cursor: pointer;"><i class="fa fa-file-pdf-o"></i> PDF tanpa Barcode</a>
                                             <a class="btn btn-danger btn-sm pull-right" id="buttonpdf" onClick="submitDetil(2, 'loo')" style="cursor: pointer;"><i class="fa fa-file-pdf-o"></i> PDF dengan Barcode</a>
                                         </td>
@@ -2847,7 +2959,7 @@ $(function(){
                                                     <div class="inner-lampiran">
                                                         <?
                                                         $set_attachement = new TrLoo();
-                                                        $set_attachement->selectByParamsAttachment(array("A.TR_LOO_ID" => (int)$reqTrLoiId), -1,-1, " AND A.VMODE = 'detil'");
+                                                        $set_attachement->selectByParamsAttachment(array("A.TR_LOO_ID" => (int)$reqTrLooId), -1,-1, " AND A.VMODE = 'detil'");
                                                         while ($set_attachement->nextRow()) {
                                                             $attach_id= $set_attachement->getField("TR_LOO_ATTACHMENT_ID");
                                                         ?>
@@ -4577,7 +4689,7 @@ function submitPreview()
 
 function submitLampiran() 
 {
-    // parent.openAdd('app/loadUrl/report/loo_cetak/?reqId=<?=$reqId?>&templateSurat=psm_lampiran');
+    parent.openAdd('app/loadUrl/report/loo_cetak/?reqId=<?=$reqTrLooId?>&templateSurat=loo_lampiran');
 }
 
 function submitForm(reqStatusData){
@@ -4585,6 +4697,12 @@ function submitForm(reqStatusData){
     $("#reqStatusData").val(reqStatusData);
 
     var pesan = "Simpan surat sebagai draft?";
+
+    if (reqStatusData == "LAMPIRAN")
+    {
+        pesan = "Apakah anda yakin upload lampiran bukti ?";
+    }
+
     if (reqStatusData == "POSTING")
     {
         // tambahan khusus
@@ -4698,6 +4816,13 @@ function setsimpan(reqStatusData)
     $('#ff').form('submit',{
         url:'web/trpsm_json/add',
         onSubmit:function(){
+
+            buttonlampiranupload= "<?=$buttonlampiranupload?>";
+            reqStatusData= $("#reqStatusData").val();
+            if(buttonlampiranupload == "1" && reqStatusData == "LAMPIRAN")
+            {
+                return true;
+            }
 
             if($(this).form('enableValidation').form('validate'))
             {

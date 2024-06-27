@@ -61,7 +61,7 @@ class ReportLoo
 			if(empty($vid)) $vid= -1;
 			$CI->load->model("TrLoi");
 			$set= new TrLoi();
-			$set->selectByParams(array(), -1,-1, " AND A.TR_LOO_ID = ".$vid);
+			$set->selectByParams(array(), -1,-1, " AND A.TR_LOI_ID = ".$vid);
 			$set->firstRow();
 			$vstatusdata= $set->getField("STATUS_DATA");
 			$vttdcode= $set->getField("TTD_KODE");
