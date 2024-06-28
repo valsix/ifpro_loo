@@ -34,6 +34,7 @@ DESCRIPTION			:
 		(
 			CUSTOMER_ID, PIC, TELP, EMAIL, TEMPAT, NAMA_PEMILIK, NAMA_BRAND, JENIS_PERUSAHAAN_ID
 			, NPWP, NPWP_ALAMAT, NOMOR_NIOR, ALAMAT_DOMISILI
+			, INFO_KEDUDUKAN
 		) 
 		VALUES
 		(
@@ -49,6 +50,7 @@ DESCRIPTION			:
 			, '".$this->getField("NPWP_ALAMAT")."'
 			, '".$this->getField("NOMOR_NIOR")."'
 			, '".$this->getField("ALAMAT_DOMISILI")."'
+			, '".$this->getField("INFO_KEDUDUKAN")."'
 		)";
 		$this->id = $this->getField("CUSTOMER_ID");
 		$this->query = $str;
@@ -83,6 +85,7 @@ DESCRIPTION			:
 			, NPWP_ALAMAT= '".$this->getField("NPWP_ALAMAT")."'
 			, NOMOR_NIOR= '".$this->getField("NOMOR_NIOR")."'
 			, ALAMAT_DOMISILI= '".$this->getField("ALAMAT_DOMISILI")."'
+			, INFO_KEDUDUKAN= '".$this->getField("INFO_KEDUDUKAN")."'
 		WHERE CUSTOMER_ID= '".$this->getField("CUSTOMER_ID")."'
 		";
 		// echo $str;exit;

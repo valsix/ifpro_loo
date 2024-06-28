@@ -30,6 +30,7 @@ else
     $reqNpwpAlamat= $set->getField("NPWP_ALAMAT");
     $reqNomorNior= $set->getField("NOMOR_NIOR");
     $reqAlamatDomisili= $set->getField("ALAMAT_DOMISILI");
+    $reqKedudukan= $set->getField("INFO_KEDUDUKAN");
 }
 ?>
 
@@ -199,6 +200,14 @@ $(function(){
                                 <input type="text" id="reqAlamatDomisili" class="easyui-validatebox textbox form-control" required name="reqAlamatDomisili" value="<?=$reqAlamatDomisili?>" data-options="required:true" />
                             </td>
                         </tr>
+
+                        <tr>
+                            <td>Keterangan Kedudukan</td>
+                            <td>:</td>
+                            <td colspan="4">
+                                <textarea id="reqKedudukan" name="reqKedudukan" style="width:90%; height:100px"><?=$reqKedudukan?></textarea>
+                            </td>
+                        </tr>
                     </thead>
                 </table>
 
@@ -248,4 +257,117 @@ function clearForm(){
     $('#ff').form('clear');
 }
             
+</script>
+
+<link rel="stylesheet" href="lib/froala_editor_2.9.8/css/froala_editor.css">
+<link rel="stylesheet" href="lib/froala_editor_2.9.8/css/froala_style.css">
+<link rel="stylesheet" href="lib/froala_editor_2.9.8/css/plugins/code_view.css">
+<link rel="stylesheet" href="lib/froala_editor_2.9.8/css/plugins/draggable.css">
+<link rel="stylesheet" href="lib/froala_editor_2.9.8/css/plugins/colors.css">
+<link rel="stylesheet" href="lib/froala_editor_2.9.8/css/plugins/emoticons.css">
+<link rel="stylesheet" href="lib/froala_editor_2.9.8/css/plugins/image_manager.css">
+<link rel="stylesheet" href="lib/froala_editor_2.9.8/css/plugins/image.css">
+<link rel="stylesheet" href="lib/froala_editor_2.9.8/css/plugins/line_breaker.css">
+<link rel="stylesheet" href="lib/froala_editor_2.9.8/css/plugins/table.css">
+<link rel="stylesheet" href="lib/froala_editor_2.9.8/css/plugins/char_counter.css">
+<link rel="stylesheet" href="lib/froala_editor_2.9.8/css/plugins/video.css">
+<link rel="stylesheet" href="lib/froala_editor_2.9.8/css/plugins/fullscreen.css">
+<link rel="stylesheet" href="lib/froala_editor_2.9.8/css/plugins/file.css">
+<link rel="stylesheet" href="lib/froala_editor_2.9.8/css/plugins/quick_insert.css">
+<link rel="stylesheet" href="lib/froala_editor_2.9.8/css/plugins/help.css">
+<link rel="stylesheet" href="lib/froala_editor_2.9.8/css/third_party/spell_checker.css">
+<link rel="stylesheet" href="lib/froala_editor_2.9.8/css/plugins/special_characters.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.3.0/codemirror.min.css">
+
+<style>
+.ss {
+    display: none;
+}
+</style>
+
+<script type="text/javascript" src="lib/froala_editor_2.9.8/js/froala_editor.min.js" ></script>
+<script type="text/javascript" src="lib/froala_editor_2.9.8/js/plugins/align.min.js"></script>
+<script type="text/javascript" src="lib/froala_editor_2.9.8/js/plugins/char_counter.min.js"></script>
+<script type="text/javascript" src="lib/froala_editor_2.9.8/js/plugins/code_beautifier.min.js"></script>
+<script type="text/javascript" src="lib/froala_editor_2.9.8/js/plugins/code_view.min.js"></script>
+<script type="text/javascript" src="lib/froala_editor_2.9.8/js/plugins/colors.min.js"></script>
+<script type="text/javascript" src="lib/froala_editor_2.9.8/js/plugins/draggable.min.js"></script>
+<script type="text/javascript" src="lib/froala_editor_2.9.8/js/plugins/emoticons.min.js"></script>
+<script type="text/javascript" src="lib/froala_editor_2.9.8/js/plugins/entities.min.js"></script>
+<script type="text/javascript" src="lib/froala_editor_2.9.8/js/plugins/file.min.js"></script>
+<script type="text/javascript" src="lib/froala_editor_2.9.8/js/plugins/font_size.min.js"></script>
+<script type="text/javascript" src="lib/froala_editor_2.9.8/js/plugins/font_family.min.js"></script>
+<script type="text/javascript" src="lib/froala_editor_2.9.8/js/plugins/fullscreen.min.js"></script>
+<script type="text/javascript" src="lib/froala_editor_2.9.8/js/plugins/image.min.js"></script>
+<script type="text/javascript" src="lib/froala_editor_2.9.8/js/plugins/image_manager.min.js"></script>
+<script type="text/javascript" src="lib/froala_editor_2.9.8/js/plugins/line_breaker.min.js"></script>
+<script type="text/javascript" src="lib/froala_editor_2.9.8/js/plugins/inline_style.min.js"></script>
+<script type="text/javascript" src="lib/froala_editor_2.9.8/js/plugins/link.min.js"></script>
+<script type="text/javascript" src="lib/froala_editor_2.9.8/js/plugins/lists.min.js"></script>
+<script type="text/javascript" src="lib/froala_editor_2.9.8/js/plugins/paragraph_format.min.js"></script>
+<script type="text/javascript" src="lib/froala_editor_2.9.8/js/plugins/paragraph_style.min.js"></script>
+<script type="text/javascript" src="lib/froala_editor_2.9.8/js/plugins/quick_insert.min.js"></script>
+<script type="text/javascript" src="lib/froala_editor_2.9.8/js/plugins/quote.min.js"></script>
+<script type="text/javascript" src="lib/froala_editor_2.9.8/js/plugins/table.min.js"></script>
+<script type="text/javascript" src="lib/froala_editor_2.9.8/js/plugins/save.min.js"></script>
+<script type="text/javascript" src="lib/froala_editor_2.9.8/js/plugins/url.min.js"></script>
+<script type="text/javascript" src="lib/froala_editor_2.9.8/js/plugins/video.min.js"></script>
+<script type="text/javascript" src="lib/froala_editor_2.9.8/js/plugins/help.min.js"></script>
+<script type="text/javascript" src="lib/froala_editor_2.9.8/js/plugins/print.min.js"></script>
+<script type="text/javascript" src="lib/froala_editor_2.9.8/js/third_party/spell_checker.min.js"></script>
+<script type="text/javascript" src="lib/froala_editor_2.9.8/js/plugins/special_characters.min.js"></script>
+<script type="text/javascript" src="lib/froala_editor_2.9.8/js/plugins/word_paste.min.js"></script>
+
+<script>
+
+    $(function(){
+        $('textarea#reqKedudukan').froalaEditor({
+
+            key: "qB1G1C1C1A1A2E7mD6F5F4E4E1B9D6C3C4A4g1Rd1Rb1MKF1AKUBWBOR==",
+            
+            imageUploadParam: 'image_param',
+            
+            // Set the image upload URL.
+            imageUploadURL: '<?=base_url()?>upload',
+            
+            // Additional upload params.
+            imageUploadParams: {id: 'my_editor'},
+            
+            // Set request type.
+            imageUploadMethod: 'POST',
+            
+            // Set max image size to 5MB.
+            imageMaxSize: 5 * 1024 * 1024,
+            
+            // Allow to upload PNG and JPG.
+            imageAllowedTypes: ['jpeg', 'jpg', 'png'],
+            
+            events: {
+                'image.beforeUpload': function (images) {
+                // console.log(images)
+                },
+                'image.uploaded': function (response) {
+                // console.log(response)
+                },
+                'image.inserted': function ($img, response) {
+                console.log($img, response)
+                // Image was inserted in the editor.
+                },
+                'image.replaced': function ($img, response) {
+                // console.log($img, response)
+                },
+                'image.error': function (error, response) {
+                // console.log(error, response)
+                }
+            },
+            tableCellStyles: {
+                borderAll: "Border All",
+                borderTop: "Border Top",
+                borderBottom: "Border Bottom",
+                borderLeft: "Border Left",
+                borderRight: "Border Right",
+            }
+          
+        })
+    });
 </script>

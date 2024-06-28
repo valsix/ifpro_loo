@@ -217,7 +217,9 @@ class lokasi_loo_json extends CI_Controller
 		$reqDeskripsi= $this->input->post("reqDeskripsi");
 		// $reqUtilityChargeId= $this->input->post("reqUtilityChargeId");
 		$reqIdUtility= $this->input->post("reqIdUtility");
-
+		$reqTerletak= $this->input->post("reqTerletak");
+		$reqLokasiGedung= $this->input->post("reqLokasiGedung");
+		$reqDasarHukum= $this->input->post("reqDasarHukum");
 
 		$reqSCHarga= $this->input->post("reqSCHarga");
 		$reqSCId= $this->input->post("reqSCId");
@@ -244,6 +246,9 @@ class lokasi_loo_json extends CI_Controller
 		$set->setField("REKENING_BANK", $reqRekeningBank);
 		$set->setField("ATAS_NAMA_BANK", $reqAtasNamaBank);
 		$set->setField("NAMA_CABANG", $reqNamaCabang);
+		$set->setField("TERLETAK", setQuote($reqTerletak));
+		$set->setField("LOKASI_GEDUNG", setQuote($reqLokasiGedung));
+		$set->setField("DASAR_HUKUM", setQuote($reqDasarHukum));
 
 		if ($reqMode == "insert") {
 			$set->setField("LAST_CREATE_USER", $this->USERNAME);

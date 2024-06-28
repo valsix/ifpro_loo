@@ -33,7 +33,7 @@ DESCRIPTION			:
 		INSERT INTO LOKASI_LOO 
 		(
 			KODE, NAMA, SERVICE_CHARGE, DESKRIPSI, EMAIL, TELEPON, NAMA_PJ
-			, NAMA_BANK, REKENING_BANK, ATAS_NAMA_BANK, NAMA_CABANG
+			, NAMA_BANK, REKENING_BANK, ATAS_NAMA_BANK, NAMA_CABANG, TERLETAK, LOKASI_GEDUNG, DASAR_HUKUM
 			, Utility_Charge
 		) 
 		VALUES 
@@ -49,6 +49,9 @@ DESCRIPTION			:
 			, '".$this->getField("REKENING_BANK")."'
 			, '".$this->getField("ATAS_NAMA_BANK")."'
 			, '".$this->getField("NAMA_CABANG")."'
+			, '".$this->getField("TERLETAK")."'
+			, '".$this->getField("LOKASI_GEDUNG")."'
+			, '".$this->getField("DASAR_HUKUM")."'
 			, '".$this->getField("Utility_Charge")."'
 		)"; 
 		$this->id = $this->getField("LOKASI_LOO_ID");
@@ -107,6 +110,9 @@ DESCRIPTION			:
 			, REKENING_BANK= '".$this->getField("REKENING_BANK")."'
 			, ATAS_NAMA_BANK= '".$this->getField("ATAS_NAMA_BANK")."'
 			, NAMA_CABANG= '".$this->getField("NAMA_CABANG")."'
+			, TERLETAK= '".$this->getField("TERLETAK")."'
+			, LOKASI_GEDUNG= '".$this->getField("LOKASI_GEDUNG")."'
+			, DASAR_HUKUM= '".$this->getField("DASAR_HUKUM")."'
 			, DESKRIPSI= '".$this->getField("DESKRIPSI")."'
 		WHERE  LOKASI_LOO_ID    	= '".$this->getField("LOKASI_LOO_ID")."'
 		"; 

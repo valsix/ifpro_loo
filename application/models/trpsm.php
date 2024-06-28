@@ -400,6 +400,36 @@ DESCRIPTION			:
     * @param int from Awal record yang diambil 
     * @return boolean True jika sukses, false jika tidak 
     **/ 
+    function selectpsm($paramsArray = array(), $limit = -1, $from = -1, $stat = '', $sOrder = "")
+	{
+		$str = "
+		SELECT 
+			A1.NAMA NAMA_AREA, A1.TERLETAK TERLETAK_AREA, A1.LOKASI_GEDUNG, A1.DASAR_HUKUM
+			, A2.NAMA_BRAND PERUSAHAAN_PENYEWA, A2.INFO_KEDUDUKAN KEDUDUKAN_PENYEWA
+			, A3.*
+			, CASE WHEN COALESCE(NULLIF(A.NOMOR_SURAT, ''), NULL) IS NULL THEN A.INFO_NOMOR_SURAT ELSE A.NOMOR_SURAT END V_NOMOR_SURAT
+			, A.*
+		FROM tr_psm A
+		INNER JOIN lokasi_loo A1 ON A.LOKASI_LOO_ID = A1.LOKASI_LOO_ID
+		INNER JOIN customer A2 ON A.CUSTOMER_ID = A2.CUSTOMER_ID
+		INNER JOIN
+		(
+			SELECT A.TR_LOI_ID LOI_ID, NOMOR_SURAT LOI_NOMOR, TO_CHAR(APPROVAL_QR_DATE, 'YYYY-MM-DD HH24:MI:SS') LOI_TANGGAL
+			FROM tr_loi A
+		) A3 ON A.TR_LOI_ID = A3.LOI_ID
+		WHERE 1 = 1
+		";
+
+		while (list($key, $val) = each($paramsArray)) {
+			$str .= " AND $key = '$val' ";
+		}
+
+		$str .= " ".$stat." ".$sOrder;
+		$this->query = $str;
+		// echo $str;exit;
+		return $this->selectLimit($str, $limit, $from);
+	}
+
     function selectByParamsAttachment($paramsArray = array(), $limit = -1, $from = -1, $stat = '', $sOrder = " ORDER BY A.TR_PSM_ATTACHMENT_ID ASC ")
 	{
 		$str = "

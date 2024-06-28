@@ -34,6 +34,9 @@ else
     $reqRekeningBank= $lokasi_loo->getField("REKENING_BANK");
     $reqAtasNamaBank= $lokasi_loo->getField("ATAS_NAMA_BANK");
     $reqNamaCabang= $lokasi_loo->getField("NAMA_CABANG");
+    $reqTerletak= $lokasi_loo->getField("TERLETAK");
+    $reqLokasiGedung= $lokasi_loo->getField("LOKASI_GEDUNG");
+    $reqDasarHukum= $lokasi_loo->getField("DASAR_HUKUM");
 
     $reqIdUtilityarr= array();
     $reqValName='';
@@ -184,6 +187,27 @@ $(function(){
                             <td>:</td>
                             <td>
                                 <textarea name="reqDeskripsi" class="easyui-validatebox textbox form-control" style="width:90%; height:100px"><?=$reqDeskripsi ?></textarea>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Terletak di</td>
+                            <td>:</td>
+                            <td>
+                                <textarea name="reqTerletak" class="easyui-validatebox textbox form-control" style="width:90%; height:50px"><?=$reqTerletak?></textarea>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Lokasi Gedung</td>
+                            <td>:</td>
+                            <td>
+                                <textarea name="reqLokasiGedung" class="easyui-validatebox textbox form-control" style="width:90%; height:50px"><?=$reqLokasiGedung?></textarea>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Dasar Hukum</td>
+                            <td>:</td>
+                            <td>
+                                <textarea name="reqDasarHukum" class="easyui-validatebox textbox form-control" style="width:90%; height:100px"><?=$reqDasarHukum?></textarea>
                             </td>
                         </tr>
                         <tr>

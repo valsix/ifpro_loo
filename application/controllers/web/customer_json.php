@@ -216,6 +216,7 @@ class customer_json extends CI_Controller
 		$reqNpwpAlamat= $this->input->post("reqNpwpAlamat");
 		$reqNomorNior= $this->input->post("reqNomorNior");
 		$reqAlamatDomisili= $this->input->post("reqAlamatDomisili");
+		$reqKedudukan= $_POST["reqKedudukan"];
 
 		$set->setField("CUSTOMER_ID", $reqId);
 		$set->setField("PIC", $reqPic);
@@ -229,6 +230,7 @@ class customer_json extends CI_Controller
 		$set->setField("NPWP_ALAMAT", $reqNpwpAlamat);
 		$set->setField("NOMOR_NIOR", $reqNomorNior);
 		$set->setField("ALAMAT_DOMISILI", $reqAlamatDomisili);
+		$set->setField("INFO_KEDUDUKAN", str_replace("'", "&quot;", $reqKedudukan));
 
 		if ($reqMode == "insert") {
 			$set->setField("LAST_CREATE_USER", $this->USERNAME);

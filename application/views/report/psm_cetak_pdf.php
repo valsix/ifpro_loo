@@ -4,8 +4,7 @@ include_once("functions/default.func.php");
 include_once("functions/string.func.php");
 include_once("libraries/vendor/autoload.php");
 
-$this->load->model("TrLoo");
-$this->load->model("TrLooDetil");
+$this->load->model("TrPsm");
 $this->load->model("Combo");
 $this->load->model("LokasiLoo");
 
@@ -13,19 +12,32 @@ $reqId= $this->input->get("reqId");
 
 if(empty($reqId)) $reqId= -1;
 
-$statement= " AND A.TR_LOO_ID = ".$reqId;
-$set= new TrLoo();
-$set->selectlampirandua(array(), -1,-1, $statement);
+$statement= " AND A.TR_PSM_ID = ".$reqId;
+$set= new TrPsm();
+$set->selectpsm(array(), -1,-1, $statement);
 $set->firstRow();
-$reqLokasiLooId= $set->getField("LOKASI_LOO_ID");
+$reqPenandaTanganNama= $set->getField("USER_PENGIRIM_NAMA");
+$reqNamaArea= $set->getField("NAMA_AREA");
+$reqTerletakArea= $set->getField("TERLETAK_AREA");
+$reqLokasiGedung= $set->getField("LOKASI_GEDUNG");
+$reqPerusahaanPenyewa= $set->getField("PERUSAHAAN_PENYEWA");
+$reqKedudukanPenyewa= $set->getField("KEDUDUKAN_PENYEWA");
+$reqVNomorSurat= $set->getField("V_NOMOR_SURAT");
+$reqDasarHukum= $set->getField("DASAR_HUKUM");
+$reqLoiNomor= $set->getField("LOI_NOMOR");
+$reqLoiTanggal= getFormattedDateTimeCheck($set->getField("LOI_TANGGAL"), false);
+$reqPicPenandatangan= $set->getField("PIC_PENANDATANGAN");
+$reqJabatanPenandatangan= $set->getField("JABATAN_PENANDATANGAN");
+$reqPenandaTanganNama= $set->getField("USER_PENGIRIM_NAMA");
+$reqPenandaTanganJabatan= $set->getField("USER_PENGIRIM_JABATAN");
 
 $arrpasal= array(
-  array("kode"=>"I", "isi"=>'PT. INDONESIA FERRY PROPERTI suatu perseroan terbatas berkedudukan di Jakarta Pusat, beralamat di Gedung ASDP Indonesia Ferry (Persero) Jalan Jenderal Ahmad Yani Kav 52A yang didirikan berdasarkan hukum Negara Republik Indonesia berdasarkan Akta Pendirian tertanggal 5 September 2017, Nomor 21, dibuat di hadapan Notaris Jose Dima Satria, SH, M.Kn, Notaris di Jakarta, yang telah mendapatkan pengesahan dari Menteri Hukum dan    Hak Asasi Manusia Republik Indonesia sebagaimana ternyata dalam Surat Keputusannya tertanggal 19 September 2017, Nomor AHU-0041206.AH.01.01 TAHUN 2017. Susunan Direksi dan Susunan Dewan Komisaris terakhir ternyata dalam Akta tertanggal 07 November 2023 Nomor 02, dibuat di Rina Yunarti, SH, M.Kn, perubahan mana telah diterima dan dicatat di dalam data Base Sistem Administrasi Badan Hukum Kementerian Hukum dan Hak Asasi Manusia Republik Indonesia tertanggal tertanggal 21 November 2023 Nomor AHU-AH.01.09-0187432, dalam hal ini diwakili oleh FAJAR SAIFUL BAHRI bertindak dalam jabatannya selaku Direktur Perseroan dari dan oleh karena itu sah bertindak untuk dan atas nama PT INDONESIA FERRY PROPERTI, Selanjutnya disebut "Yang Menyewakan";')
-  , array("kode"=>"II", "isi"=>'<b>[mohon diisi]</b>, Selanjutnya disebut <b>"Penyewa".</b>')
+  array("kode"=>"I", "isi"=>'PT. INDONESIA FERRY PROPERTI suatu perseroan terbatas berkedudukan di Jakarta Pusat, beralamat di Gedung ASDP Indonesia Ferry (Persero) Jalan Jenderal Ahmad Yani Kav 52A yang didirikan berdasarkan hukum Negara Republik Indonesia berdasarkan '.$reqDasarHukum.', dalam hal ini diwakili oleh <b>'.strtoupper($reqPenandaTanganNama).'</b> bertindak dalam jabatannya selaku Direktur Perseroan dari dan oleh karena itu sah bertindak untuk dan atas nama <b>PT INDONESIA FERRY PROPERTI</b>, Selanjutnya disebut <b>"Yang Menyewakan";</b>')
+  , array("kode"=>"II", "isi"=>$reqKedudukanPenyewa)
 );
 
 $arrdetil2= array(
-  array("kode"=>"1", "isi"=>'Bahwa <b>Yang Menyewakan</b> adalah suatu perusahaan yang bergerak dibidang Properti, yang telah mengembangkan dan/atau mengelola suatu bangunan pusat perbelanjaan setempat dikenal dengan nama <b>Area Komersial</b> <b>[mohon diisi]</b>, yang terletak <b>[mohon diisi]</b>, untuk selanjutnya disebut <b>"Gedung".</b>')
+  array("kode"=>"1", "isi"=>'Bahwa <b>Yang Menyewakan</b> adalah suatu perusahaan yang bergerak dibidang Properti, yang telah mengembangkan dan/atau mengelola suatu bangunan pusat perbelanjaan setempat dikenal dengan nama <b>Area Komersial</b> <b>'.$reqPerusahaanPenyewa.'</b>, yang terletak di '.$reqTerletakArea.', untuk selanjutnya disebut <b>"Gedung".</b>')
   , array("kode"=>"2", "isi"=>"Bahwa <b>Yang Menyewakan</b> bermaksud untuk menyewakan sebagian tempat/ruang di dalam Gedung kepada <b>Penyewa</b> dan <b>Penyewa</b> bermaksud untuk menyewa sebagian tempat/ruang tersebut dari <b>Yang Menyewakan.</b>")
   , array("kode"=>"3", "isi"=>"Bahwa berdasarkan Butir 1 dan 2 tersebut di atas, dengan ini <b>Para Pihak</b> bermaksud untuk mengadakan Perjanjian Inti sehubungan dengan sewa-menyewa tempat/ruang dengan syarat-syarat dan kondisi-kondisi yang ditentukan dalam pasal-pasal yang diuraikan lebih lanjut di bawah ini dan dalam lampiran-lampiran yang menjadi bagian dari Perjanjian Inti ini.")
   , array("kode"=>"4", "isi"=>"Bahwa <b>Penyewa</b> setuju akan mengikatkan diri untuk mengikuti dan menaati seluruh Perjanjian Inti berikut lampiran-lampirannya yang merupakan bagian yang tidak terpisahkan dari Perjanjian ini serta mengikat kepada siapa pun yang menggantikan kedudukan <b>Penyewa.</b>")
@@ -33,8 +45,8 @@ $arrdetil2= array(
 
 $arrdetilpasal1= array(
   array("kode"=>"1", "isi"=>"<b>Perjanjian Inti</b> adalah suatu perjanjian sewa menyewa yang dilakukan oleh <b>Yang Menyewakan<b/> dan <b>Penyewa</b> mengenai suatu area di dalam Gedung dengan ketentuan-ketentuan yang diatur di dalamnya beserta lampiran-lampirannya.")
-  , array("kode"=>"2", "isi"=>"<b>Gedung</b> adalah Suatu Bangunan yang berlokasi di <b>[mohon diisi]</b>")
-  , array("kode"=>"3", "isi"=>"<b>[mohon diisi]</b> adalah nama Gedung tersebut.")
+  , array("kode"=>"2", "isi"=>"<b>Gedung</b> adalah Suatu Bangunan yang berlokasi di ".$reqLokasiGedung)
+  , array("kode"=>"3", "isi"=>"<b>Area Komersial ".$reqNamaArea."</b> adalah nama Gedung tersebut.")
   , array("kode"=>"4", "isi"=>"<b>Yang Menyewakan</b> adalah Pihak yang memiliki Gedung termasuk ruang sewa di dalamnya dan bergerak dibidang Properti.")
   , array("kode"=>"5", "isi"=>"<b>Penyewa</b> adalah badan hukum maupun perorangan yang menyewa area sewa/ruang sewa di dalam Gedung untuk menjalankan usahanya di dalam Gedung.")
   , array("kode"=>"6", "isi"=>"<b>Objek Sewa</b> adalah suatu ruang atau area di dalam Gedung yang disewakan oleh <b>Yang Menyewakan</b> kepada <b>Penyewa</b> dengan cara pengukuran dari as ke as termasuk kolom di dalamnya.")
@@ -53,11 +65,11 @@ $arrdetilpasal1= array(
   , array("kode"=>"19", "isi"=>"<b>Fitting Out</b> adalah kegiatan renovasi lokasi sewa yang diinginkan oleh <b>Penyewa</b> yang telah mendapat persetujuan atas rancangan (desain) oleh <b>Yang Menyewakan.</b>")
   , array("kode"=>"20", "isi"=>"<b>Keamanan</b> adalah kegiatan penjagaan terhadap pencurian, pengerusakan maupun hal-hal lainnya yang dilaksanakan oleh pihak yang ditunjuk oleh <b>Yang Menyewakan</b> untuk menjaga keamanan di seluruh area publik baik pada jam operasional maupun di luar jam operasional.")
   , array("kode"=>"21", "isi"=>"<b>Biaya Lain-lain</b> adalah segala biaya yang timbul berkenaan dengan fasilitas pendukung kegiatan Operasional <b>Penyewa</b> seperti namun tidak terbatas biaya listrik, air, internet, TIK, Gas dan lainnya.")
-  , array("kode"=>"22", "isi"=>"<b>Letter Of Intent</b> adalah Perjanjian pendahuluan tertanggal <b>[mohon diisi]</b> Nomor <b>[mohon diisi].</b>")
+  , array("kode"=>"22", "isi"=>"<b>Letter Of Intent</b> adalah Perjanjian pendahuluan tertanggal <b>".$reqLoiTanggal."</b> Nomor <b>".$reqLoiNomor.".</b>")
 );
 
 $arrdetilpasal3= array(
-  array("kode"=>"1", "isi"=>'Objek Sewa diperuntukkan sebagai kegiatan/bentuk usaha <b>Penyewa</b> yaitu sebagai tempat untuk jenis kegiatan usaha Retail untuk Nama Usaha / Merek Dagang <b>"[mohon diisi]".</b>')
+  array("kode"=>"1", "isi"=>'Objek Sewa diperuntukkan sebagai kegiatan/bentuk usaha <b>Penyewa</b> yaitu sebagai tempat untuk jenis kegiatan usaha Retail untuk Nama Usaha / Merek Dagang <b>'.$reqPerusahaanPenyewa.'.</b>')
   , array("kode"=>"2", "isi"=>'<b>Penyewa</b> tidak diperbolehkan mengubah peruntukan Objek Sewa dan/atau nama usaha dan/atau merek dagang yang digunakan <b>Penyewa</b> tanpa memperoleh persetujuan tertulis terlebih dahulu dari pihak <b>Yang Menyewakan.</b>')
   , array("kode"=>"3", "isi"=>'<b>Penyewa</b> hanya berhak mempergunakan Lokasi Sewa untuk usaha sebagaimana dimaksud dalam ayat 1 pasal ini, serta tidak bertentangan dengan undang-undang negara Republik Indonesia, kesusilaan, ketertiban umum, kebersihan, dan kesehatan dan karenanya <b>Penyewa</b> menjamin dan membebaskan <b>Yang Menyewakan</b>, Building Management dan/atau dari segala tuntutan, tagihan atau gugatan dari pihak mana pun berkaitan dengan kegiatan usaha yang dilakukan <b>Penyewa</b> termasuk tetapi tidak terbatas pada barang yang diperjualbelikan maupun dipamerkan oleh <b>Penyewa.</b>')
   , array("kode"=>"4", "isi"=>'Penyewa wajib memperhatikan dan mematuhi hari dan jam buka tutup sesuai ketentuan yang ditetapkan oleh Building Management.')
@@ -89,9 +101,19 @@ $arrdetilpasal11= array(
 $arrdetilpasal12= array(
   array("kode"=>"1", "isi"=>'<b>Penyewa</b> menyetujui bahwa <b>Yang Menyewakan</b> berhak untuk (tetapi tidak wajib) mengiklankan atau mempublikasikan atau dilain pihak <b>Penyewa</b> sebagai <b>Penyewa</b> dari <b>Yang Menyewakan</b> dan atau Properti yang terkait, untuk mencantumkan atau menggabungkan atau sehubungan dengan nama usaha, logo, merek jasa dan atau merek dagang pada setiap materi iklan dan promosi dalam kaitannya dengan properti.')
   , array("kode"=>"2", "isi"=>'Hal-hal yang belum diatur atau belum cukup diatur di dalam Perjanjian ini dan atas kesepakatan kedua belah pihak akan diatur di dalam suatu Addendum dan atau Amandemen dan merupakan satu kesatuan yang tidak terpisahkan dari Perjanjian ini.')
-  , array("kode"=>"3", "isi"=>'Hal-hal yang lebih detail dan merupakan ketentuan-ketentuan lebih khusus berkaitan dengan pasal per pasal di dalam Perjanjian Inti ini dituangkan di dalam lampiran-lampiran yang mengikuti Perjanjian Inti, Lampiran-lampiran dimaksud terdiri dari :<br/><br/>a.  Lampiran I - Denah/Gambar Tata Letak<br/>b.  Lampiran II - Rincian Pembayaran Sewa dan Uang Muka<br/>c.  Lampiran III - Spesifikasi Objek Sewa dan Fitting Out<br/>d.  Lampiran IV - Biaya Pelayanan<br/>e.  Lampiran V - Ketentuan - ketentuan Sewa Menyewa<br/>f.  Lampiran VI - Peraturan Gedung dan Tata Tertib Usaha<br/><br/>seluruh lampiran-lampiran sebagaimana tersebut di atas yang mengikuti Perjanjian Inti merupakan satu kesatuan yang tidak terpisahkan dari Perjanjian Inti dan merupakan ketentuan yang bersifat lebih terperinci, dan oleh karenanya Para Pihak wajib taat, tunduk dan patuh pada seluruh ketentuan-ketentuan yang tercantum di dalamnya.')
+  , array("kode"=>"3", "isi"=>'Hal-hal yang lebih detail dan merupakan ketentuan-ketentuan lebih khusus berkaitan dengan pasal per pasal di dalam Perjanjian Inti ini dituangkan di dalam lampiran-lampiran yang mengikuti Perjanjian Inti, Lampiran-lampiran dimaksud terdiri dari :<br/><br/>a.  Lampiran I - Denah/Gambar Tata Letak<br/>b.  Lampiran II - Rincian Pembayaran Sewa dan Uang Muka')
   , array("kode"=>"4", "isi"=>'Bahwa dengan ditandatanganinya Perjanjian Inti beserta lampiran-lampirannya, maka segala persyaratan dan ketentuan yang tercantum dalam Perjanjian, telah dibaca dan dimengerti dengan benar oleh Para Pihak.')
 );
+// print_r($arrdetilpasal12);exit;
+
+$vinfolampiran= $arrdetilpasal12[2]["isi"];
+// $vinfolampiran.= "<br/>c.  Lampiran III - Spesifikasi Objek Sewa dan Fitting Out";;
+// $vinfolampiran.= "<br/>d.  Lampiran IV - Biaya Pelayanan";
+// $vinfolampiran.= "<br/>e.  Lampiran V - Ketentuan - ketentuan Sewa Menyewa";
+// $vinfolampiran.= "<br/>f.  Lampiran VI - Peraturan Gedung dan Tata Tertib Usaha";
+$vinfolampiran.= "<br/><br/>seluruh lampiran-lampiran sebagaimana tersebut di atas yang mengikuti Perjanjian Inti merupakan satu kesatuan yang tidak terpisahkan dari Perjanjian Inti dan merupakan ketentuan yang bersifat lebih terperinci, dan oleh karenanya Para Pihak wajib taat, tunduk dan patuh pada seluruh ketentuan-ketentuan yang tercantum di dalamnya.";
+
+$arrdetilpasal12[2]["isi"]= $vinfolampiran;
 ?>
 <base href="<?=base_url();?>">
 <link href="css/gaya-surat.css" rel="stylesheet" type="text/css">
@@ -128,9 +150,9 @@ $arrdetilpasal12= array(
     <tr>
       <td colspan="3" class="cntr">
         <b>PERJANJIAN SEWA MENYEWA
-        <br/>[mohon diisi]
-        <br/>AREA KOMERSIAL [mohon diisi] 
-        <br/>Nomor : [mohon diisi]</b>
+        <br/><?=strtoupper($reqPerusahaanPenyewa)?>
+        <br/>AREA KOMERSIAL <?=strtoupper($reqNamaArea)?>
+        <br/>Nomor : <?=$reqVNomorSurat?></b>
       </td>
     </tr>
     <tr>
@@ -392,7 +414,7 @@ $arrdetilpasal12= array(
     </tr>
     <tr>
       <td style="width:30%;text-align: center;">
-        <b><?=$reqCustomerNama?></b>
+        <b><?=$reqPerusahaanPenyewa?></b>
       </td>
       <td style="width:40%"></td>
       <td style="width:30%;text-align: center;">
@@ -413,20 +435,20 @@ $arrdetilpasal12= array(
     </tr>
     <tr>
       <td style="width:30%;text-align: center;">
-        <b><?=$reqCustomerNama?></b>
+        <b><?=$reqPicPenandatangan?></b>
       </td>
       <td style="width:40%"></td>
       <td style="width:30%;text-align: center;">
-        <u><b>FAJAR SAIFUL BAHRI</b></u>                       
+        <u><b><?=$reqPenandaTanganNama?></b></u>                       
       </td>
     </tr>
     <tr>
       <td style="width:30%;text-align: center;">
-        
+        <?=$reqJabatanPenandatangan?>
       </td>
       <td style="width:40%"></td>
       <td style="width:30%;text-align: center;">
-        Direktur
+        <?=$reqPenandaTanganJabatan?>
       </td>
     </tr>
     <tr>
