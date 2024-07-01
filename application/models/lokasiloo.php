@@ -298,6 +298,66 @@ DESCRIPTION			:
 			return $this->getField("ROWCOUNT"); 
 		else 
 			return 0; 
-    }	
+    }
+
+    function insertAttachment()
+	{
+		/*Auto-generate primary key(s) by next max value (integer) */
+		$this->setField("LOKASI_LOO_ATTACHMENT_ID", $this->getNextId("LOKASI_LOO_ATTACHMENT_ID", "lokasi_loo_attachment"));
+
+		$str = "
+		INSERT INTO lokasi_loo_attachment
+		(
+			LOKASI_LOO_ATTACHMENT_ID, LOKASI_LOO_ID, ATTACHMENT, UKURAN, TIPE, NAMA, LAST_CREATE_USER, LAST_CREATE_DATE
+		)
+		VALUES 
+		(
+			'".$this->getField("LOKASI_LOO_ATTACHMENT_ID")."'
+			, '".$this->getField("LOKASI_LOO_ID")."'
+			, '".$this->getField("ATTACHMENT")."'
+			, ".(int)$this->getField("UKURAN")."
+			, '".$this->getField("TIPE")."'
+			, '".$this->getField("NAMA")."'
+			, '".$this->getField("LAST_CREATE_USER")."'
+			, NOW()
+		)";
+
+		$this->query = $str;
+		// echo $str;
+		// exit;
+		$this->id = $this->getField("LOKASI_LOO_ATTACHMENT_ID");
+		return $this->execQuery($str);
+	}
+
+    function deleteAttachment()
+	{
+		$str= "
+		DELETE FROM lokasi_loo_attachment
+		WHERE
+		LOKASI_LOO_ID = '".$this->getField("LOKASI_LOO_ID")."'";
+
+		$this->query = $str;
+		$this->execQuery($str);
+	}
+
+    function selectByParamsAttachment($paramsArray = array(), $limit = -1, $from = -1, $stat = '', $sOrder = " ORDER BY A.LOKASI_LOO_ATTACHMENT_ID ASC ")
+	{
+		$str = "
+		SELECT 
+			A.*
+		FROM lokasi_loo_attachment A
+		WHERE 1 = 1
+		";
+
+		while (list($key, $val) = each($paramsArray)) {
+			$str .= " AND $key = '$val' ";
+		}
+
+		$str .= " ".$stat." ".$sOrder;
+		$this->query = $str;
+		// echo $str;exit;
+		return $this->selectLimit($str, $limit, $from);
+	}
+
   } 
 ?>

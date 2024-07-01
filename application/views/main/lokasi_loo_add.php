@@ -114,17 +114,17 @@ else
 </script>
 
 <!-- UPLOAD CORE -->
-<script src="<?=base_url()?>lib/multifile-master/jquery.MultiFile.js"></script>
+<!-- <script src="<?=base_url()?>lib/multifile-master/jquery.MultiFile.js"></script> -->
 <script>
 // wait for document to load
 $(function(){
     
     // invoke plugin
-    $('#reqLampiran').MultiFile({
+    /*$('#reqLampiran').MultiFile({
     onFileChange: function(){
         console.log(this, arguments);
     }
-    });
+    });*/
 
 });
 
@@ -180,6 +180,69 @@ $(function(){
                             <td>
                                 <input type="text" id="reqServiceCharge" class="vlxuangclass easyui-validatebox textbox form-control totalluasoutdoor" required name="reqServiceCharge"  value="<?=$reqServiceCharge ?>" data-options="required:true" style="width:10%; display: inline; text-align: right;" />
                                 <label> Rp / m² / bulan</label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Lampiran I
+                            </td>
+                            <td>:</td>
+                            <td>
+                                <div class="kotak-dokumen">
+                                    <div class="kontak">
+                                        <div class="inner-lampiran">
+                                            <input id ="reqFile" name="reqLinkFile[]" type="file" maxlength="10" class="multi maxsize-10240" value="" />
+                                            <?
+                                            $set_attachement = new LokasiLoo();
+                                            $set_attachement->selectByParamsAttachment(array("A.LOKASI_LOO_ID" => (int)$reqId), -1,-1, " AND COALESCE(NULLIF(A.VMODE, ''), NULL) IS NULL");
+                                            while ($set_attachement->nextRow()) {
+                                                $attach_id= $set_attachement->getField("LOKASI_LOO_ATTACHMENT_ID");
+                                            ?>
+                                                
+                                                <div class="MultiFile-label">
+                                                    <input type="hidden" name="reqLinkFileTemp[]" value="<?= $set_attachement->getField("ATTACHMENT") ?>" />
+                                                    <input type="hidden" name="reqLinkFileTempNama[]" value="<?= $set_attachement->getField("NAMA") ?>" />
+                                                    <input type="hidden" name="reqLinkFileTempTipe[]" value="<?= $set_attachement->getField("TIPE") ?>" />
+                                                    <input type="hidden" name="reqLinkFileTempSize[]" value="<?= $set_attachement->getField("UKURAN") ?>" />
+                                                    <a class="MultiFile-remove"><i class="fa fa-times-circle" onclick="$(this).parent().parent().remove();"></i></a>
+    
+                                                    <?
+                                                    $arrexcept= array("xlsx", "xls", "doc", "docx", "ppt", "pptx", "txt");
+                                                    //$arrexcept= array("xlsx", "xls", "doc", "docx", "txt");
+                                                    if(in_array(strtolower($set_attachement->getField("TIPE")), $arrexcept))
+                                                    {
+                                                    ?>
+                                                    <?= $set_attachement->getField("NAMA") ?>
+                                                    <a onClick="down('<?=$attach_id?>', 'lokasiloo')" >
+                                                        <i style="cursor: pointer;" class="fa fa-download" ></i>
+                                                    </a>
+                                                    <?
+                                                    }
+                                                    else
+                                                    {
+                                                    ?>
+                                                    <?= $set_attachement->getField("NAMA") ?>
+                                                    <a onClick="parent.openAdd('<?= base_url()."uploadslokasiloo/".$reqId."/".$set_attachement->getField("ATTACHMENT") ?>')" >
+                                                        <i style="cursor: pointer;" class="fa fa-eye" ></i>
+                                                    </a>
+                                                    |
+                                                    <a onClick="down('<?=$attach_id?>', 'lokasiloo')" >
+                                                        <i style="cursor: pointer;" class="fa fa-download" ></i>
+                                                    </a>
+                                                    <?
+                                                    }
+                                                    ?>
+                                                </div>
+                                            <?
+                                            }
+                                            ?>
+                                            
+                                            <div class="small">Ukuran file maksimum yang diizinkan adalah 10 MB & Jenis file diterima: world, excel, ppt, pdf, jpg, jpeg, png</div>
+                                            
+                                        </div>
+                                    </div>
+    
+                                </div>
                             </td>
                         </tr>
                         <tr>
@@ -438,6 +501,11 @@ $(function(){
 $(document).ready(function() {
     
 });
+
+function down(attach_id, vmode)
+{
+    window.open("downloi?reqMode="+vmode+"&reqAttachId="+attach_id, 'Cetak');
+}
 
 function submitForm(){
     

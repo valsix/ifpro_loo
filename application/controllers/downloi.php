@@ -35,7 +35,8 @@ class Downloi extends CI_Controller {
 	{
         $this->load->model("TrLoo");
         $this->load->model("TrLoi");
-		$this->load->model("TrPsm");
+        $this->load->model("TrPsm");
+		$this->load->model("LokasiLoo");
 
         $reqTemplate = $this->input->get("reqMode");
         $reqAttachId = $this->input->get("reqAttachId");
@@ -61,6 +62,13 @@ class Downloi extends CI_Controller {
             $vfield= "TR_PSM_ID";
             $set= new TrPsm();
             $statement= " AND A.TR_PSM_ATTACHMENT_ID = ".(int)$reqAttachId;
+        }
+        else if($reqTemplate == "lokasiloo")
+        {
+            $vfolder= "uploadslokasiloo";
+            $vfield= "LOKASI_LOO_ID";
+            $set= new LokasiLoo();
+            $statement= " AND A.LOKASI_LOO_ATTACHMENT_ID = ".(int)$reqAttachId;
         }
 
         if(empty($vfolder))

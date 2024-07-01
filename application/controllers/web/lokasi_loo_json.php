@@ -204,12 +204,12 @@ class lokasi_loo_json extends CI_Controller
 	function add()
 	{
 		$this->load->model("LokasiLoo");
-		// $this->load->model("NaskahTemplate");
-		$set = new LokasiLoo();
-		// $naskah_template = new NaskahTemplate();
+		$this->load->library("FileHandler");
 
-		$reqMode 					= $this->input->post("reqMode");
-		$reqId 						= $this->input->post("reqId");
+		$set = new LokasiLoo();
+
+		$reqMode= $this->input->post("reqMode");
+		$reqId= $this->input->post("reqId");
 
 		$reqKode= $this->input->post("reqKode");
 		$reqNama= $this->input->post("reqNama");
@@ -277,6 +277,104 @@ class lokasi_loo_json extends CI_Controller
 		// 	$set->setField("LOKASI_LOO_ID", $reqId);
 		// 	$set->insertUtilityCharge();
 		// }
+
+		// UNTUK CEK DATA TERUPLOAD
+		$arrDataAttach= array();
+		$data_attachement = new LokasiLoo();
+		$data_attachement->selectByParamsAttachment(array("LOKASI_LOO_ID"=>$reqId), -1,-1, " AND COALESCE(NULLIF(A.VMODE, ''), NULL) IS NULL");
+		$z=0;
+		while ($data_attachement->nextRow()) 
+		{
+			$arrDataAttach[$z]['temp_size'] = $data_attachement->getField("UKURAN");
+			$arrDataAttach[$z]['temp_tipe'] = $data_attachement->getField("TIPE");
+			$arrDataAttach[$z]['temp'] = $data_attachement->getField("ATTACHMENT");
+			$arrDataAttach[$z]['temp_nama'] = $data_attachement->getField("NAMA");
+			$z++;
+		}
+
+		// batas file WAJIB UNTUK UPLOAD FILE
+		$file = new FileHandler();
+		$FILE_DIR = "uploadslokasiloo/".$reqId."/";
+		makedirs($FILE_DIR);
+
+		$reqLinkFile = $_FILES["reqLinkFile"];
+		$reqLinkFileTempSize	=  $this->input->post("reqLinkFileTempSize");
+		$reqLinkFileTempTipe	=  $this->input->post("reqLinkFileTempTipe");
+		$reqLinkFileTemp		=  $this->input->post("reqLinkFileTemp");
+		$reqLinkFileTempNama	=  $this->input->post("reqLinkFileTempNama");
+		// print_r($reqLinkFile['name']); exit;
+		// echo count($reqLinkFile['name']);exit();
+		$set_attachement = new LokasiLoo();
+		$set_attachement->setField("LOKASI_LOO_ID", $reqId);
+		$set_attachement->deleteAttachment();
+		$reqJenis = $reqJenisTujuan.generateZero($reqId, 10);
+		for ($i = 0; $i < count($reqLinkFile['name']); $i++) {
+			$renameFile = $reqJenis.date("Ymdhis").rand().".".getExtension($reqLinkFile['name'][$i]);
+			
+			if ($file->uploadToDirArray('reqLinkFile', $FILE_DIR, $renameFile, $i)) {
+				$insertLinkSize = $file->uploadedSize;
+				$insertLinkTipe =  $file->uploadedExtension;
+				$insertLinkFile =  $renameFile;
+
+				if ($insertLinkFile == "") {
+				} else {
+					$set_attachement = new LokasiLoo();
+					$set_attachement->setField("LOKASI_LOO_ID", $reqId);
+					$set_attachement->setField("ATTACHMENT", setQuote($renameFile, ""));
+					$set_attachement->setField("UKURAN", $insertLinkSize);
+					$set_attachement->setField("TIPE", $insertLinkTipe);
+					$set_attachement->setField("NAMA", setQuote($reqLinkFile['name'][$i], ""));
+					$set_attachement->setField("LAST_CREATE_USER", $this->ID);
+					$set_attachement->insertAttachment();
+					// echo $set_attachement->query;exit;
+					// print_r($reqLinkFile['name'][$i]);
+
+					$arrDataAttach[$z]['temp_size'] = $insertLinkSize;
+					$arrDataAttach[$z]['temp_tipe'] = $insertLinkTipe;
+					$arrDataAttach[$z]['temp'] = $renameFile;
+					$arrDataAttach[$z]['temp_nama'] = $reqLinkFile['name'][$i];
+					$z++;
+				}
+			}
+		}
+
+		/* SIMPAN DATA UPLOAD*/
+		for ($i = 0; $i < count($reqLinkFileTemp); $i++) {
+			$insertLinkSize = $reqLinkFileTempSize[$i];
+			$insertLinkTipe =  $reqLinkFileTempTipe[$i];
+			$insertLinkFile =  $reqLinkFileTemp[$i];
+			$insertLinkNama =  $reqLinkFileTempNama[$i];
+					// echo $i."if";
+
+			/*if ($insertLinkFile == "") {
+			} else {
+				$set_attachement = new LokasiLoo();
+				$set_attachement->setField("LOKASI_LOO_ID", $reqId);
+				$set_attachement->setField("ATTACHMENT", setQuote($insertLinkFile, ""));
+				$set_attachement->setField("UKURAN", $insertLinkSize);
+				$set_attachement->setField("TIPE", $insertLinkTipe);
+				$set_attachement->setField("NAMA", setQuote($insertLinkNama, ""));
+				$set_attachement->setField("LAST_CREATE_USER", $this->ID);
+				$set_attachement->insertAttachment();
+				// print_r($reqLinkFile['name'][$i]);
+			}*/
+		}
+
+		// hapus file
+		for ($i=0; $i < count($arrDataAttach); $i++) { 
+			$insertLinkTipe =  $arrDataAttach[$i]['temp_tipe'];
+			$insertLinkFile =  $arrDataAttach[$i]['temp'];
+			$insertLinkNama =  $arrDataAttach[$i]['temp_nama'];
+
+			$cek_data_attach = new LokasiLoo();
+			$cek_data_attach->selectByParamsAttachment(array("ATTACHMENT"=>setQuote($insertLinkFile, ""), "TIPE"=>$insertLinkTipe, "NAMA"=>setQuote($insertLinkNama, "")), -1,-1, " AND COALESCE(NULLIF(A.VMODE, ''), NULL) IS NULL");
+			$cek_data_attach->firstRow();
+
+			if ($cek_data_attach->getField("ATTACHMENT")=="") {
+				unlink($FILE_DIR.$insertLinkFile); // hapus file
+			}
+		}
+		// batas file
 
 		echo "Data berhasil disimpan.";
 	}

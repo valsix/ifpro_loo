@@ -40,3 +40,22 @@ alter table lokasi_loo add column lokasi_gedung character varying;
 alter table customer add column npwp character varying, add column npwp_alamat character varying, add column nomor_nior character varying, add column alamat_domisili character varying;
 
 alter table customer add column info_kedudukan text;
+
+drop table if exists lokasi_loo_attachment;
+create table lokasi_loo_attachment
+(
+	lokasi_loo_attachment_id numeric not null
+	, lokasi_loo_id numeric
+	, vmode character varying
+	, attachment text
+	, catatan character varying
+	, ukuran numeric
+	, tipe character varying(50)
+	, nama character varying
+	, no_urut numeric
+	, last_create_user character varying
+	, last_create_date timestamp without time zone
+	, last_update_user character varying
+	, last_update_date timestamp without time zone
+	, constraint pk_lokasi_loo_attachment primary key (lokasi_loo_attachment_id)
+);

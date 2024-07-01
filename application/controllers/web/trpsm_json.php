@@ -260,6 +260,10 @@ class trpsm_json extends CI_Controller
 		$reqPromotionLevy= $this->input->post("reqPromotionLevy");
 		$reqPicPenandatangan= $this->input->post("reqPicPenandatangan");
 		$reqJabatanPenandatangan= $this->input->post("reqJabatanPenandatangan");
+		$reqSaksiNama= $this->input->post("reqSaksiNama");
+		$reqSaksiJabatan= $this->input->post("reqSaksiJabatan");
+		$reqSaksiPenyewaNama= $this->input->post("reqSaksiPenyewaNama");
+		$reqSaksiPenyewaJabatan= $this->input->post("reqSaksiPenyewaJabatan");
 
 		if($reqStatusData == "UBAHDATAPARAF" || $reqStatusData == "UBAHDATAREVISI")
 		{
@@ -331,6 +335,11 @@ class trpsm_json extends CI_Controller
 
 		$set->setField("PIC_PENANDATANGAN", setQuote($reqPicPenandatangan));
 		$set->setField("JABATAN_PENANDATANGAN", setQuote($reqJabatanPenandatangan));
+
+		$set->setField("SAKSI_NAMA", setQuote($reqSaksiNama));
+		$set->setField("SAKSI_JABATAN", setQuote($reqSaksiJabatan));
+		$set->setField("SAKSI_PENYEWA_NAMA", setQuote($reqSaksiPenyewaNama));
+		$set->setField("SAKSI_PENYEWA_JABATAN", setQuote($reqSaksiPenyewaJabatan));
 
 		$set->setField("USER_PEMBUAT_ID", $sesid);
 		$set->setField("STATUS_DATA", $reqStatusData);

@@ -9,6 +9,7 @@ $this->load->model("Combo");
 $this->load->model("TrLoiParaf");
 $this->load->model("Customer");
 $this->load->model("SatuanKerja");
+$this->load->model("LokasiLoo");
 
 $this->load->model("TrLoo");
 $this->load->model("TrLooDetil");
@@ -1764,6 +1765,36 @@ $(function(){
 
                                     <tr>
                                         <td colspan="3">
+                                            <?
+                                            $set_attachement = new LokasiLoo();
+                                            $set_attachement->selectByParamsAttachment(array("A.LOKASI_LOO_ID" => (int)$reqLokasiLooId), -1,-1, " AND COALESCE(NULLIF(A.VMODE, ''), NULL) IS NULL");
+                                            $set_attachement->firstRow();
+                                            $vurluploadslokasiloo= $set_attachement->getField("ATTACHMENT");
+
+                                            $vadalampiran1= "";
+                                            $vurluploadslokasiloo= "uploadslokasiloo/".$reqId."/".$vurluploadslokasiloo;
+                                            if(file_exists($vurluploadslokasiloo))
+                                            {
+                                                $vadalampiran1= "1";
+                                            }
+                                            ?>
+                                            <a class="btn btn-danger btn-sm pull-right"
+                                            <?
+                                            if(empty($vadalampiran1))
+                                            {
+                                            ?>
+                                            onClick="javascript:void(0); $.messager.alert('Info', 'Lampiran I belum ada', 'warning');"
+                                            <?
+                                            }
+                                            else
+                                            {
+                                            ?>
+                                            onClick="parent.openAdd('<?= base_url().$vurluploadslokasiloo?>')"
+                                            <?
+                                            }
+                                            ?>
+                                            style="cursor: pointer;"><i class="fa fa-file-pdf-o"></i> Lampiran I</a>
+                                            
                                             <a class="btn btn-danger btn-sm pull-right" onClick="submitLampiran()" style="cursor: pointer;"><i class="fa fa-file-pdf-o"></i> Lampiran II</a>
                                             <a class="btn btn-danger btn-sm pull-right" onClick="submitDetil(1)" style="cursor: pointer;"><i class="fa fa-file-pdf-o"></i> PDF tanpa Barcode</a>
                                             <a class="btn btn-danger btn-sm pull-right" onClick="submitDetil(2)" style="cursor: pointer;"><i class="fa fa-file-pdf-o"></i> PDF dengan Barcode</a>

@@ -5,6 +5,7 @@ include_once("functions/string.func.php");
 include_once("libraries/vendor/autoload.php");
 
 $this->load->model("TrPsm");
+$this->load->model("TrPsmDetil");
 $this->load->model("Combo");
 $this->load->model("LokasiLoo");
 
@@ -12,12 +13,35 @@ $reqId= $this->input->get("reqId");
 
 if(empty($reqId)) $reqId= -1;
 
+$arrlokasi= [];
+$statement= " AND A.TR_PSM_ID = ".$reqId." AND VMODE ILIKE '%luas_sewa%'";
+$set= new TrPsmDetil();
+$set->selectlokasi(array(), -1,-1, $statement);
+// echo $set->query;exit;
+while($set->nextRow())
+{
+    $arrdata= [];
+    $arrdata["trloidetilid"]= $set->getField("TR_PSM_DETIL_ID");
+    $arrdata["trloiid"]= $set->getField("TR_PSM_ID");
+    $arrdata["vmode"]= $set->getField("VMODE");
+    $arrdata["vid"]= $set->getField("VID");
+    $arrdata["vnilai"]= $set->getField("NILAI");
+    $arrdata["kode"]= $set->getField("KODE");
+    $arrdata["nama"]= $set->getField("NAMA");
+    $arrdata["lantai"]= $set->getField("LANTAI");
+    $arrdata["area"]= $set->getField("AREA");
+    $arrdata["areanama"]= $set->getField("AREA_NAMA");
+    array_push($arrlokasi, $arrdata);
+}
+// print_r($arrlokasi);exit;
+
 $statement= " AND A.TR_PSM_ID = ".$reqId;
 $set= new TrPsm();
 $set->selectpsm(array(), -1,-1, $statement);
 $set->firstRow();
 $reqPenandaTanganNama= $set->getField("USER_PENGIRIM_NAMA");
 $reqNamaArea= $set->getField("NAMA_AREA");
+$reqTotalLuas= $set->getField("TOTAL_LUAS");
 $reqTerletakArea= $set->getField("TERLETAK_AREA");
 $reqLokasiGedung= $set->getField("LOKASI_GEDUNG");
 $reqPerusahaanPenyewa= $set->getField("PERUSAHAAN_PENYEWA");
@@ -30,6 +54,11 @@ $reqPicPenandatangan= $set->getField("PIC_PENANDATANGAN");
 $reqJabatanPenandatangan= $set->getField("JABATAN_PENANDATANGAN");
 $reqPenandaTanganNama= $set->getField("USER_PENGIRIM_NAMA");
 $reqPenandaTanganJabatan= $set->getField("USER_PENGIRIM_JABATAN");
+
+$reqSaksiNama= $set->getField("SAKSI_NAMA");
+$reqSaksiJabatan= $set->getField("SAKSI_JABATAN");
+$reqSaksiPenyewaNama= $set->getField("SAKSI_PENYEWA_NAMA");
+$reqSaksiPenyewaJabatan= $set->getField("SAKSI_PENYEWA_JABATAN");
 
 $arrpasal= array(
   array("kode"=>"I", "isi"=>'PT. INDONESIA FERRY PROPERTI suatu perseroan terbatas berkedudukan di Jakarta Pusat, beralamat di Gedung ASDP Indonesia Ferry (Persero) Jalan Jenderal Ahmad Yani Kav 52A yang didirikan berdasarkan hukum Negara Republik Indonesia berdasarkan '.$reqDasarHukum.', dalam hal ini diwakili oleh <b>'.strtoupper($reqPenandaTanganNama).'</b> bertindak dalam jabatannya selaku Direktur Perseroan dari dan oleh karena itu sah bertindak untuk dan atas nama <b>PT INDONESIA FERRY PROPERTI</b>, Selanjutnya disebut <b>"Yang Menyewakan";</b>')
@@ -233,7 +262,44 @@ $arrdetilpasal12[2]["isi"]= $vinfolampiran;
     <tr>
       <td></td>
       <td colspan="2" style="text-align: justify;">
-        <b>Penyewa</b> setuju untuk menyewa kepada <b>Yang Menyewakan</b> dan <b>Yang Menyewakan</b> juga setuju untuk menyewakan kepada <b>Penyewa</b> sebagian tempat/ruang yang terletak dalam Gedung, di <b>[mohon diisi]</b>, dengan luas tempat/ruang <b>[mohon diisi]</b> <b>([mohon diisi])</b> sebagaimana tercantum di dalam Lampiran I, untuk selanjutnya disebut juga sebagai <b>"Objek Sewa".</b>
+        <?
+        if(count($arrlokasi) == 1)
+        {
+          $arrlokasidetil= $arrlokasi[0];
+        ?>
+        <b>Penyewa</b> setuju untuk menyewa kepada <b>Yang Menyewakan</b> dan <b>Yang Menyewakan</b> juga setuju untuk menyewakan kepada <b>Penyewa</b> sebagian tempat/ruang yang terletak dalam Gedung, di <b><?=$arrlokasidetil["lantai"]?></b>, dengan luas tempat/ruang <b><?=$reqTotalLuas?> m<sup>2</sup></b> <b>(<?=kekata($reqTotalLuas)?> meter persegi)</b> sebagaimana tercantum di dalam Lampiran I, untuk selanjutnya disebut juga sebagai <b>"Objek Sewa".</b>
+        <?
+        }
+        else
+        {
+        ?>
+        <b>Penyewa</b> setuju untuk menyewa kepada <b>Yang Menyewakan</b> dan <b>Yang Menyewakan</b> juga setuju untuk menyewakan kepada <b>Penyewa</b> sebagian tempat/ruang yang terletak dalam Gedung
+        <?
+        $vconcat= "";
+        $vconcatdetil= '<table style="width: 80%; margin-left:100px;" border="0">';
+
+        foreach ($arrlokasi as $kd => $vd) {
+          $vinfodata= $vd["lantai"];
+          if(isStrContain($vconcat, $vinfodata)){}
+          else
+          {
+            if(empty($vconcat))
+              $vconcat= $vinfodata;
+            else
+              $vconcat= $vconcat.", ".$vinfodata;
+          }
+
+          $vconcatdetil.= '<tr><td style="width:20%"> - '.$vd["kode"].' </td><td style="width:30px">:</td><td>'.$vd["vnilai"].' m<sup>2</sup></td></tr>';
+        }
+        $vconcatdetil.= '</table>';
+        ?>
+        <?=$vconcat?>
+        dengan rincian sebagai berikut
+        <?=$vconcatdetil?>
+        Sehingga total luas tempat/ruang Sewa menjadi <b><?=$reqTotalLuas?> m<sup>2</sup></b> <b>(<?=kekata($reqTotalLuas)?> meter persegi)</b> sebagaimana tercantum di dalam Lampiran I, untuk selanjutnya disebut juga sebagai <b>"Obyek Sewa".</b>
+        <?
+        }
+        ?>
       </td>
     </tr>
     <tr>
@@ -402,7 +468,7 @@ $arrdetilpasal12[2]["isi"]= $vinfolampiran;
 
   <br>
   <br>
-  <table style="width:100%">
+  <table style="width:100%" border="0">
     <tr>
       <td style="width:30%;text-align: center;">
         <b>PENYEWA,</b>
@@ -456,7 +522,14 @@ $arrdetilpasal12[2]["isi"]= $vinfolampiran;
     </tr>
     <tr>
       <td style="width:30%;text-align: center;">
-        <b></b>
+        <?
+        if(!empty($reqSaksiPenyewaNama) || !empty($reqSaksiPenyewaJabatan))
+        {
+        ?>
+        <b>Saksi Yang Penyewa:</b>
+        <?
+        }
+        ?>
       </td>
       <td style="width:40%"></td>
       <td style="width:30%;text-align: center;">
@@ -468,20 +541,20 @@ $arrdetilpasal12[2]["isi"]= $vinfolampiran;
     </tr>
     <tr>
       <td style="width:30%;text-align: center;">
-        
+        <u><b><?=$reqSaksiPenyewaNama?></b></u>
       </td>
       <td style="width:40%"></td>
       <td style="width:30%;text-align: center;">
-        <u><b>CHANDRA NICO PARDEDE</b></u>                       
+        <u><b><?=$reqSaksiNama?></b></u>
       </td>
     </tr>
     <tr>
       <td style="width:30%;text-align: center;">
-        
+        <?=$reqSaksiPenyewaJabatan?>
       </td>
       <td style="width:40%"></td>
       <td style="width:30%;text-align: center;">
-        Legal
+        <?=$reqSaksiJabatan?>
       </td>
     </tr>
 

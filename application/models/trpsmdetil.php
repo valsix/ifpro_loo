@@ -107,6 +107,7 @@ DESCRIPTION			:
 		$str = "
 		SELECT
 		A1.KODE, A1.NAMA, A1.LANTAI
+		, A1.AREA, CASE A1.AREA WHEN UPPER('I') THEN 'Indoor' WHEN UPPER('O') THEN 'Outdoor' ELSE '' END AREA_NAMA
 		, A.*
 		FROM tr_psm_detil A
 		INNER JOIN

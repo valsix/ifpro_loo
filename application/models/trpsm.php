@@ -104,6 +104,10 @@ DESCRIPTION			:
 		, CUSTOMER_ID= ".$this->getField("CUSTOMER_ID")."
 		, PIC_PENANDATANGAN= '".$this->getField("PIC_PENANDATANGAN")."'
 		, JABATAN_PENANDATANGAN= '".$this->getField("JABATAN_PENANDATANGAN")."'
+		, SAKSI_NAMA= '".$this->getField("SAKSI_NAMA")."'
+		, SAKSI_JABATAN= '".$this->getField("SAKSI_JABATAN")."'
+		, SAKSI_PENYEWA_NAMA= '".$this->getField("SAKSI_PENYEWA_NAMA")."'
+		, SAKSI_PENYEWA_JABATAN= '".$this->getField("SAKSI_PENYEWA_JABATAN")."'
 		, LOKASI_LOO_ID= ".$this->getField("LOKASI_LOO_ID")."
 		, PPH= ".$this->getField("PPH")."
 		, TOTAL_LUAS_INDOOR= ".$this->getField("TOTAL_LUAS_INDOOR")."

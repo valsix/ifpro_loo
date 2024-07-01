@@ -1376,6 +1376,10 @@ create table tr_psm
 	, ttd_kode character varying
 	, persetujuan_info character varying
 	, jumlah_step numeric
+	, saksi_nama character varying
+	, saksi_jabatan character varying
+	, saksi_penyewa_nama character varying
+	, saksi_penyewa_jabatan character varying
 	, last_user character varying
 	, paksa_db character varying
 	, last_create_date timestamp without time zone
